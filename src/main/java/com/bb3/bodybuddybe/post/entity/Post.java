@@ -1,6 +1,7 @@
 package com.bb3.bodybuddybe.post.entity;
 
 import com.bb3.bodybuddybe.common.timestamped.TimeStamped;
+import com.bb3.bodybuddybe.post.dto.PostCreateRequestDto;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -29,9 +30,9 @@ public class Post extends TimeStamped {
     @Column
     private String video_url;
 
-//    @ManyToOne
-//    @JoinColumn(name = "user_id")
-//    private User user;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
 //    @ManyToOne
 //    @JoinColumn(name = "gym_id")
@@ -40,11 +41,15 @@ public class Post extends TimeStamped {
 //    @OneToMany(mappedBy = "Post", cascade = CascadeType.REMOVE)
 //    private Comment comment;
 
-    public Post(Post post) {
-        this.title = post.getTitle();
-        this.content = post.getContent();
-        this.category = post.getCategory();
-        this.image_url = post.getImage_url();
-        this.video_url = post.getVideo_url();
+    public Post(PostCreateRequestDto requestDto) {
+        this.title = requestDto.getTitle();
+        this.content = requestDto.getContent();
+        this.category = requestDto.getCategory();
+        this.image_url = requestDto.getImage_url();
+        this.video_url = requestDto.getVideo_url();
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 }
