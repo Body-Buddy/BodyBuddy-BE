@@ -36,10 +36,10 @@ public class Users {
     @Column(nullable = false, unique = true)
     private String email;
 
-    @Column(nullable = false)
+    @Column
     private String imageUrl;
 
-    @Column(nullable = false)
+    @Column
     private String introduction;
 
     @Column(nullable = false)
@@ -71,7 +71,7 @@ public class Users {
         this.password=password;
         this.passwordDecoded = passwordDecoded;
         this.email=email;
-        this.role=role;
+         this.role=role;
         this.status = 허가;
     }
 }

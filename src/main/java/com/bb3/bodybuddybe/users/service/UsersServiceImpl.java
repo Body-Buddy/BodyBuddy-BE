@@ -60,7 +60,7 @@ public class UsersServiceImpl implements UsersService {
             if (!POSTOWNER_TOKEN.equals(requestDto.getPostownerToken())) {
                 throw new IllegalArgumentException();
             }
-            role = UsersRoleEnum.CHATOWNER;
+            role = UsersRoleEnum.POSTOWNER;
         }
 
         // 사용자 등록
