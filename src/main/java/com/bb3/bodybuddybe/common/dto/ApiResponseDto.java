@@ -1,0 +1,20 @@
+package com.bb3.bodybuddybe.common.dto;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Getter
+@Setter
+@NoArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class ApiResponseDto {
+    private Integer statusCode;
+    private String message;
+
+    public ApiResponseDto(Integer statusCode, String message) {
+        this.statusCode = statusCode;
+        this.message = message;
+    }
+}
