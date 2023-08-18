@@ -3,21 +3,23 @@ package com.bb3.bodybuddybe.users.service;
 import com.bb3.bodybuddybe.common.advice.ApiResponseDto;
 import com.bb3.bodybuddybe.common.image.ImageUploader;
 import com.bb3.bodybuddybe.common.jwt.JwtUtil;
+import com.bb3.bodybuddybe.common.security.UserDetailsImpl;
 import com.bb3.bodybuddybe.users.UsersRoleEnum;
-import com.bb3.bodybuddybe.users.dto.AuthRequestDto;
-import com.bb3.bodybuddybe.users.dto.DeleteRequestDto;
-import com.bb3.bodybuddybe.users.dto.ProfileResponseDto;
-import com.bb3.bodybuddybe.users.dto.UserProfileDto;
+import com.bb3.bodybuddybe.users.dto.*;
 import com.bb3.bodybuddybe.users.entity.Users;
 import com.bb3.bodybuddybe.users.repository.UsersRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -67,6 +69,9 @@ public class UsersServiceImpl implements UsersService {
         Users user = new Users(username,nickname, password, passwordDecoded, email, role);
         userRepository.save(user);
     }
+
+
+
 
     @Override
     public ResponseEntity<ApiResponseDto> changeUserInfo(MultipartFile profilePic, String introduction, String password, Users user) throws IOException {

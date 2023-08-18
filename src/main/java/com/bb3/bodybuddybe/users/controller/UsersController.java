@@ -7,6 +7,7 @@ import com.bb3.bodybuddybe.users.dto.*;
 import com.bb3.bodybuddybe.users.service.EmailServiceImpl;
 import com.bb3.bodybuddybe.users.service.UsersService;
 import com.bb3.bodybuddybe.users.service.UsersServiceImpl;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -43,6 +44,8 @@ public class UsersController {
         usersServiceimpl.signup(requestDto);
         return ResponseEntity.ok(new ApiResponseDto("회원가입 완료",200));
     }
+
+
 
     //프로필수정
     @PutMapping( value = "/{userId}/profile",consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})

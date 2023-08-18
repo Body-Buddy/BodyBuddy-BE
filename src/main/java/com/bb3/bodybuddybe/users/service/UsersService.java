@@ -1,11 +1,10 @@
 package com.bb3.bodybuddybe.users.service;
 
 import com.bb3.bodybuddybe.common.advice.ApiResponseDto;
-import com.bb3.bodybuddybe.users.dto.AuthRequestDto;
-import com.bb3.bodybuddybe.users.dto.DeleteRequestDto;
-import com.bb3.bodybuddybe.users.dto.ProfileResponseDto;
-import com.bb3.bodybuddybe.users.dto.UserProfileDto;
+import com.bb3.bodybuddybe.common.security.UserDetailsImpl;
+import com.bb3.bodybuddybe.users.dto.*;
 import com.bb3.bodybuddybe.users.entity.Users;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,4 +29,5 @@ public interface UsersService {
     ResponseEntity<ProfileResponseDto> getProfile(Users user);
 
     void delete(DeleteRequestDto requestDto, Users user);
+
 }
