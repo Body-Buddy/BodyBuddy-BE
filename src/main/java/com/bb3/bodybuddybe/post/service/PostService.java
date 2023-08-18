@@ -8,6 +8,9 @@ import com.bb3.bodybuddybe.post.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 public class PostService {
@@ -29,9 +32,11 @@ public class PostService {
     }
 
     public PostListResponseDto getPostsByGymId(Long gymId) {
+        List<PostResponseDto> postList = postRepository.findAllByGymId(gymId).stream()
+                .map(PostResponseDto::new)
+                .collect(Collectors.toList());
 
-
-        return new PostListResponseDto();
+        return new PostListResponseDto(postList);
     }
     public Post findPost(Long id) {
         return postRepository.findById(id).orElseThrow(
