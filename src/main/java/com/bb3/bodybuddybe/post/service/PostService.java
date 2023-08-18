@@ -32,13 +32,13 @@ public class PostService {
         return new PostResponseDto(post);
     }
 
-    public PostListResponseDto getPostsByGymId(Long gymId) {
-        List<PostResponseDto> postList = postRepository.findAllByGymId(gymId).stream()
-                .map(PostResponseDto::new)
-                .collect(Collectors.toList());
-
-        return new PostListResponseDto(postList);
-    }
+//    public PostListResponseDto getPostsByGymId(Long gymId) {
+//        List<PostResponseDto> postList = postRepository.findAllByGymId(gymId).stream()
+//                .map(PostResponseDto::new)
+//                .collect(Collectors.toList());
+//
+//        return new PostListResponseDto(postList);
+//    }
     public Post findPost(Long id) {
         return postRepository.findById(id).orElseThrow(
                 () -> new IllegalArgumentException("게시글이 존재하지 않습니다.")

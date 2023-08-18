@@ -30,10 +30,11 @@ public class PostController {
         return ResponseEntity.ok().body(postResponseDto);
     }
 
-    @GetMapping("/gyms/{gymId}/posts")
-    public ResponseEntity<PostListResponseDto> getPostsByGymId(@PathVariable Long gymId) {
-        PostListResponseDto postListResponseDto = postService.getPostsByGymId(gymId);
-
-        return ResponseEntity.ok().body(postListResponseDto);
-    }
+//    @GetMapping("/gyms/{gymId}/posts")
+//    public ResponseEntity<PostListResponseDto> getPostsByGymId(@PathVariable Long gymId) {
+//        PostListResponseDto postListResponseDto = postService.getPostsByGymId(gymId);
+//
+//        return ResponseEntity.ok().body(postListResponseDto);
+//    }
+//
 }
