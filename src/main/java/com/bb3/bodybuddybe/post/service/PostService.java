@@ -5,6 +5,7 @@ import com.bb3.bodybuddybe.post.dto.PostListResponseDto;
 import com.bb3.bodybuddybe.post.dto.PostResponseDto;
 import com.bb3.bodybuddybe.post.entity.Post;
 import com.bb3.bodybuddybe.post.repository.PostRepository;
+import com.bb3.bodybuddybe.users.entity.Users;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -16,9 +17,9 @@ import java.util.stream.Collectors;
 public class PostService {
     private final PostRepository postRepository;
 
-    public PostResponseDto createPost(PostCreateRequestDto postCreateRequestDto, User user) {
+    public PostResponseDto createPost(PostCreateRequestDto postCreateRequestDto, Users users) {
         Post post = new Post(postCreateRequestDto);
-        post.setUser(user);
+        post.setUser(users);
 
         postRepository.save(post);
 

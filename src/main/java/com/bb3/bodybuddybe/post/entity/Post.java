@@ -2,6 +2,7 @@ package com.bb3.bodybuddybe.post.entity;
 
 import com.bb3.bodybuddybe.common.timestamped.TimeStamped;
 import com.bb3.bodybuddybe.post.dto.PostCreateRequestDto;
+import com.bb3.bodybuddybe.users.entity.Users;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -32,7 +33,7 @@ public class Post extends TimeStamped {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private User user;
+    private Users users;
 
 //    @ManyToOne
 //    @JoinColumn(name = "gym_id")
@@ -49,7 +50,7 @@ public class Post extends TimeStamped {
         this.video_url = requestDto.getVideo_url();
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setUser(Users users) {
+        this.users = users;
     }
 }

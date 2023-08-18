@@ -2,7 +2,6 @@ package com.bb3.bodybuddybe.users.service;
 
 import com.bb3.bodybuddybe.common.advice.ApiResponseDto;
 import com.bb3.bodybuddybe.common.image.ImageUploader;
-import com.bb3.bodybuddybe.common.jwt.JwtUtil;
 import com.bb3.bodybuddybe.users.UsersRoleEnum;
 import com.bb3.bodybuddybe.users.dto.AuthRequestDto;
 import com.bb3.bodybuddybe.users.dto.DeleteRequestDto;
@@ -10,23 +9,16 @@ import com.bb3.bodybuddybe.users.dto.ProfileResponseDto;
 import com.bb3.bodybuddybe.users.dto.UserProfileDto;
 import com.bb3.bodybuddybe.users.entity.Users;
 import com.bb3.bodybuddybe.users.repository.UsersRepository;
-import jakarta.mail.MessagingException;
-import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
-import java.util.Random;
 import java.util.regex.Pattern;
 
 
