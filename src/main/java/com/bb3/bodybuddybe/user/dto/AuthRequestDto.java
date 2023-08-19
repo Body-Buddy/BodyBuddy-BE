@@ -1,8 +1,5 @@
-package com.bb3.bodybuddybe.users.dto;
+package com.bb3.bodybuddybe.user.dto;
 
-import com.bb3.bodybuddybe.users.UsersRoleEnum;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 

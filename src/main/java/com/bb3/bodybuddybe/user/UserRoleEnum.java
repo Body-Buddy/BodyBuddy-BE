@@ -1,6 +1,6 @@
-package com.bb3.bodybuddybe.users;
+package com.bb3.bodybuddybe.user;
 
-public enum UsersRoleEnum {
+public enum UserRoleEnum {
     USER(Authority.USER),
     CHATOWNER(Authority.CHATOWNER),
     POSTOWNER(Authority.POSTOWNER),
@@ -8,7 +8,7 @@ public enum UsersRoleEnum {
 
     private final String authority;
 
-    UsersRoleEnum(String authority) {
+    UserRoleEnum(String authority) {
         this.authority = authority;
     }
 
