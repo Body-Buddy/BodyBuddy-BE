@@ -10,20 +10,20 @@ import java.util.List;
 @Getter
 @Builder
 public class ErrorResponse {
-    private String code;
-    private String message;
+    private String errorCode;
+    private String errorMessage;
 
-    public static ErrorResponse of(String code, String message) {
+    public static ErrorResponse of(String errorCode, String errorMessage) {
         return ErrorResponse.builder()
-                .code(code)
-                .message(message)
+                .errorCode(errorCode)
+                .errorMessage(errorMessage)
                 .build();
     }
 
-    public static ErrorResponse of(String code, BindingResult bindingResult) {
+    public static ErrorResponse of(String errorCode, BindingResult bindingResult) {
         return ErrorResponse.builder()
-                .code(code)
-                .message(createErrorMessage(bindingResult))
+                .errorCode(errorCode)
+                .errorMessage(createErrorMessage(bindingResult))
                 .build();
     }
 
