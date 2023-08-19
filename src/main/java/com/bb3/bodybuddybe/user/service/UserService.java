@@ -1,6 +1,6 @@
 package com.bb3.bodybuddybe.user.service;
 
-import com.bb3.bodybuddybe.common.advice.ApiResponseDto;
+import com.bb3.bodybuddybe.common.dto.ApiResponseDto;
 import com.bb3.bodybuddybe.user.dto.*;
 import com.bb3.bodybuddybe.user.entity.User;
 import org.springframework.http.ResponseEntity;
