@@ -1,6 +1,6 @@
 package com.bb3.bodybuddybe.gym.controller;
 
-import com.bb3.bodybuddybe.gym.dto.KakaoPlaceDto;
+import com.bb3.bodybuddybe.gym.dto.PlaceDto;
 import com.bb3.bodybuddybe.gym.dto.LocationDto;
 import com.bb3.bodybuddybe.gym.service.GymServiceImpl;
 import lombok.RequiredArgsConstructor;
@@ -17,9 +17,9 @@ public class GymController {
     private final GymServiceImpl gymService;
 
     @GetMapping("/gyms/search")
-    public ResponseEntity<List<KakaoPlaceDto>> searchGyms(@RequestParam String query,
-                                                          @ModelAttribute LocationDto location) {
-        List<KakaoPlaceDto> gyms = gymService.searchGyms(query, location);
+    public ResponseEntity<List<PlaceDto>> searchGyms(@RequestParam String query,
+                                                     @ModelAttribute LocationDto location) {
+        List<PlaceDto> gyms = gymService.searchGyms(query, location);
         return ResponseEntity.ok(gyms);
     }
 
