@@ -1,9 +1,9 @@
 package com.bb3.bodybuddybe.post.entity;
 
 import com.bb3.bodybuddybe.common.timestamped.TimeStamped;
-import com.bb3.bodybuddybe.post.dto.PostCreateRequestDto;
 import com.bb3.bodybuddybe.users.entity.Users;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -31,7 +31,7 @@ public class Post extends TimeStamped {
     @Column
     private String video_url;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private Users users;
 
@@ -42,15 +42,21 @@ public class Post extends TimeStamped {
 //    @OneToMany(mappedBy = "Post", cascade = CascadeType.REMOVE)
 //    private Comment comment;
 
-    public Post(PostCreateRequestDto requestDto) {
-        this.title = requestDto.getTitle();
-        this.content = requestDto.getContent();
-        this.category = requestDto.getCategory();
-        this.image_url = requestDto.getImage_url();
-        this.video_url = requestDto.getVideo_url();
+    @Builder
+    public Post(String title, String content, String category, String image_url, String video_url, Users users) {
+        this.title = title;
+        this.content = content;
+        this.category = category;
+        this.image_url = image_url;
+        this.video_url = video_url;
+        this.users = users;
     }
 
-    public void setUser(Users users) {
-        this.users = users;
+    public void update(String title, String content, String category, String imageUrl, String videoUrl) {
+        this.title = title;
+        this.content = content;
+        this.category = category;
+        this.image_url = imageUrl;
+        this.video_url = videoUrl;
     }
 }

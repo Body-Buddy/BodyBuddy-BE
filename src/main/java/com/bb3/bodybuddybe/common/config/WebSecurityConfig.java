@@ -4,10 +4,10 @@ import com.bb3.bodybuddybe.common.jwt.JwtUtil;
 import com.bb3.bodybuddybe.common.security.JwtAuthenticationFilter;
 import com.bb3.bodybuddybe.common.security.JwtAuthorizationFilter;
 import com.bb3.bodybuddybe.common.security.UserDetailsServiceImpl;
-import com.bb3.bodybuddybe.common.security.UserVerificationFilter;
-import com.bb3.bodybuddybe.user.repository.UserRepository;
+import com.bb3.bodybuddybe.users.repository.UsersRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -30,7 +30,7 @@ public class WebSecurityConfig {
     private final UserDetailsServiceImpl userDetailsService;
     private final ObjectMapper objectMapper;
     private final AuthenticationConfiguration authenticationConfiguration;
-    private final UserRepository userRepository;
+    private final UsersRepository userRepository;
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
