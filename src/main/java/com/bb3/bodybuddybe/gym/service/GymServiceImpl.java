@@ -1,13 +1,17 @@
 package com.bb3.bodybuddybe.gym.service;
 
-import com.bb3.bodybuddybe.gym.dto.KakaoApiResponseDto;
-import com.bb3.bodybuddybe.gym.dto.LocationDto;
-import com.bb3.bodybuddybe.gym.dto.PlaceDto;
+import com.bb3.bodybuddybe.common.exception.CustomException;
+import com.bb3.bodybuddybe.common.exception.ErrorCode;
+import com.bb3.bodybuddybe.gym.dto.*;
+import com.bb3.bodybuddybe.gym.entity.Gym;
+import com.bb3.bodybuddybe.gym.entity.UserGym;
 import com.bb3.bodybuddybe.gym.repository.GymRepository;
 import com.bb3.bodybuddybe.gym.repository.UserGymRepository;
+import com.bb3.bodybuddybe.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.List;
@@ -60,5 +64,41 @@ public class GymServiceImpl implements GymService {
                 .bodyToMono(KakaoApiResponseDto.class)
                 .block()
                 .getDocuments();
+    }
+
+    @Override
+    @Transactional
+    public void addToMyGyms(GymRequestDto requestDto, User user) {
+        Gym gym = gymRepository.findByKakaoPlaceId(requestDto.getId())
+                .orElseGet(() -> gymRepository.save(new Gym(requestDto)));
+        userGymRepository.save(new UserGym(user, gym));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<GymResponseDto> getMyGyms(User user) {
+        return userGymRepository.findByUser(user)
+                .stream()
+                .map(UserGym::getGym)
+                .map(GymResponseDto::new)
+                .toList();
+    }
+
+    @Override
+    @Transactional
+    public void deleteFromMyGyms(Long gymId, User user) {
+        Gym gym = findGym(gymId);
+        UserGym userGym = findUserGym(user, gym);
+        userGymRepository.delete(userGym);
+    }
+
+    private Gym findGym(Long gymId) {
+        return gymRepository.findById(gymId)
+                .orElseThrow(() -> new CustomException(ErrorCode.GYM_NOT_FOUND));
+    }
+
+    private UserGym findUserGym(User user, Gym gym) {
+        return userGymRepository.findByUserAndGym(user, gym)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_MY_GYM));
     }
 }
