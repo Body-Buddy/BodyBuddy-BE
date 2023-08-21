@@ -43,4 +43,10 @@ public class Gym {
         this.name = requestDto.getName();
         this.roadAddress = requestDto.getRoadAddress();
     }
+
+    public Gym(String kakaoPlaceId, String name, String roadAddress) {
+        this.kakaoPlaceId = kakaoPlaceId;
+        this.name = name;
+        this.roadAddress = roadAddress;
+    }
 }

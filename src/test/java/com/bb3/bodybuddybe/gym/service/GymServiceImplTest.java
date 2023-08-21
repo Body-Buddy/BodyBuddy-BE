@@ -1,6 +1,7 @@
 package com.bb3.bodybuddybe.gym.service;
 
 import com.bb3.bodybuddybe.gym.dto.GymRequestDto;
+import com.bb3.bodybuddybe.gym.dto.GymResponseDto;
 import com.bb3.bodybuddybe.gym.entity.Gym;
 import com.bb3.bodybuddybe.gym.entity.UserGym;
 import com.bb3.bodybuddybe.gym.repository.GymRepository;
@@ -14,6 +15,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -87,5 +90,35 @@ class GymServiceImplTest {
         assertEquals(requestDto.getId(), savedGym.getKakaoPlaceId());
         assertEquals(requestDto.getName(), savedGym.getName());
         assertEquals(0, savedGym.getMembers().size());
+    }
+
+    @Test
+    @DisplayName("나의 헬스장 목록을 조회한다.")
+    void testGetMyGyms() {
+        // given
+        User user = new User();
+        Gym gym1 = new Gym("448766559", "스포애니 노원점", "서울 노원구 동일로 1361");
+        Gym gym2 = new Gym("27440935", "에이블짐 노원본점", "서울 노원구 상계로 77");
+        List<UserGym> userGyms = Arrays.asList(new UserGym(user, gym1), new UserGym(user, gym2));
+
+        when(userGymRepository.findByUser(user)).thenReturn(userGyms);
+
+        // when
+        List<GymResponseDto> result = gymService.getMyGyms(user);
+
+        // then
+        verify(userGymRepository).findByUser(user);
+
+        assertEquals(2, result.size());
+
+        GymResponseDto gymResponse1 = result.get(0);
+        assertEquals("448766559", gymResponse1.getKakaoPlaceId());
+        assertEquals("스포애니 노원점", gymResponse1.getName());
+        assertEquals("서울 노원구 동일로 1361", gymResponse1.getRoadAddress());
+
+        GymResponseDto gymResponse2 = result.get(1);
+        assertEquals("27440935", gymResponse2.getKakaoPlaceId());
+        assertEquals("에이블짐 노원본점", gymResponse2.getName());
+        assertEquals("서울 노원구 상계로 77", gymResponse2.getRoadAddress());
     }
 }
