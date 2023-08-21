@@ -1,5 +1,7 @@
 package com.bb3.bodybuddybe.gym.service;
 
+import com.bb3.bodybuddybe.common.exception.CustomException;
+import com.bb3.bodybuddybe.common.exception.ErrorCode;
 import com.bb3.bodybuddybe.gym.dto.GymRequestDto;
 import com.bb3.bodybuddybe.gym.dto.GymResponseDto;
 import com.bb3.bodybuddybe.gym.entity.Gym;
@@ -19,7 +21,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -35,7 +37,7 @@ class GymServiceImplTest {
     UserGymRepository userGymRepository;
 
     @Test
-    @DisplayName("DB에 존재하는 헬스장을 등록하는 경우")
+    @DisplayName("DB에 존재하는 헬스장을 등록한다.")
     void testAddToMyGyms_addExistingGym() {
         // given
         GymRequestDto requestDto = new GymRequestDto();
@@ -63,7 +65,7 @@ class GymServiceImplTest {
     }
 
     @Test
-    @DisplayName("DB에 존재하지 않는 헬스장을 등록하는 경우")
+    @DisplayName("DB에 존재하지 않는 헬스장을 등록한다.")
     void testAddToMyGyms_addNewGym() {
         // given
         GymRequestDto requestDto = new GymRequestDto();
@@ -108,7 +110,6 @@ class GymServiceImplTest {
 
         // then
         verify(userGymRepository).findByUser(user);
-
         assertEquals(2, result.size());
 
         GymResponseDto gymResponse1 = result.get(0);
@@ -120,5 +121,48 @@ class GymServiceImplTest {
         assertEquals("27440935", gymResponse2.getKakaoPlaceId());
         assertEquals("에이블짐 노원본점", gymResponse2.getName());
         assertEquals("서울 노원구 상계로 77", gymResponse2.getRoadAddress());
+    }
+
+    @Test
+    @DisplayName("나의 헬스장 목록에서 헬스장을 성공적으로 삭제한다.")
+    void testDeleteFromMyGyms_success() {
+        // given
+        User user = new User();
+        Long gymId = 1L;
+        Gym gym = new Gym("448766559", "스포애니 노원점", "서울 노원구 동일로 1361");
+        UserGym userGym = new UserGym(user, gym);
+
+        when(gymRepository.findById(gymId)).thenReturn(Optional.of(gym));
+        when(userGymRepository.findByUserAndGym(user, gym)).thenReturn(Optional.of(userGym));
+
+        // when
+        gymService.deleteFromMyGyms(gymId, user);
+
+        // then
+        verify(gymRepository).findById(gymId);
+        verify(userGymRepository).findByUserAndGym(user, gym);
+        verify(userGymRepository).delete(userGym);
+    }
+
+    @Test
+    @DisplayName("등록하지 않은 헬스장을 삭제하려고 할 때 예외를 발생시킨다.")
+    void testDeleteFromMyGyms_failure() {
+        // given
+        User user = new User();
+        Long gymId = 1L;
+        Gym gym = new Gym("448766559", "스포애니 노원점", "서울 노원구 동일로 1361");
+
+        when(gymRepository.findById(gymId)).thenReturn(Optional.of(gym));
+        when(userGymRepository.findByUserAndGym(user, gym)).thenReturn(Optional.empty());
+
+        //when
+        CustomException thrownException = assertThrows(CustomException.class, () -> {
+            gymService.deleteFromMyGyms(gymId, user);
+        });
+
+        // then
+        verify(gymRepository).findById(gymId);
+        verify(userGymRepository).findByUserAndGym(user, gym);
+        assertEquals(ErrorCode.NOT_MY_GYM, thrownException.getErrorCode());
     }
 }
