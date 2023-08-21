@@ -28,7 +28,7 @@ public class GymController {
         List<PlaceDto> gyms = gymService.searchGyms(query, location);
         return ResponseEntity.ok(gyms);
     }
-
+  
     @PostMapping("/users/{userId}/gyms")
     public ResponseEntity<ApiResponseDto> addToMyGyms(@RequestBody GymRequestDto requestDto,
                                                      @AuthenticationPrincipal UserDetailsImpl userDetails) {
