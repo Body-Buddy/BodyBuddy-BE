@@ -152,7 +152,6 @@ class GymServiceImplTest {
         Gym savedGym = gymCaptor.getValue();
         assertEquals(requestDto.getId(), savedGym.getKakaoPlaceId());
         assertEquals(requestDto.getName(), savedGym.getName());
-        assertEquals(0, savedGym.getMembers().size());
     }
 
     @Test

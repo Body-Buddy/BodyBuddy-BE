@@ -1,7 +1,6 @@
 package com.bb3.bodybuddybe.common.security;
 
 import com.bb3.bodybuddybe.common.exception.ErrorResponse;
-import com.bb3.bodybuddybe.user.entity.User;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -46,7 +45,7 @@ public class UserVerificationFilter extends OncePerRequestFilter {
             }
         }
 
-        filterChain.doFilter(request,response);
+        filterChain.doFilter(request, response);
     }
 }
 
