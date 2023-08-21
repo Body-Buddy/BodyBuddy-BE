@@ -156,6 +156,32 @@ class GymServiceImplTest {
     }
 
     @Test
+    @DisplayName("중복된 헬스장을 등록하려고 할 때 예외를 발생시킨다.")
+    void testAddToMyGyms_duplicateGym() {
+        // given
+        GymRequestDto requestDto = new GymRequestDto();
+        requestDto.setId("448766559");
+        requestDto.setName("스포애니 노원점");
+
+        User user = new User();
+        Gym existingGym = new Gym(requestDto);
+        UserGym userGym = new UserGym(user, existingGym);
+
+        when(gymRepository.findByKakaoPlaceId(requestDto.getId())).thenReturn(Optional.of(existingGym));
+        when(userGymRepository.existsByUserAndGym(user, existingGym)).thenReturn(true);
+
+        // when
+        CustomException thrownException = assertThrows(CustomException.class, () -> {
+            gymService.addToMyGyms(requestDto, user);
+        });
+
+        // then
+        verify(gymRepository).findByKakaoPlaceId(requestDto.getId());
+        verify(userGymRepository).existsByUserAndGym(user, existingGym);
+        assertEquals(ErrorCode.DUPLICATED_MY_GYM, thrownException.getErrorCode());
+    }
+
+    @Test
     @DisplayName("나의 헬스장 목록을 조회한다.")
     void testGetMyGyms() {
         // given

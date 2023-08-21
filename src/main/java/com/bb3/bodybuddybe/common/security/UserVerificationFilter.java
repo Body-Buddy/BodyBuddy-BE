@@ -1,17 +1,22 @@
 package com.bb3.bodybuddybe.common.security;
 
 import com.bb3.bodybuddybe.common.exception.ErrorResponse;
+import com.bb3.bodybuddybe.user.entity.User;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.servlet.*;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-public class UserVerificationFilter implements Filter {
+public class UserVerificationFilter extends OncePerRequestFilter {
 
     private final ObjectMapper objectMapper;
 
@@ -19,31 +24,29 @@ public class UserVerificationFilter implements Filter {
         this.objectMapper = objectMapper;
     }
 
+    private final Pattern pattern = Pattern.compile("^/api/users/(\\d+)/gyms(/(\\d+))?");
+
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-        HttpServletRequest httpServletRequest = (HttpServletRequest) request;
-        String pathUserId = httpServletRequest.getParameter("userId");
-        String requestURI = httpServletRequest.getRequestURI();
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+        String uri = request.getRequestURI();
+        Matcher matcher = pattern.matcher(uri);
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        if (authentication != null && authentication.getPrincipal() instanceof UserDetailsImpl userDetails) {
-            Long userId = userDetails.getUser().getId();
+        if (authentication != null && matcher.matches()) {
+            String pathUserId = matcher.group(1);
+            Long userId = ((UserDetailsImpl) authentication.getPrincipal()).getUser().getId();
 
-            if (requestURI.matches("/api/users/\\d+/gyms(/\\d+)?")) {
-                if (!userId.toString().equals(pathUserId)) {
-                    HttpServletResponse httpServletResponse = (HttpServletResponse) response;
-
-                    ErrorResponse errorResponse = ErrorResponse.of(HttpStatus.FORBIDDEN.toString(), "로그인 유저 본인만 해당 리소스에 접근할 수 있습니다.");
-                    httpServletResponse.setStatus(HttpServletResponse.SC_FORBIDDEN);
-                    httpServletResponse.setContentType("application/json; charset=UTF-8");
-                    httpServletResponse.getWriter().write(objectMapper.writeValueAsString(errorResponse));
-                    return;
-                }
+            if (!userId.toString().equals(pathUserId)) {
+                ErrorResponse errorResponse = ErrorResponse.of(HttpStatus.FORBIDDEN.toString(), "로그인 유저 본인만 해당 리소스에 접근할 수 있습니다.");
+                response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                response.setContentType("application/json; charset=UTF-8");
+                response.getWriter().write(objectMapper.writeValueAsString(errorResponse));
+                return;
             }
         }
 
-        chain.doFilter(request, response);
+        filterChain.doFilter(request,response);
     }
 }
 

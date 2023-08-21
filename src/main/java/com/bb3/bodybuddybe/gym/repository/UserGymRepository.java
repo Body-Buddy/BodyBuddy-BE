@@ -14,4 +14,6 @@ public interface UserGymRepository extends JpaRepository<UserGym, Long> {
     List<UserGym> findByUser(User user);
 
     Optional<UserGym> findByUserAndGym(User user, Gym gym);
+
+    boolean existsByUserAndGym(User user, Gym gym);
 }

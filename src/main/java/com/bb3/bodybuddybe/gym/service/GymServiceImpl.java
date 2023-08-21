@@ -8,7 +8,6 @@ import com.bb3.bodybuddybe.gym.entity.UserGym;
 import com.bb3.bodybuddybe.gym.repository.GymRepository;
 import com.bb3.bodybuddybe.gym.repository.UserGymRepository;
 import com.bb3.bodybuddybe.user.entity.User;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -76,6 +75,11 @@ public class GymServiceImpl implements GymService {
     public void addToMyGyms(GymRequestDto requestDto, User user) {
         Gym gym = gymRepository.findByKakaoPlaceId(requestDto.getId())
                 .orElseGet(() -> gymRepository.save(new Gym(requestDto)));
+
+        if (userGymRepository.existsByUserAndGym(user, gym)) {
+            throw new CustomException(ErrorCode.DUPLICATED_MY_GYM);
+        }
+
         userGymRepository.save(new UserGym(user, gym));
     }
 
