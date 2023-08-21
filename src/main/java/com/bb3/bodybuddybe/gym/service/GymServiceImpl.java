@@ -19,7 +19,6 @@ import java.util.List;
 import static com.bb3.bodybuddybe.gym.dto.KakaoApiResponseDto.Document;
 
 @Service
-@RequiredArgsConstructor
 public class GymServiceImpl implements GymService {
 
     private static final String KAKAO_API_PATH = "/v2/local/search/keyword.json";
@@ -32,6 +31,12 @@ public class GymServiceImpl implements GymService {
 
     @Value("${kakao.api.key}")
     private String restApiKey;
+
+    public GymServiceImpl(GymRepository gymRepository, UserGymRepository userGymRepository, WebClient.Builder webClientBuilder) {
+        this.gymRepository = gymRepository;
+        this.userGymRepository = userGymRepository;
+        this.webClient = webClientBuilder.baseUrl("https://dapi.kakao.com").build();
+    }
 
     @Override
     public List<PlaceDto> searchGyms(String query, LocationDto location) {

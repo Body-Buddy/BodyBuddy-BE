@@ -24,7 +24,6 @@ public class WebClientConfig {
                                 .addHandlerLast(new WriteTimeoutHandler(5000, TimeUnit.MILLISECONDS)));
 
         return WebClient.builder()
-                .baseUrl("https://dapi.kakao.com")
                 .clientConnector(new ReactorClientHttpConnector(httpClient))
                 .defaultHeader("Content-type", "application/x-www-form-urlencoded;charset=utf-8")
                 .build();
