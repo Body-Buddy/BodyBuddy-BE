@@ -1,4 +1,4 @@
-package com.bb3.bodybuddybe.users.dto;
+package com.bb3.bodybuddybe.user.dto;
 
 import lombok.Getter;
 import lombok.Setter;

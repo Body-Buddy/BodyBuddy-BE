@@ -2,11 +2,15 @@ package com.bb3.bodybuddybe.gym.dto;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
 @Getter
+@NoArgsConstructor
+@AllArgsConstructor
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class KakaoApiResponseDto {
 
@@ -31,6 +35,7 @@ public class KakaoApiResponseDto {
     }
 
     @Getter
+    @NoArgsConstructor
     @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
     public static class Document {
         private String placeName;
@@ -45,6 +50,11 @@ public class KakaoApiResponseDto {
         private String categoryGroupName;
         private String x;
         private String y;
+
+        public Document(String placeName, String categoryName, String id) {
+            this.placeName = placeName;
+            this.categoryName = categoryName;
+            this.id = id;
+        }
     }
 }
-

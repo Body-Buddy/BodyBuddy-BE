@@ -1,7 +1,7 @@
 package com.bb3.bodybuddybe.common.security;
 
-import com.bb3.bodybuddybe.users.UsersRoleEnum;
-import com.bb3.bodybuddybe.users.entity.Users;
+import com.bb3.bodybuddybe.user.UserRoleEnum;
+import com.bb3.bodybuddybe.user.entity.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -10,33 +10,33 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 public class UserDetailsImpl implements UserDetails {
-    private final Users users;
+    private final User user;
 
-    public UserDetailsImpl(Users users) {
-        this.users = users;
+    public UserDetailsImpl(User user) {
+        this.user = user;
     }
 
-    public Users getUser() {
-        return users;
+    public User getUser() {
+        return user;
     }
 
     public String getRole(){
-        return users.getRole().toString();
+        return user.getRole().toString();
     }
 
     @Override
     public String getPassword() {
-        return users.getPassword();
+        return user.getPassword();
     }
 
     @Override
     public String getUsername() {
-        return users.getUsername();
+        return user.getUsername();
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        UsersRoleEnum role = users.getRole();
+        UserRoleEnum role = user.getRole();
         String authority = role.getAuthority();
 
         SimpleGrantedAuthority simpleGrantedAuthority = new SimpleGrantedAuthority(authority);

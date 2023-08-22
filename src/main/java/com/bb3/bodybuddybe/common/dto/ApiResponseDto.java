@@ -10,11 +10,11 @@ import lombok.Setter;
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ApiResponseDto {
-    private Integer statusCode;
     private String message;
+    private Integer statusCode;
 
-    public ApiResponseDto(Integer statusCode, String message) {
-        this.statusCode = statusCode;
+    public ApiResponseDto(String message, Integer statusCode) {
         this.message = message;
+        this.statusCode = statusCode;
     }
 }
