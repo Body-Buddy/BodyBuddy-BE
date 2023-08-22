@@ -1,6 +1,6 @@
 package com.bb3.bodybuddybe.common.jwt;
 
-import com.bb3.bodybuddybe.users.UsersRoleEnum;
+import com.bb3.bodybuddybe.user.UserRoleEnum;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
@@ -40,7 +40,7 @@ public class JwtUtil {
     }
 
     // 토큰 생성
-    public String createToken(String username, UsersRoleEnum role) {
+    public String createToken(String username, UserRoleEnum role) {
         Date date = new Date();
 
         return BEARER_PREFIX +

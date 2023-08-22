@@ -1,22 +1,20 @@
-package com.bb3.bodybuddybe.users.entity;
+package com.bb3.bodybuddybe.user.entity;
 
-import com.bb3.bodybuddybe.users.UsersBlockEnum;
-import com.bb3.bodybuddybe.users.UsersRoleEnum;
+import com.bb3.bodybuddybe.user.UserBlockEnum;
+import com.bb3.bodybuddybe.user.UserRoleEnum;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import static com.bb3.bodybuddybe.users.UsersBlockEnum.허가;
+import static com.bb3.bodybuddybe.user.UserBlockEnum.허가;
 
 @Entity
 @NoArgsConstructor
 @Getter
 @Setter
-public class Users {
+@Table(name = "users")
+public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -44,12 +42,12 @@ public class Users {
 
     @Column(nullable = false)
     @Enumerated(value = EnumType.STRING)
-    private UsersRoleEnum role;
+    private UserRoleEnum role;
 
 
     @Column(nullable = false)
     @Enumerated(value = EnumType.STRING)
-    private UsersBlockEnum status;
+    private UserBlockEnum status;
 
 //    @OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
 //    private List<Notification> notificationList = new ArrayList<>();
@@ -65,7 +63,7 @@ public class Users {
 //    private List<GroupChatMember> groupChatMemberList = new ArrayList<>();
 
 
-    public Users(String username, String nickname, String password, String passwordDecoded,String email, UsersRoleEnum role) {
+    public User(String username, String nickname, String password, String passwordDecoded, String email, UserRoleEnum role) {
         this.username=username;
         this.nickname=nickname;
         this.password=password;

@@ -1,4 +1,4 @@
-package com.bb3.bodybuddybe.users.service;
+package com.bb3.bodybuddybe.user.service;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;

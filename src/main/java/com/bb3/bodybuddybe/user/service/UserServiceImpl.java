@@ -1,41 +1,28 @@
-package com.bb3.bodybuddybe.users.service;
+package com.bb3.bodybuddybe.user.service;
 
 import com.bb3.bodybuddybe.common.advice.ApiResponseDto;
 import com.bb3.bodybuddybe.common.image.ImageUploader;
-import com.bb3.bodybuddybe.common.jwt.JwtUtil;
-import com.bb3.bodybuddybe.common.security.UserDetailsImpl;
-import com.bb3.bodybuddybe.users.UsersRoleEnum;
-import com.bb3.bodybuddybe.users.dto.*;
-import com.bb3.bodybuddybe.users.entity.Users;
-import com.bb3.bodybuddybe.users.repository.UsersRepository;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.mail.MessagingException;
-import jakarta.mail.internet.MimeMessage;
-import jakarta.servlet.http.HttpServletResponse;
+import com.bb3.bodybuddybe.user.UserRoleEnum;
+import com.bb3.bodybuddybe.user.dto.*;
+import com.bb3.bodybuddybe.user.entity.User;
+import com.bb3.bodybuddybe.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
-import java.util.Random;
 import java.util.regex.Pattern;
 
 
 @Service
 @RequiredArgsConstructor
-public class UsersServiceImpl implements UsersService {
-    private final UsersRepository userRepository;
+public class UserServiceImpl implements UserService {
+    private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final ImageUploader imageUploader;
     // OWNER_TOKEN
@@ -57,16 +44,16 @@ public class UsersServiceImpl implements UsersService {
             throw new IllegalArgumentException();
         }
 
-        UsersRoleEnum role = UsersRoleEnum.USER;
+        UserRoleEnum role = UserRoleEnum.USER;
         if (requestDto.isPostOwner()) {
             if (!POSTOWNER_TOKEN.equals(requestDto.getPostownerToken())) {
                 throw new IllegalArgumentException();
             }
-            role = UsersRoleEnum.POSTOWNER;
+            role = UserRoleEnum.POSTOWNER;
         }
 
         // 사용자 등록
-        Users user = new Users(username,nickname, password, passwordDecoded, email, role);
+        User user = new User(username,nickname, password, passwordDecoded, email, role);
         userRepository.save(user);
     }
 
@@ -74,8 +61,8 @@ public class UsersServiceImpl implements UsersService {
 
 
     @Override
-    public ResponseEntity<ApiResponseDto> changeUserInfo(MultipartFile profilePic, String introduction, String password, Users user) throws IOException {
-        Users dbUser = userRepository.findByUsername(user.getUsername()).orElseThrow(() ->
+    public ResponseEntity<ApiResponseDto> changeUserInfo(MultipartFile profilePic, String introduction, String password, User user) throws IOException {
+        User dbUser = userRepository.findByUsername(user.getUsername()).orElseThrow(() ->
                 new IllegalArgumentException(""));
         if (profilePic != null) {
             String imageUrl = imageUploader.upload(profilePic, "image");
@@ -116,14 +103,14 @@ public class UsersServiceImpl implements UsersService {
     }
 
     @Override
-    public UserProfileDto getUserProfile(Users user) {
-        Users users = userRepository.findById(user.getId()).orElseThrow(()-> new IllegalArgumentException("회원정보가 없습니다."));
+    public UserProfileDto getUserProfile(User user) {
+        User users = userRepository.findById(user.getId()).orElseThrow(()-> new IllegalArgumentException("회원정보가 없습니다."));
         return new UserProfileDto(users);
     }
 
     @Override
-    public ResponseEntity<ProfileResponseDto> getProfile(Users user) {
-        Users dbUser = userRepository.findByUsername(user.getUsername()).orElseThrow(() ->
+    public ResponseEntity<ProfileResponseDto> getProfile(User user) {
+        User dbUser = userRepository.findByUsername(user.getUsername()).orElseThrow(() ->
                 new IllegalArgumentException(""));
         ProfileResponseDto profileResponseDto = new ProfileResponseDto(dbUser.getImageUrl(), dbUser.getIntroduction());
         return new ResponseEntity<>(profileResponseDto, HttpStatus.OK);
@@ -131,7 +118,7 @@ public class UsersServiceImpl implements UsersService {
 
 
     @Override
-    public void delete(DeleteRequestDto requestDto, Users user){
+    public void delete(DeleteRequestDto requestDto, User user){
         if (!requestDto.getPassword().equals(user.getPasswordDecoded())) {
             throw new IllegalArgumentException("비밀번호가 틀립니다.");
         }

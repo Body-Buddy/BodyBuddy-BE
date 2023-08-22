@@ -1,17 +1,12 @@
-package com.bb3.bodybuddybe.users.controller;
+package com.bb3.bodybuddybe.user.controller;
 
 import com.bb3.bodybuddybe.common.advice.ApiResponseDto;
-import com.bb3.bodybuddybe.common.jwt.JwtUtil;
 import com.bb3.bodybuddybe.common.security.UserDetailsImpl;
-import com.bb3.bodybuddybe.users.dto.*;
-import com.bb3.bodybuddybe.users.service.EmailServiceImpl;
-import com.bb3.bodybuddybe.users.service.UsersService;
-import com.bb3.bodybuddybe.users.service.UsersServiceImpl;
-import jakarta.servlet.http.HttpServletResponse;
+import com.bb3.bodybuddybe.user.dto.*;
+import com.bb3.bodybuddybe.user.service.EmailServiceImpl;
+import com.bb3.bodybuddybe.user.service.UserServiceImpl;
 import jakarta.validation.Valid;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -23,14 +18,14 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Locale;
+
 //카프카, 엘라스틱 서치, 레디스
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/users")
-public class UsersController {
+public class UserController {
 
-    private final UsersServiceImpl usersServiceimpl;
+    private final UserServiceImpl usersServiceimpl;
     private final EmailServiceImpl emailServiceimpl;
 
     //회원가입
