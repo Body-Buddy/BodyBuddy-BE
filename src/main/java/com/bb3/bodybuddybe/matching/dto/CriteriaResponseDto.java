@@ -5,9 +5,7 @@ import com.bb3.bodybuddybe.matching.enums.ExerciseTimeEnum;
 import com.bb3.bodybuddybe.matching.enums.ExperienceEnum;
 import com.bb3.bodybuddybe.matching.enums.GoalEnum;
 import com.bb3.bodybuddybe.matching.enums.IntensityEnum;
-import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
-import lombok.Setter;
 
 import java.util.Set;
 

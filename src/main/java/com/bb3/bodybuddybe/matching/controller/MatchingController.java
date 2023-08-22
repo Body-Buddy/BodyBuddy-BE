@@ -6,6 +6,7 @@ import com.bb3.bodybuddybe.matching.dto.CriteriaCreateRequestDto;
 import com.bb3.bodybuddybe.matching.dto.CriteriaResponseDto;
 import com.bb3.bodybuddybe.matching.dto.CriteriaUpdateRequestDto;
 import com.bb3.bodybuddybe.matching.service.MatchingServiceImpl;
+import com.bb3.bodybuddybe.user.dto.UserProfileDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -13,30 +14,39 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/users/{userId}/criteria")
+@RequestMapping("/api")
 public class MatchingController {
 
     private final MatchingServiceImpl matchingService;
 
-    @PostMapping
+    @PostMapping("/users/{userId}/criteria")
     ResponseEntity<ApiResponseDto> createMatchingCriteria(@RequestBody @Valid CriteriaCreateRequestDto requestDto,
                                                           @AuthenticationPrincipal UserDetailsImpl userDetails) {
         matchingService.createMatchingCriteria(requestDto, userDetails.getUser());
         return ResponseEntity.ok(new ApiResponseDto("매칭 기준 생성 성공", HttpStatus.OK.value()));
     }
 
-    @GetMapping
+    @GetMapping("/users/{userId}/criteria")
     ResponseEntity<CriteriaResponseDto> getMatchingCriteria(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         CriteriaResponseDto criteria = matchingService.getMatchingCriteria(userDetails.getUser());
         return ResponseEntity.ok(criteria);
     }
 
-    @PutMapping
+    @PutMapping("/users/{userId}/criteria")
     ResponseEntity<ApiResponseDto> updateMatchingCriteria(@RequestBody @Valid CriteriaUpdateRequestDto requestDto,
-                                                               @AuthenticationPrincipal UserDetailsImpl userDetails) {
+                                                          @AuthenticationPrincipal UserDetailsImpl userDetails) {
         matchingService.updateMatchingCriteria(requestDto, userDetails.getUser());
         return ResponseEntity.ok(new ApiResponseDto("매칭 기준 수정 성공", HttpStatus.OK.value()));
+    }
+
+    @GetMapping("/gyms/{gymId}/matches")
+    ResponseEntity<List<UserProfileDto>> getMatchingUsers(@PathVariable Long gymId,
+                                                         @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        List<UserProfileDto> matchingUsers = matchingService.getMatchingUsers(gymId, userDetails.getUser());
+        return ResponseEntity.ok(matchingUsers);
     }
 }

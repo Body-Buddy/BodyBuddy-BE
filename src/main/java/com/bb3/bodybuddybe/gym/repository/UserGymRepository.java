@@ -11,9 +11,11 @@ import java.util.Optional;
 
 @Repository
 public interface UserGymRepository extends JpaRepository<UserGym, Long> {
-    List<UserGym> findByUser(User user);
+    List<UserGym> findAllByUser(User user);
 
     Optional<UserGym> findByUserAndGym(User user, Gym gym);
 
     boolean existsByUserAndGym(User user, Gym gym);
+
+    List<UserGym> findAllByGymId(Long gymId);
 }
