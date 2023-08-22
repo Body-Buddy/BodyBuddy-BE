@@ -26,12 +26,12 @@ public class EmailServiceImpl implements EmailService {
         MimeMessage message = emailsender.createMimeMessage();
 
         message.addRecipients(Message.RecipientType.TO, to);
-        message.setSubject("diaDelivery 회원가입 이메일 인증");
+        message.setSubject("BodyBuddy 회원가입 이메일 인증");
 
         String msgg = "";
         msgg += "<div style='margin:100px;'>";
         msgg += "<h1> 안녕하세요</h1>";
-        msgg += "<h1> dia delivery 입니다</h1>";
+        msgg += "<h1> BodyBuddy 입니다</h1>";
         msgg += "<br>";
         msgg += "<p>아래 코드를 회원가입 창으로 돌아가 입력해주세요<p>";
         msgg += "<br>";
