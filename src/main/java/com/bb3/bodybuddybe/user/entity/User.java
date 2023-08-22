@@ -7,7 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import static com.bb3.bodybuddybe.user.UserBlockEnum.허가;
+import static com.bb3.bodybuddybe.user.UserBlockEnum.ACTIVE;
 
 @Entity
 @NoArgsConstructor
@@ -70,6 +70,6 @@ public class User {
         this.passwordDecoded = passwordDecoded;
         this.email=email;
          this.role=role;
-        this.status = 허가;
+        this.status = ACTIVE;
     }
 }
