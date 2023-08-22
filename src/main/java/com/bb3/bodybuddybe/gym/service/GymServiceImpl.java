@@ -1,13 +1,16 @@
 package com.bb3.bodybuddybe.gym.service;
 
-import com.bb3.bodybuddybe.gym.dto.KakaoApiResponseDto;
-import com.bb3.bodybuddybe.gym.dto.LocationDto;
-import com.bb3.bodybuddybe.gym.dto.PlaceDto;
+import com.bb3.bodybuddybe.common.exception.CustomException;
+import com.bb3.bodybuddybe.common.exception.ErrorCode;
+import com.bb3.bodybuddybe.gym.dto.*;
+import com.bb3.bodybuddybe.gym.entity.Gym;
+import com.bb3.bodybuddybe.gym.entity.UserGym;
 import com.bb3.bodybuddybe.gym.repository.GymRepository;
 import com.bb3.bodybuddybe.gym.repository.UserGymRepository;
-import lombok.RequiredArgsConstructor;
+import com.bb3.bodybuddybe.user.entity.User;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.List;
@@ -15,7 +18,6 @@ import java.util.List;
 import static com.bb3.bodybuddybe.gym.dto.KakaoApiResponseDto.Document;
 
 @Service
-@RequiredArgsConstructor
 public class GymServiceImpl implements GymService {
 
     private static final String KAKAO_API_PATH = "/v2/local/search/keyword.json";
@@ -28,6 +30,12 @@ public class GymServiceImpl implements GymService {
 
     @Value("${kakao.api.key}")
     private String restApiKey;
+
+    public GymServiceImpl(GymRepository gymRepository, UserGymRepository userGymRepository, WebClient.Builder webClientBuilder) {
+        this.gymRepository = gymRepository;
+        this.userGymRepository = userGymRepository;
+        this.webClient = webClientBuilder.baseUrl("https://dapi.kakao.com").build();
+    }
 
     @Override
     public List<PlaceDto> searchGyms(String query, LocationDto location) {
@@ -60,5 +68,46 @@ public class GymServiceImpl implements GymService {
                 .bodyToMono(KakaoApiResponseDto.class)
                 .block()
                 .getDocuments();
+    }
+
+    @Override
+    @Transactional
+    public void addToMyGyms(GymRequestDto requestDto, User user) {
+        Gym gym = gymRepository.findByKakaoPlaceId(requestDto.getId())
+                .orElseGet(() -> gymRepository.save(new Gym(requestDto)));
+
+        if (userGymRepository.existsByUserAndGym(user, gym)) {
+            throw new CustomException(ErrorCode.DUPLICATED_MY_GYM);
+        }
+
+        userGymRepository.save(new UserGym(user, gym));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<GymResponseDto> getMyGyms(User user) {
+        return userGymRepository.findByUser(user)
+                .stream()
+                .map(UserGym::getGym)
+                .map(GymResponseDto::new)
+                .toList();
+    }
+
+    @Override
+    @Transactional
+    public void deleteFromMyGyms(Long gymId, User user) {
+        Gym gym = findGym(gymId);
+        UserGym userGym = findUserGym(user, gym);
+        userGymRepository.delete(userGym);
+    }
+
+    private Gym findGym(Long gymId) {
+        return gymRepository.findById(gymId)
+                .orElseThrow(() -> new CustomException(ErrorCode.GYM_NOT_FOUND));
+    }
+
+    private UserGym findUserGym(User user, Gym gym) {
+        return userGymRepository.findByUserAndGym(user, gym)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_MY_GYM));
     }
 }

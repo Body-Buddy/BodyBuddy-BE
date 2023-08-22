@@ -1,6 +1,6 @@
 package com.bb3.bodybuddybe.common.security;
 
-import com.bb3.bodybuddybe.common.advice.ApiResponseDto;
+import com.bb3.bodybuddybe.common.dto.ApiResponseDto;
 import com.bb3.bodybuddybe.common.jwt.JwtUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;

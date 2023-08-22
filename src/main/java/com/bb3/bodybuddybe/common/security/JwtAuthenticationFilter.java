@@ -1,6 +1,6 @@
 package com.bb3.bodybuddybe.common.security;
 
-import com.bb3.bodybuddybe.common.advice.ApiResponseDto;
+import com.bb3.bodybuddybe.common.dto.ApiResponseDto;
 import com.bb3.bodybuddybe.common.jwt.JwtUtil;
 import com.bb3.bodybuddybe.user.UserRoleEnum;
 import com.bb3.bodybuddybe.user.dto.AuthRequestDto;
@@ -69,7 +69,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         String token = jwtUtil.createToken(username, role);
         response.addHeader(JwtUtil.AUTHORIZATION_HEADER, token);
         ApiResponseDto apiResponseDto = new ApiResponseDto();
-        apiResponseDto.setMsg("로그인 성공");
+        apiResponseDto.setMessage("로그인 성공");
         apiResponseDto.setStatusCode(HttpStatus.OK.value());
         response.setStatus(HttpStatus.OK.value());
         response.setContentType("application/json");
