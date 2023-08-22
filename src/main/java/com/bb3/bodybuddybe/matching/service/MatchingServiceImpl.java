@@ -60,24 +60,26 @@ public class MatchingServiceImpl implements MatchingService {
                 .map(UserGym::getUser)
                 .toList();
 
+        MatchingCriteria userCriteria = findByUser(user);
+
         return allUsersInGym.stream()
                 .filter(other -> !other.getId().equals(user.getId()))
-                .sorted(Comparator.comparingInt(other -> -calculateMatchScore(user, other)))
+                .sorted(Comparator.comparingInt(other -> -calculateMatchScore(userCriteria, other)))
                 .map(UserProfileDto::new)
                 .toList();
     }
 
-    private int calculateMatchScore(User user, User other) {
-        MatchingCriteria userCriteria = findByUser(user);
+    private int calculateMatchScore(MatchingCriteria userCriteria, User other) {
+        User user = userCriteria.getUser();
         MatchingCriteria otherCriteria = findByUser(other);
 
         int score = 0;
-        if (userCriteria.getPreferSameGender() && user.getGender().equals(other.getGender())) {
+        if (userCriteria.getPreferSameGender() && user.getGender() == other.getGender()) {
             score += 20;
         }
 
-        if (userCriteria.getPreferSameAgeRange() && user.getAgeRange().equals(other.getAgeRange())) {
-            score += 20;
+        if (userCriteria.getPreferSameAgeRange() && user.getAgeRange() == other.getAgeRange()) {
+            score += 10;
         }
 
         if (userCriteria.getExperience() == otherCriteria.getExperience()) {

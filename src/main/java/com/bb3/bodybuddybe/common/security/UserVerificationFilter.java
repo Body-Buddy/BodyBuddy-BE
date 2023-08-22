@@ -23,7 +23,7 @@ public class UserVerificationFilter extends OncePerRequestFilter {
         this.objectMapper = objectMapper;
     }
 
-    private final Pattern pattern = Pattern.compile("^/api/users/(\\d+)/gyms(/(\\d+))?");
+    private final Pattern pattern = Pattern.compile("^/api/users/(\\d+)/(gyms(/(\\d+))?|criteria)");
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {

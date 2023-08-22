@@ -9,18 +9,17 @@ import com.bb3.bodybuddybe.matching.dto.CriteriaCreateRequestDto;
 import com.bb3.bodybuddybe.matching.dto.CriteriaResponseDto;
 import com.bb3.bodybuddybe.matching.dto.CriteriaUpdateRequestDto;
 import com.bb3.bodybuddybe.matching.entity.MatchingCriteria;
-import com.bb3.bodybuddybe.matching.enums.ExerciseTimeEnum;
-import com.bb3.bodybuddybe.matching.enums.ExperienceEnum;
-import com.bb3.bodybuddybe.matching.enums.GoalEnum;
-import com.bb3.bodybuddybe.matching.enums.IntensityEnum;
+import com.bb3.bodybuddybe.matching.enums.*;
 import com.bb3.bodybuddybe.matching.repository.MatchingCriteriaRepository;
 import com.bb3.bodybuddybe.user.dto.UserProfileDto;
 import com.bb3.bodybuddybe.user.entity.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.*;
-import org.springframework.test.util.ReflectionTestUtils;
+import org.mockito.ArgumentCaptor;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import java.util.List;
 import java.util.Optional;
@@ -31,13 +30,13 @@ import static org.mockito.Mockito.*;
 
 class MatchingServiceImplTest {
     @InjectMocks
-    private MatchingServiceImpl matchingService;
+    MatchingServiceImpl matchingService;
 
     @Mock
-    private UserGymRepository userGymRepository;
+    UserGymRepository userGymRepository;
 
     @Mock
-    private MatchingCriteriaRepository matchingCriteriaRepository;
+    MatchingCriteriaRepository matchingCriteriaRepository;
 
     @BeforeEach
     public void setup() {
@@ -48,7 +47,7 @@ class MatchingServiceImplTest {
     @DisplayName("사용자의 매칭 기준을 생성한다.")
     void testCreateMatchingCriteria() {
         // given
-        User user = new User();
+        User user = mock(User.class);
         CriteriaCreateRequestDto requestDto = CriteriaCreateRequestDto.builder()
                 .preferSameGender(true)
                 .preferSameAgeRange(true)
@@ -96,8 +95,8 @@ class MatchingServiceImplTest {
     void testUpdateMatchingCriteria() {
         // given
         User user = mock(User.class);
-        CriteriaUpdateRequestDto requestDto = Mockito.mock(CriteriaUpdateRequestDto.class);
-        MatchingCriteria criteria = Mockito.mock(MatchingCriteria.class);
+        CriteriaUpdateRequestDto requestDto = mock(CriteriaUpdateRequestDto.class);
+        MatchingCriteria criteria = mock(MatchingCriteria.class);
 
         when(matchingCriteriaRepository.findByUser(user)).thenReturn(Optional.of(criteria));
 
@@ -114,36 +113,93 @@ class MatchingServiceImplTest {
     void testGetMatchingUsers_success() {
         // given
         Long gymId = 1L;
-        Gym gym = Mockito.mock(Gym.class);
+        Gym gym = mock(Gym.class);
 
-        User currentUser = new User();
-        User other1 = new User();
-        User other2 = new User();
+        User user = mock(User.class);
+        when(user.getId()).thenReturn(1L);
+        when(user.getGender()).thenReturn(GenderEnum.F);
+        when(user.getAgeRange()).thenReturn(AgeRangeEnum.S20s);
 
-        UserGym userGym1 = new UserGym(currentUser, gym);
-        UserGym userGym2 = new UserGym(other1, gym);
-        UserGym userGym3 = new UserGym(other2, gym);
+        User other1 = mock(User.class);
+        when(other1.getId()).thenReturn(2L);
+        when(other1.getGender()).thenReturn(GenderEnum.F);
+        when(other1.getAgeRange()).thenReturn(AgeRangeEnum.S30s);
 
-        ReflectionTestUtils.setField(currentUser, "id", 1L);
-        ReflectionTestUtils.setField(other1, "id", 2L);
-        ReflectionTestUtils.setField(other2, "id", 3L);
+        User other2 = mock(User.class);
+        when(other2.getId()).thenReturn(3L);
+        when(other2.getGender()).thenReturn(GenderEnum.M);
+        when(other2.getAgeRange()).thenReturn(AgeRangeEnum.S20s);
 
-        List<UserGym> allUsersInGym = List.of(userGym1, userGym2, userGym3);
+        User other3 = mock(User.class);
+        when(other3.getId()).thenReturn(4L);
+        when(other3.getGender()).thenReturn(GenderEnum.M);
+        when(other3.getAgeRange()).thenReturn(AgeRangeEnum.S50s);
 
-        when(userGymRepository.existsByUserAndGymId(currentUser, gymId)).thenReturn(true);
+        List<UserGym> allUsersInGym = List.of(
+                new UserGym(user, gym),
+                new UserGym(other1, gym),
+                new UserGym(other2, gym),
+                new UserGym(other3, gym)
+        );
+
+        when(userGymRepository.existsByUserAndGymId(user, gymId)).thenReturn(true);
         when(userGymRepository.findAllByGymId(gymId)).thenReturn(allUsersInGym);
 
-        when(matchingCriteriaRepository.findByUser(currentUser)).thenReturn(Optional.of(mock(MatchingCriteria.class)));
-        when(matchingCriteriaRepository.findByUser(other1)).thenReturn(Optional.of(mock(MatchingCriteria.class)));
-        when(matchingCriteriaRepository.findByUser(other2)).thenReturn(Optional.of(mock(MatchingCriteria.class)));
+        MatchingCriteria userCriteria = new MatchingCriteria(
+                user, CriteriaCreateRequestDto.builder()
+                .preferSameGender(true)
+                .preferSameAgeRange(true)
+                .goals(Set.of(GoalEnum.FAT_REDUCTION, GoalEnum.BUILD_HEALTHY_HABIT))
+                .experience(ExperienceEnum.INTERMEDIATE)
+                .intensity(IntensityEnum.HIGH)
+                .exerciseTime(ExerciseTimeEnum.NIGHT)
+                .build());
+
+        MatchingCriteria other1Criteria = new MatchingCriteria(
+                other1, CriteriaCreateRequestDto.builder()
+                .preferSameGender(true) // +20
+                .preferSameAgeRange(true)
+                .goals(Set.of(GoalEnum.STAMINA_IMPROVEMENT))
+                .experience(ExperienceEnum.INTERMEDIATE) // +5
+                .intensity(IntensityEnum.HIGH) // +5
+                .exerciseTime(ExerciseTimeEnum.EVENING)
+                .build());
+
+        MatchingCriteria other2Criteria = new MatchingCriteria(
+                other2, CriteriaCreateRequestDto.builder()
+                .preferSameGender(true)
+                .preferSameAgeRange(true) // +10
+                .goals(Set.of(GoalEnum.FAT_REDUCTION, GoalEnum.BUILD_HEALTHY_HABIT)) // +6
+                .experience(ExperienceEnum.INTERMEDIATE) // +5
+                .intensity(IntensityEnum.HIGH) // +5
+                .exerciseTime(ExerciseTimeEnum.NIGHT) // +5
+                .build());
+
+        MatchingCriteria other3Criteria = new MatchingCriteria(
+                other3, CriteriaCreateRequestDto.builder()
+                .preferSameGender(true)
+                .preferSameAgeRange(true)
+                .goals(Set.of(GoalEnum.FAT_REDUCTION)) // +3
+                .experience(ExperienceEnum.INTERMEDIATE) // +5
+                .intensity(IntensityEnum.HIGH) // +5
+                .exerciseTime(ExerciseTimeEnum.NIGHT) // +5
+                .build());
+
+        when(matchingCriteriaRepository.findByUser(user)).thenReturn(Optional.of(userCriteria));
+        when(matchingCriteriaRepository.findByUser(other1)).thenReturn(Optional.of(other1Criteria));
+        when(matchingCriteriaRepository.findByUser(other2)).thenReturn(Optional.of(other2Criteria));
+        when(matchingCriteriaRepository.findByUser(other3)).thenReturn(Optional.of(other3Criteria));
 
         // when
-        List<UserProfileDto> matchingUsers = matchingService.getMatchingUsers(gymId, currentUser);
+        List<UserProfileDto> matchingUsers = matchingService.getMatchingUsers(gymId, user);
 
         // then
         verify(userGymRepository).findAllByGymId(gymId);
-        assertEquals(2, matchingUsers.size());
-        assertTrue(matchingUsers.stream().noneMatch(userProfile -> userProfile.getId().equals(currentUser.getId())));
+        assertEquals(3, matchingUsers.size());
+        assertTrue(matchingUsers.stream().noneMatch(userProfile -> userProfile.getId().equals(user.getId())));
+        assertEquals(other2.getId(), matchingUsers.get(0).getId()); // score: 31
+        assertEquals(other1.getId(), matchingUsers.get(1).getId()); // score: 30
+        assertEquals(other3.getId(), matchingUsers.get(2).getId()); // score: 18
     }
 
     @Test
@@ -151,7 +207,7 @@ class MatchingServiceImplTest {
     public void testGetMatchingUsers_failure() {
         // given
         Long gymId = 1L;
-        User currentUser = Mockito.mock(User.class);
+        User currentUser = mock(User.class);
 
         when(userGymRepository.existsByUserAndGymId(currentUser, gymId)).thenReturn(false);
 

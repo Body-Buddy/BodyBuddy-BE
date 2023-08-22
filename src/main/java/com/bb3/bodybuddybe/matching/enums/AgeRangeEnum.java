@@ -6,8 +6,7 @@ public enum AgeRangeEnum {
     S30s("30s"),
     S40s("40s"),
     S50s("50s"),
-    S60plus("60+"),
-    ALL("ALL");
+    S60plus("60+");
 
     private final String description;
 
