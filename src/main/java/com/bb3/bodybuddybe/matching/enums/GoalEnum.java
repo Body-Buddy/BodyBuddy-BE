@@ -1,4 +1,4 @@
-package com.bb3.bodybuddybe.friend.enums;
+package com.bb3.bodybuddybe.matching.enums;
 
 public enum GoalEnum {
     FAT_REDUCTION("체지방 줄이기"),
