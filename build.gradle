@@ -33,6 +33,8 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
     // spring-web
     implementation 'org.springframework.boot:spring-boot-starter-web'
+    // spring-websocket
+    implementation 'org.springframework.boot:spring-boot-starter-websocket'
     // mysql connector
     runtimeOnly 'com.mysql:mysql-connector-j'
 

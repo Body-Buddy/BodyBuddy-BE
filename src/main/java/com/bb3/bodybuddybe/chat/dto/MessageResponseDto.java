@@ -5,11 +5,12 @@ import lombok.Getter;
 @Getter
 public class MessageResponseDto {
 
-    private String nickName;
+    private Long chatId;
+    private String senderNickName;
     private String content;
 
     public MessageResponseDto(String nickName, String content) {
-        this.nickName = nickName;
+        this.senderNickName = nickName;
         this.content = content;
     }
 }
