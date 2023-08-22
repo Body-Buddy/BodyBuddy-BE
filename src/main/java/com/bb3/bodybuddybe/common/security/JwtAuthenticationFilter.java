@@ -2,7 +2,7 @@ package com.bb3.bodybuddybe.common.security;
 
 import com.bb3.bodybuddybe.common.dto.ApiResponseDto;
 import com.bb3.bodybuddybe.common.jwt.JwtUtil;
-import com.bb3.bodybuddybe.user.UserRoleEnum;
+import com.bb3.bodybuddybe.user.enums.UserRoleEnum;
 import com.bb3.bodybuddybe.user.dto.AuthRequestDto;
 import com.bb3.bodybuddybe.user.entity.User;
 import com.bb3.bodybuddybe.user.repository.UserRepository;
@@ -20,12 +20,13 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import java.io.IOException;
 
-import static com.bb3.bodybuddybe.user.UserBlockEnum.차단;
+import static com.bb3.bodybuddybe.user.enums.UserBlockEnum.차단;
 
 @Slf4j(topic = "로그인 및 JWT 생성")
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
     private final JwtUtil jwtUtil;
     private final UserRepository userRepository;
+
     public JwtAuthenticationFilter(JwtUtil jwtUtil, UserRepository userRepository) {
         this.jwtUtil = jwtUtil;
         this.userRepository = userRepository;
@@ -37,7 +38,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         log.info("로그인 시도");
         try {
             AuthRequestDto requestDto = new ObjectMapper().readValue(request.getInputStream(), AuthRequestDto.class);
-            User user = userRepository.findByUsername(requestDto.getUsername()).orElseThrow(()-> new IllegalArgumentException("유저가 없습니다."));
+            User user = userRepository.findByUsername(requestDto.getUsername()).orElseThrow(() -> new IllegalArgumentException("유저가 없습니다."));
             if (user.getStatus().equals(차단)) {
                 ApiResponseDto apiResponseDto = new ApiResponseDto("차단된 회원입니다.", HttpStatus.BAD_REQUEST.value());
                 response.setStatus(HttpStatus.BAD_REQUEST.value());
