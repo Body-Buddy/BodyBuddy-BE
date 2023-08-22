@@ -1,5 +1,6 @@
 package com.bb3.bodybuddybe.gym.entity;
 
+import com.bb3.bodybuddybe.gym.dto.GymRequestDto;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -36,6 +37,12 @@ public class Gym {
 
     @OneToMany(mappedBy = "gym", cascade = CascadeType.ALL)
     private List<UserGym> members = new ArrayList<>();
+
+    public Gym(GymRequestDto requestDto) {
+        this.kakaoPlaceId = requestDto.getId();
+        this.name = requestDto.getName();
+        this.roadAddress = requestDto.getRoadAddress();
+    }
 
     public Gym(String kakaoPlaceId, String name, String roadAddress) {
         this.kakaoPlaceId = kakaoPlaceId;
