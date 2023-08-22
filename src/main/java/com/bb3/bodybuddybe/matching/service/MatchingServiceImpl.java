@@ -51,6 +51,10 @@ public class MatchingServiceImpl implements MatchingService {
     @Override
     @Transactional(readOnly = true)
     public List<UserProfileDto> getMatchingUsers(Long gymId, User user) {
+        if (!userGymRepository.existsByUserAndGymId(user, gymId)) {
+            throw new CustomException(ErrorCode.NOT_MY_GYM);
+        }
+
         List<User> allUsersInGym = userGymRepository.findAllByGymId(gymId)
                 .stream()
                 .map(UserGym::getUser)

@@ -5,13 +5,15 @@ import com.bb3.bodybuddybe.matching.enums.ExperienceEnum;
 import com.bb3.bodybuddybe.matching.enums.GoalEnum;
 import com.bb3.bodybuddybe.matching.enums.IntensityEnum;
 import jakarta.validation.constraints.NotNull;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.Set;
 
 @Getter
 @Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class CriteriaCreateRequestDto {
     @NotNull
     private Boolean preferSameGender;
