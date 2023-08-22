@@ -6,7 +6,7 @@ import com.bb3.bodybuddybe.chat.entity.Chat;
 import com.bb3.bodybuddybe.chat.repository.ChatRepository;
 import com.bb3.bodybuddybe.gym.entity.Gym;
 import com.bb3.bodybuddybe.gym.repository.GymRepository;
-import com.bb3.bodybuddybe.users.entity.Users;
+import com.bb3.bodybuddybe.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,7 +21,7 @@ public class ChatService {
 
     // 채팅방 생성
     @Transactional
-    public ChatResponseDto createChatRoom(Users user, ChatRequestDto chatRequestDto, Long gymId) {
+    public ChatResponseDto createChatRoom(User user, ChatRequestDto chatRequestDto, Long gymId) {
 
         Gym gym = gymRepository.findById(gymId).orElseThrow(() ->
             new IllegalArgumentException("해당 Gym을 찾을 수 업습니다."));

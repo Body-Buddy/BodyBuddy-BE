@@ -1,6 +1,6 @@
 package com.bb3.bodybuddybe.chat.entity;
 
-import com.bb3.bodybuddybe.users.entity.Users;
+import com.bb3.bodybuddybe.user.entity.User;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -23,7 +23,7 @@ public class GroupChatMember {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    private Users user;
+    private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "chat_id")

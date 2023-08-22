@@ -1,6 +1,6 @@
 package com.bb3.bodybuddybe.chat.entity;
 
-import com.bb3.bodybuddybe.users.entity.Users;
+import com.bb3.bodybuddybe.user.entity.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -33,14 +33,14 @@ public class Message {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private Users user;
+    private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "chat_id")
     private Chat chat;
 
     @Builder
-    public Message(String content, MessageType type, Users user ,Chat chat) {
+    public Message(String content, MessageType type, User user ,Chat chat) {
         this.content = content;
         this.type = type;
         this.user = user;

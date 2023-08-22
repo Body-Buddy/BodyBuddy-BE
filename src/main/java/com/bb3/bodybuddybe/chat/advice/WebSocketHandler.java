@@ -4,7 +4,7 @@ import com.bb3.bodybuddybe.chat.dto.MessageRequestDto;
 import com.bb3.bodybuddybe.chat.entity.Chat;
 import com.bb3.bodybuddybe.chat.repository.ChatRepository;
 import com.bb3.bodybuddybe.chat.service.ChatService;
-import com.bb3.bodybuddybe.users.repository.UsersRepository;
+import com.bb3.bodybuddybe.user.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,7 +21,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
     private final ObjectMapper objectMapper;
     private final ChatService chatService;
     private final ChatRepository chatRepository;
-    private final UsersRepository usersRepository;
+    private final UserRepository userRepository;
 
     // 웹소켓을 통해 서버로 json형태의 메세지 요청
     // 메세지 엔티티로 파싱하여 핸들링
