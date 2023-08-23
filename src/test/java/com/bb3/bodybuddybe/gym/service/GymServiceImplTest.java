@@ -189,13 +189,13 @@ class GymServiceImplTest {
         Gym gym2 = new Gym("27440935", "에이블짐 노원본점", "서울 노원구 상계로 77");
         List<UserGym> userGyms = List.of(new UserGym(user, gym1), new UserGym(user, gym2));
 
-        when(userGymRepository.findByUser(user)).thenReturn(userGyms);
+        when(userGymRepository.findAllByUser(user)).thenReturn(userGyms);
 
         // when
         List<GymResponseDto> result = gymService.getMyGyms(user);
 
         // then
-        verify(userGymRepository).findByUser(user);
+        verify(userGymRepository).findAllByUser(user);
         assertEquals(2, result.size());
 
         GymResponseDto gymResponse1 = result.get(0);
