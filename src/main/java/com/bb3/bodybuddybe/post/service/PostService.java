@@ -27,7 +27,7 @@ public class PostService {
                 .category(postCreateRequestDto.getCategory())
                 .image_url(postCreateRequestDto.getImage_url())
                 .video_url(postCreateRequestDto.getVideo_url())
-                .users(userDetails.getUser())
+                .user(userDetails.getUser())
                 .gym(postCreateRequestDto.getGymId())
                 .build();
 
@@ -53,7 +53,7 @@ public class PostService {
     public void updatePost(Long postId, PostCreateRequestDto postCreateRequestDto, UserDetailsImpl userDetails) {
         Post post = findPost(postId);
 
-        if (!post.getUsers().getId().equals(userDetails.getUser().getId())) {
+        if (!post.getUser().getId().equals(userDetails.getUser().getId())) {
             throw new RejectedExecutionException("게시글 생성자만 수정할 수 있습니다.");
         }
 
@@ -69,7 +69,7 @@ public class PostService {
     public void deletePost(Long postId, UserDetailsImpl userDetails) {
         Post post = findPost(postId);
 
-        if (!post.getUsers().getId().equals(userDetails.getUser().getId())) {
+        if (!post.getUser().getId().equals(userDetails.getUser().getId())) {
             throw new RejectedExecutionException("게시글 생성자만 삭제할 수 있습니다.");
         }
 

@@ -2,7 +2,7 @@ package com.bb3.bodybuddybe.post.entity;
 
 import com.bb3.bodybuddybe.common.timestamped.TimeStamped;
 import com.bb3.bodybuddybe.gym.entity.Gym;
-import com.bb3.bodybuddybe.users.entity.Users;
+import com.bb3.bodybuddybe.user.entity.User;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -34,20 +34,20 @@ public class Post extends TimeStamped {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    private Users users;
+    private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "gym_id")
     private Gym gym;
 
     @Builder
-    public Post(String title, String content, String category, String image_url, String video_url, Users users, Gym gym) {
+    public Post(String title, String content, String category, String image_url, String video_url, User user, Gym gym) {
         this.title = title;
         this.content = content;
         this.category = category;
         this.image_url = image_url;
         this.video_url = video_url;
-        this.users = users;
+        this.user = user;
         this.gym = gym;
     }
 
