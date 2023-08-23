@@ -27,10 +27,11 @@ public class ChatResponseDto {
     public void handlerActions(WebSocketSession session, MessageDto chatMessage, ChatService chatService) {
         if (chatMessage.getType().equals(MessageType.ENTER)) {
             sessions.add(session);
+            System.out.println("sessions = " + sessions);
             chatMessage.changeEnterMessage(chatMessage.getSenderNickname());
 
             // 해당 채팅방 이전대화내용 불러오기
-            chatService.getMessages(session, chatMessage.getChatId());
+            chatService.getMessages(session, Long.parseLong(chatMessage.getChatId()));
         }
 
         sendMessage(chatMessage, chatService);

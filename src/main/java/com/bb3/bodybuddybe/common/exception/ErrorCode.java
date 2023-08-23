@@ -11,7 +11,7 @@ public enum ErrorCode {
     NOT_MY_GYM(HttpStatus.BAD_REQUEST, "G002", "사용자가 등록한 헬스장이 아닙니다."),
     DUPLICATED_MY_GYM(HttpStatus.BAD_REQUEST, "G003", "이미 사용자가 등록한 헬스장입니다."),
     CHAT_NOT_FOUND(HttpStatus.BAD_REQUEST, "G004", "존재하지 않는 채팅방 입니다."),
-    USER_NOT_FOUND(HttpStatus.BAD_REQUEST, "G004", "존재하지 않는 사용자 입니다.")
+    USER_NOT_FOUND(HttpStatus.BAD_REQUEST, "G005", "존재하지 않는 사용자 입니다."),
     ;
 
     private final HttpStatus httpStatus;

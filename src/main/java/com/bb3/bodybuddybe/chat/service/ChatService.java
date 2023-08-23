@@ -11,6 +11,7 @@ import com.bb3.bodybuddybe.common.exception.CustomException;
 import com.bb3.bodybuddybe.common.exception.ErrorCode;
 import com.bb3.bodybuddybe.gym.entity.Gym;
 import com.bb3.bodybuddybe.gym.repository.GymRepository;
+import com.bb3.bodybuddybe.gym.repository.UserGymRepository;
 import com.bb3.bodybuddybe.user.entity.User;
 import com.bb3.bodybuddybe.user.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -33,6 +34,7 @@ public class ChatService {
     private final GymRepository gymRepository;
     private final UserRepository userRepository;
     private final MessageRepository messageRepository;
+    private final UserGymRepository userGymRepository;
 
     // 채팅방 생성
     @Transactional
@@ -40,6 +42,10 @@ public class ChatService {
 
         Gym gym = gymRepository.findById(gymId)
             .orElseThrow(() -> new CustomException(ErrorCode.GYM_NOT_FOUND));
+
+        if (!userGymRepository.existsByUserAndGym(user, gym)) {
+            throw new CustomException(ErrorCode.NOT_MY_GYM);
+        }
 
         Chat chat = Chat.builder()
             .roomName(chatRequestDto.getRoomName())
@@ -54,6 +60,7 @@ public class ChatService {
     }
 
 
+    @Transactional
     public <T> void sendMessage(WebSocketSession session, T message) {
         try {
             session.sendMessage(new TextMessage(objectMapper.writeValueAsString(message)));
@@ -63,8 +70,9 @@ public class ChatService {
 
     }
 
+    @Transactional
     public void saveMessage(MessageDto message) {
-        Chat chat = chatRepository.findById(message.getChatId())
+        Chat chat = chatRepository.findById(Long.parseLong(message.getChatId()))
             .orElseThrow(() -> new CustomException(ErrorCode.CHAT_NOT_FOUND));
 
         User user = userRepository.findByNickname(message.getSenderNickname())
@@ -81,6 +89,7 @@ public class ChatService {
 
     }
 
+    @Transactional
     public <T> void getMessages(WebSocketSession session, Long chatId) {
         List<MessageDto> messageDtos = messageRepository.findAllByChatId(chatId).stream()
             .map(MessageDto::new)

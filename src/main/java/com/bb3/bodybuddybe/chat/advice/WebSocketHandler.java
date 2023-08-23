@@ -33,9 +33,10 @@ public class WebSocketHandler extends TextWebSocketHandler {
         throws Exception {
         String payload = message.getPayload();
         log.info("{}", payload);
+        System.out.println("session.getId() = " + session.getId());
         MessageDto chatMessage = objectMapper.readValue(payload, MessageDto.class);
 
-        Chat chat = chatRepository.findById(chatMessage.getChatId())
+        Chat chat = chatRepository.findById(Long.parseLong(chatMessage.getChatId()))
             .orElseThrow(() -> new CustomException(ErrorCode.CHAT_NOT_FOUND));
 
         ChatResponseDto chatRoom = new ChatResponseDto(chat.getId(), chat.getRoomName(),
