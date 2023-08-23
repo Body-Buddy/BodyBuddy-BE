@@ -6,9 +6,9 @@ import java.util.List;
 
 @Getter
 public class PostListResponseDto {
-    private List<PostListResponseDto> postsList;
+    private List<PostResponseDto> postsList;
 
     public PostListResponseDto(List<PostResponseDto> postsList) {
-        this.postsList = getPostsList();
+        this.postsList = postsList;
     }
 }
