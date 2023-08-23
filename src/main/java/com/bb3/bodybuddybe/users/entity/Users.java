@@ -1,5 +1,6 @@
 package com.bb3.bodybuddybe.users.entity;
 
+import com.bb3.bodybuddybe.gym.entity.UserGym;
 import com.bb3.bodybuddybe.users.UsersBlockEnum;
 import com.bb3.bodybuddybe.users.UsersRoleEnum;
 import jakarta.persistence.*;
@@ -50,6 +51,9 @@ public class Users {
     @Column(nullable = false)
     @Enumerated(value = EnumType.STRING)
     private UsersBlockEnum status;
+
+    @OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
+    private List<UserGym> gyms = new ArrayList<>();
 
 //    @OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
 //    private List<Notification> notificationList = new ArrayList<>();

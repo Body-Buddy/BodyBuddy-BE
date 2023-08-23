@@ -2,24 +2,24 @@ package com.bb3.bodybuddybe.post.service;
 
 import com.bb3.bodybuddybe.common.security.UserDetailsImpl;
 import com.bb3.bodybuddybe.post.dto.PostCreateRequestDto;
+import com.bb3.bodybuddybe.post.dto.PostListResponseDto;
 import com.bb3.bodybuddybe.post.dto.PostResponseDto;
 import com.bb3.bodybuddybe.post.entity.Post;
 import com.bb3.bodybuddybe.post.repository.PostRepository;
-import com.bb3.bodybuddybe.users.UsersRoleEnum;
-import com.bb3.bodybuddybe.users.entity.Users;
-import io.jsonwebtoken.io.IOException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.concurrent.RejectedExecutionException;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class PostService {
     private final PostRepository postRepository;
 
-    public void createPost(PostCreateRequestDto postCreateRequestDto, UserDetailsImpl userDetails){
+    public void createPost(PostCreateRequestDto postCreateRequestDto, UserDetailsImpl userDetails) {
 
         Post post = Post.builder()
                 .title(postCreateRequestDto.getTitle())
@@ -28,6 +28,7 @@ public class PostService {
                 .image_url(postCreateRequestDto.getImage_url())
                 .video_url(postCreateRequestDto.getVideo_url())
                 .users(userDetails.getUser())
+                .gym(postCreateRequestDto.getGymId())
                 .build();
 
         postRepository.save(post);
@@ -39,18 +40,14 @@ public class PostService {
         return new PostResponseDto(post);
     }
 
-    //    public PostListResponseDto getPostsByGymId(Long gymId) {
-//        List<PostResponseDto> postList = postRepository.findAllByGymId(gymId).stream()
-//                .map(PostResponseDto::new)
-//                .collect(Collectors.toList());
-//
-//        return new PostListResponseDto(postList);
-//    }
-    public Post findPost(Long id) {
-        return postRepository.findById(id).orElseThrow(
-                () -> new IllegalArgumentException("게시글이 존재하지 않습니다.")
-        );
+    public PostListResponseDto getPostsByGymId(Long gymId) {
+        List<PostResponseDto> postList = postRepository.findAllByGymId(gymId).stream()
+                .map(PostResponseDto::new)
+                .collect(Collectors.toList());
+
+        return new PostListResponseDto(postList);
     }
+
 
     @Transactional
     public void updatePost(Long postId, PostCreateRequestDto postCreateRequestDto, UserDetailsImpl userDetails) {
@@ -77,5 +74,11 @@ public class PostService {
         }
 
         postRepository.delete(post);
+    }
+
+    public Post findPost(Long id) {
+        return postRepository.findById(id).orElseThrow(
+                () -> new IllegalArgumentException("게시글이 존재하지 않습니다.")
+        );
     }
 }

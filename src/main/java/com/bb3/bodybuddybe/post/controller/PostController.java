@@ -3,6 +3,7 @@ package com.bb3.bodybuddybe.post.controller;
 import com.bb3.bodybuddybe.common.dto.ApiResponseDto;
 import com.bb3.bodybuddybe.common.security.UserDetailsImpl;
 import com.bb3.bodybuddybe.post.dto.PostCreateRequestDto;
+import com.bb3.bodybuddybe.post.dto.PostListResponseDto;
 import com.bb3.bodybuddybe.post.dto.PostResponseDto;
 import com.bb3.bodybuddybe.post.service.PostService;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +32,13 @@ public class PostController {
         return ResponseEntity.ok().body(postResponseDto);
     }
 
+    @GetMapping("/gyms/{gymId}/posts")
+    public ResponseEntity<PostListResponseDto> getPostsByGymId(@PathVariable Long gymId) {
+        PostListResponseDto postListResponseDto = postService.getPostsByGymId(gymId);
+
+        return ResponseEntity.ok().body(postListResponseDto);
+    }
+
     @PutMapping("/posts/{postId}")
     public ResponseEntity<ApiResponseDto> updatePost(@PathVariable Long postId,
                                                      @RequestBody PostCreateRequestDto postCreateRequestDto,
@@ -48,11 +56,3 @@ public class PostController {
         return ResponseEntity.ok().body(new ApiResponseDto("게시글이 삭제되었습니다.", HttpStatus.OK.value()));
     }
 }
-
-//    @GetMapping("/gyms/{gymId}/posts")
-//    public ResponseEntity<PostListResponseDto> getPostsByGymId(@PathVariable Long gymId) {
-//        PostListResponseDto postListResponseDto = postService.getPostsByGymId(gymId);
-//
-//        return ResponseEntity.ok().body(postListResponseDto);
-//    }
-////

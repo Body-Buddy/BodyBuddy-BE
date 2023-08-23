@@ -1,6 +1,7 @@
 package com.bb3.bodybuddybe.post.entity;
 
 import com.bb3.bodybuddybe.common.timestamped.TimeStamped;
+import com.bb3.bodybuddybe.gym.entity.Gym;
 import com.bb3.bodybuddybe.users.entity.Users;
 import jakarta.persistence.*;
 import lombok.Builder;
@@ -35,21 +36,19 @@ public class Post extends TimeStamped {
     @JoinColumn(name = "user_id")
     private Users users;
 
-//    @ManyToOne
-//    @JoinColumn(name = "gym_id")
-//    private gym gym;
-
-//    @OneToMany(mappedBy = "Post", cascade = CascadeType.REMOVE)
-//    private Comment comment;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "gym_id")
+    private Gym gym;
 
     @Builder
-    public Post(String title, String content, String category, String image_url, String video_url, Users users) {
+    public Post(String title, String content, String category, String image_url, String video_url, Users users, Gym gym) {
         this.title = title;
         this.content = content;
         this.category = category;
         this.image_url = image_url;
         this.video_url = video_url;
         this.users = users;
+        this.gym = gym;
     }
 
     public void update(String title, String content, String category, String imageUrl, String videoUrl) {
