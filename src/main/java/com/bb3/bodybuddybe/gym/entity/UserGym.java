@@ -18,15 +18,15 @@ public class UserGym {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private User user;
+    @JoinColumn(name = "users_id")
+    private User users;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "gym_id")
     private Gym gym;
 
     public UserGym(User user, Gym gym) {
-        this.user = user;
+        this.users = user;
         this.gym = gym;
     }
 }
