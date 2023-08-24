@@ -27,8 +27,8 @@ public class Message {
     private String content;
 
     @ManyToOne
-    @JoinColumn(name = "users_id")
-    private User users;
+    @JoinColumn(name = "user_id")
+    private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "chat_id")

@@ -28,10 +28,10 @@ public class GroupChatMember {
 
 
     @ManyToOne
-    @JoinColumn(name = "users_id")
-    private User users;
+    @JoinColumn(name = "user_id")
+    private User user;
 
-    public void setUsers(User users) {
-        this.users = users;
+    public void setUsers(User user) {
+        this.user = user;
     }
 }
