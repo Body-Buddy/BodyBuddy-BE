@@ -86,7 +86,7 @@ public class GymServiceImpl implements GymService {
     @Override
     @Transactional(readOnly = true)
     public List<GymResponseDto> getMyGyms(User user) {
-        return userGymRepository.findByUser(user)
+        return userGymRepository.findAllByUser(user)
                 .stream()
                 .map(UserGym::getGym)
                 .map(GymResponseDto::new)

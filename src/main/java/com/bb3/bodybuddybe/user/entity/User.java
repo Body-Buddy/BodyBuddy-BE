@@ -1,13 +1,16 @@
 package com.bb3.bodybuddybe.user.entity;
 
-import com.bb3.bodybuddybe.user.UserBlockEnum;
-import com.bb3.bodybuddybe.user.UserRoleEnum;
+import com.bb3.bodybuddybe.matching.entity.MatchingCriteria;
+import com.bb3.bodybuddybe.matching.enums.AgeRangeEnum;
+import com.bb3.bodybuddybe.matching.enums.GenderEnum;
+import com.bb3.bodybuddybe.user.enums.UserBlockEnum;
+import com.bb3.bodybuddybe.user.enums.UserRoleEnum;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import static com.bb3.bodybuddybe.user.UserBlockEnum.허가;
+import static com.bb3.bodybuddybe.user.enums.UserBlockEnum.허가;
 
 @Entity
 @NoArgsConstructor
@@ -39,14 +42,24 @@ public class User {
     @Column
     private String introduction;
 
+    @Column
+    @Enumerated(EnumType.STRING)
+    private GenderEnum gender;
+
+    @Column
+    @Enumerated(EnumType.STRING)
+    private AgeRangeEnum ageRange;
+
     @Column(nullable = false)
     @Enumerated(value = EnumType.STRING)
     private UserRoleEnum role;
 
-
     @Column(nullable = false)
     @Enumerated(value = EnumType.STRING)
     private UserBlockEnum status;
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private MatchingCriteria matchingCriteria;
 
 //    @OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
 //    private List<Notification> notificationList = new ArrayList<>();
@@ -61,14 +74,13 @@ public class User {
 //    @OneToMany(mappedBy = "user", cascade = CascadeType.PERSIST, orphanRemoval = true)
 //    private List<GroupChatMember> groupChatMemberList = new ArrayList<>();
 
-
     public User(String username, String nickname, String password, String passwordDecoded, String email, UserRoleEnum role) {
-        this.username=username;
-        this.nickname=nickname;
-        this.password=password;
+        this.username = username;
+        this.nickname = nickname;
+        this.password = password;
         this.passwordDecoded = passwordDecoded;
-        this.email=email;
-         this.role=role;
+        this.email = email;
+        this.role = role;
         this.status = 허가;
     }
 }
