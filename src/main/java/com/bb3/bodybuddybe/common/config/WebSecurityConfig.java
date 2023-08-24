@@ -4,10 +4,10 @@ import com.bb3.bodybuddybe.common.jwt.JwtUtil;
 import com.bb3.bodybuddybe.common.security.JwtAuthenticationFilter;
 import com.bb3.bodybuddybe.common.security.JwtAuthorizationFilter;
 import com.bb3.bodybuddybe.common.security.UserDetailsServiceImpl;
-import com.bb3.bodybuddybe.users.repository.UsersRepository;
+import com.bb3.bodybuddybe.common.security.UserVerificationFilter;
+import com.bb3.bodybuddybe.user.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -30,7 +30,7 @@ public class WebSecurityConfig {
     private final UserDetailsServiceImpl userDetailsService;
     private final ObjectMapper objectMapper;
     private final AuthenticationConfiguration authenticationConfiguration;
-    private final UsersRepository userRepository;
+    private final UserRepository userRepository;
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -51,11 +51,15 @@ public class WebSecurityConfig {
         return filter;
     }
 
+    public UserVerificationFilter userVerificationFilter() {
+        return new UserVerificationFilter(objectMapper);
+    }
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        // CSRF 설정
-        http.csrf().disable(); // CSRF 설정 비활성화
-        http.cors();
+        // CSRF, CORS 설정
+        http.csrf(csrf -> csrf.disable());
+        http.cors(corf -> corf.disable());
 
         // 기본 설정인 Session 방식은 사용하지 않고 JWT 방식을 사용하기 위한 설정
         http.sessionManagement((sessionManagement) ->
@@ -69,6 +73,6 @@ public class WebSecurityConfig {
         // 필터 관리
         http.addFilterBefore(jwtAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
         http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
-
+        http.addFilterBefore(userVerificationFilter(), UsernamePasswordAuthenticationFilter.class);
         return http.build();
 }}

@@ -1,6 +1,6 @@
 package com.bb3.bodybuddybe.common.jwt;
 
-import com.bb3.bodybuddybe.users.UsersRoleEnum;
+import com.bb3.bodybuddybe.user.enums.UserRoleEnum;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
@@ -40,7 +40,7 @@ public class JwtUtil {
     }
 
     // 토큰 생성
-    public String createToken(String username, UsersRoleEnum role) {
+    public String createToken(String username, UserRoleEnum role) {
         Date date = new Date();
 
         return BEARER_PREFIX +
@@ -56,8 +56,8 @@ public class JwtUtil {
 
     // header 토큰을 가져오기 Keys.hmacShaKeyFor(bytes);
     public String resolveToken(HttpServletRequest request) {
-        String bearerToken= request.getHeader(AUTHORIZATION_HEADER);
-        if(StringUtils.hasText(bearerToken) && bearerToken.startsWith(BEARER_PREFIX)){
+        String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
+        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(BEARER_PREFIX)) {
             return bearerToken.substring(7);
         }
         return null;
