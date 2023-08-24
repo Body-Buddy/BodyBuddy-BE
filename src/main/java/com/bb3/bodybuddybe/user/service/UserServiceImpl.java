@@ -30,17 +30,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void signup(AuthRequestDto requestDto){
-        String username = requestDto.getUsername();
-        String passwordDecoded = requestDto.getPassword();
-        String password = passwordEncoder.encode(requestDto.getPassword()); // 패스워드 평문 암호화
-        String nickname = requestDto.getNickname();
-        String email = requestDto.getEmail();
 
 
-        if(userRepository.findByUsername(username).isPresent()){
+        if(userRepository.findByUsername(requestDto.getUsername()).isPresent()){
             throw new IllegalArgumentException();}
 
-        if(userRepository.findByEmail(email).isPresent()){
+        if(userRepository.findByEmail(requestDto.getEmail()).isPresent()){
             throw new IllegalArgumentException();
         }
 
@@ -53,8 +48,17 @@ public class UserServiceImpl implements UserService {
         }
 
         // 사용자 등록
-        User user = new User(username,nickname, password, passwordDecoded, email, role);
+        User user = User.builder()
+                .username(requestDto.getUsername())
+                .nickname(requestDto.getNickname())
+                .password(requestDto.getPassword())
+                .passwordDecoded(passwordEncoder.encode(requestDto.getPassword())) // 패스워드 평문 암호화
+                .email(requestDto.getEmail())
+                .role(UserRoleEnum.USER)
+                .build();
+
         userRepository.save(user);
+
     }
 
 

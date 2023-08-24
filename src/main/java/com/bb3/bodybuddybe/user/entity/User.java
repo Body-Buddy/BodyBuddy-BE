@@ -7,10 +7,11 @@ import com.bb3.bodybuddybe.gym.entity.Gym;
 import com.bb3.bodybuddybe.gym.entity.UserGym;
 import com.bb3.bodybuddybe.user.UserBlockEnum;
 import com.bb3.bodybuddybe.user.UserRoleEnum;
+import com.bb3.bodybuddybe.user.oauth2.SocialType;
+import com.bb3.bodybuddybe.user.service.Role;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +23,8 @@ import static com.bb3.bodybuddybe.user.UserBlockEnum.ACTIVE;
 @Getter
 @Setter
 @Table(name = "users")
+@AllArgsConstructor
+@Builder
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -52,20 +55,58 @@ public class User {
     @Enumerated(value = EnumType.STRING)
     private UserRoleEnum role;
 
+    @Column(nullable = false)
+    @Enumerated(value = EnumType.STRING)
+    private Role socialRole;
 
     @Column(nullable = false)
     @Enumerated(value = EnumType.STRING)
     private UserBlockEnum status;
 
+    @Enumerated(EnumType.STRING)
+    private SocialType socialType; // KAKAO, NAVER, GOOGLE
 
-    @OneToMany(mappedBy = "users", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private String socialId; // 로그인한 소셜 타입의 식별자 값 (일반 로그인인 경우 null)
+
+    private String refreshToken; // 리프레시 토큰
+
+    // 유저 권한 설정 메소드
+    public void authorizeUser() {
+        this.role = UserRoleEnum.USER;
+    }
+
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<GroupChatMember> groupChatMemberList = new ArrayList<>();
 
-    @OneToMany(mappedBy = "users", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<UserGym> userGymList = new ArrayList<>();
 
-    @OneToMany(mappedBy = "users", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Message> messageList = new ArrayList<>();
+
+    // 유저 권한 설정 메소드
+
+
+    // 비밀번호 암호화 메소드
+    public void passwordEncode(PasswordEncoder passwordEncoder) {
+        this.password = passwordEncoder.encode(this.password);
+    }
+
+    //== 유저 필드 업데이트 ==//
+    public void updateNickname(String updateNickname) {
+        this.nickname = updateNickname;
+    }
+
+
+
+    public void updatePassword(String updatePassword, PasswordEncoder passwordEncoder) {
+        this.password = passwordEncoder.encode(updatePassword);
+    }
+
+    public void updateRefreshToken(String updateRefreshToken) {
+        this.refreshToken = updateRefreshToken;
+    }
 
 
     public User(String username, String nickname, String password, String passwordDecoded, String email, UserRoleEnum role) {
