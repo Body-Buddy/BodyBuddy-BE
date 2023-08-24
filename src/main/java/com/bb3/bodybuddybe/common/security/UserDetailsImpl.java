@@ -1,6 +1,6 @@
 package com.bb3.bodybuddybe.common.security;
 
-import com.bb3.bodybuddybe.user.UserRoleEnum;
+import com.bb3.bodybuddybe.user.enums.UserRoleEnum;
 import com.bb3.bodybuddybe.user.entity.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -20,7 +20,7 @@ public class UserDetailsImpl implements UserDetails {
         return user;
     }
 
-    public String getRole(){
+    public String getRole() {
         return user.getRole().toString();
     }
 
