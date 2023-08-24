@@ -3,6 +3,7 @@ package com.bb3.bodybuddybe.gym.entity;
 import com.bb3.bodybuddybe.gym.dto.GymRequestDto;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
