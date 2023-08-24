@@ -3,6 +3,7 @@ package com.bb3.bodybuddybe.gym.entity;
 import com.bb3.bodybuddybe.gym.dto.GymRequestDto;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
@@ -19,20 +20,20 @@ public class Gym {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", updatable = false)
+    @Column(updatable = false)
     private Long id;
 
-    @Column(name = "kakao_place_id", nullable = false, unique = true)
+    @Column(nullable = false, unique = true)
     private String kakaoPlaceId;
 
-    @Column(name = "name", nullable = false)
+    @Column(nullable = false)
     private String name;
 
-    @Column(name = "road_address", nullable = false)
+    @Column(nullable = false)
     private String roadAddress;
 
     @CreationTimestamp
-    @Column(name = "created_at", nullable = false, updatable = false)
+    @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
     @OneToMany(mappedBy = "gym", cascade = CascadeType.ALL)

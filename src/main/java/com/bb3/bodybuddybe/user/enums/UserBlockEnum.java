@@ -1,4 +1,4 @@
-package com.bb3.bodybuddybe.user;
+package com.bb3.bodybuddybe.user.enums;
 
 public enum UserBlockEnum {
     ACTIVE("허가"),

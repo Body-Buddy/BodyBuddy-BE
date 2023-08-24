@@ -1,4 +1,4 @@
-package com.bb3.bodybuddybe.user;
+package com.bb3.bodybuddybe.user.enums;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
