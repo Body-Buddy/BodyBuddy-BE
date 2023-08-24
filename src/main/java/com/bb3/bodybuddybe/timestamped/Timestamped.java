@@ -25,4 +25,3 @@ import java.time.LocalDateTime;
         private LocalDateTime modifiedAt;
     }
 
-}

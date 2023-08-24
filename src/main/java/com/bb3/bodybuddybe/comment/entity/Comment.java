@@ -1,49 +1,58 @@
 package com.bb3.bodybuddybe.comment.entity;
 
-import com.bb3.bodybuddybe.timestamped.Timestamped;
+import com.bb3.bodybuddybe.comment.dto.CommentUpdateRequestDto;
+import com.bb3.bodybuddybe.common.timestamped.TimeStamped;
+import com.bb3.bodybuddybe.post.entity.Post;
+import com.bb3.bodybuddybe.user.entity.User;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
+import java.util.List;
 
 @Entity
-@Getter
 @NoArgsConstructor
-@Table(name = "comment")
-public class Comment extends Timestamped {
+@Getter
+public class Comment extends TimeStamped {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false)
-    private String username;
+    private String content;
 
-    @Column(nullable = false)
-    private String description;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "post_id", nullable = false)
+    private Post post;
 
-    @ManyToOne
-    @JoinColumn(name = "card_id")
-    private Card card;
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Comment parent;
 
-    @ManyToOne
+    @OneToMany(mappedBy = "parent", orphanRemoval = true)
+    private List<Comment> child = new ArrayList<>();
+
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToMany(mappedBy = "comment", cascade = CascadeType.REMOVE)
-    private List<Comment2> Comment2List = new ArrayList<>();
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
-    public void setDescription(String description) {
-        this.description = description;
-    }
-    public void setCard(Card card) {
-        this.card = card;
-    }
-    public void setUser(User user) {
+    @Builder
+    public Comment(String content, Post post, User user) {
+        this.content = content;
+        this.post = post;
         this.user = user;
     }
+
+    public void addParent(Comment comment) {
+        this.parent = comment;
+    }
+
+    public void update(CommentUpdateRequestDto requestDto) {
+        this.content = requestDto.getContent();
+    }
+
+
 }
