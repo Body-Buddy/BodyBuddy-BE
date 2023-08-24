@@ -17,8 +17,12 @@ public enum ErrorCode {
 
     // matching
     MATCHING_CRITERIA_NOT_FOUND(HttpStatus.BAD_REQUEST, "M001", "사용자의 매칭 기준이 존재하지 않습니다."),
-    CHAT_NOT_FOUND(HttpStatus.BAD_REQUEST, "G004", "존재하지 않는 채팅방 입니다."),
-    USER_NOT_FOUND(HttpStatus.BAD_REQUEST, "G005", "존재하지 않는 사용자 입니다."),
+
+    // chat
+    CHAT_NOT_FOUND(HttpStatus.BAD_REQUEST, "C001", "존재하지 않는 채팅방 입니다."),
+
+    // user
+    USER_NOT_FOUND(HttpStatus.BAD_REQUEST, "U001", "존재하지 않는 사용자 입니다."),
     ;
 
     private final HttpStatus httpStatus;
