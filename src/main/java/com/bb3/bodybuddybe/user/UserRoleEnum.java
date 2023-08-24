@@ -1,12 +1,18 @@
 package com.bb3.bodybuddybe.user;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+@Getter
 public enum UserRoleEnum {
     USER(Authority.USER),
     CHAT_OWNER(Authority.CHAT_OWNER),
     POST_OWNER(Authority.POST_OWNER),
     ADMIN(Authority.ADMIN);
 
+
     private final String authority;
+
 
     UserRoleEnum(String authority) {
         this.authority = authority;
@@ -22,6 +28,8 @@ public enum UserRoleEnum {
         public static final String CHAT_OWNER = "ROLE_CHATOWNER";
         public static final String POST_OWNER = "ROLE_POSTOWNER";
     }
+
+
 }
 
 
