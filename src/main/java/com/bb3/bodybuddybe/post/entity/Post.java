@@ -27,10 +27,10 @@ public class Post extends TimeStamped {
     private String category;
 
     @Column
-    private String image_url;
+    private String imageUrl;
 
     @Column
-    private String video_url;
+    private String videoUrl;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
@@ -41,12 +41,12 @@ public class Post extends TimeStamped {
     private Gym gym;
 
     @Builder
-    public Post(String title, String content, String category, String image_url, String video_url, User user, Gym gym) {
+    public Post(String title, String content, String category, String imageUrl, String videoUrl, User user, Gym gym) {
         this.title = title;
         this.content = content;
         this.category = category;
-        this.image_url = image_url;
-        this.video_url = video_url;
+        this.imageUrl = imageUrl;
+        this.videoUrl = videoUrl;
         this.user = user;
         this.gym = gym;
     }
@@ -55,7 +55,7 @@ public class Post extends TimeStamped {
         this.title = title;
         this.content = content;
         this.category = category;
-        this.image_url = imageUrl;
-        this.video_url = videoUrl;
+        this.imageUrl = imageUrl;
+        this.videoUrl = videoUrl;
     }
 }

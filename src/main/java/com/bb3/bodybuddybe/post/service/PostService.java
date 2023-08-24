@@ -1,6 +1,10 @@
 package com.bb3.bodybuddybe.post.service;
 
+import com.bb3.bodybuddybe.common.exception.CustomException;
+import com.bb3.bodybuddybe.common.exception.ErrorCode;
 import com.bb3.bodybuddybe.common.security.UserDetailsImpl;
+import com.bb3.bodybuddybe.gym.entity.Gym;
+import com.bb3.bodybuddybe.gym.repository.GymRepository;
 import com.bb3.bodybuddybe.post.dto.PostCreateRequestDto;
 import com.bb3.bodybuddybe.post.dto.PostListResponseDto;
 import com.bb3.bodybuddybe.post.dto.PostResponseDto;
@@ -18,17 +22,19 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class PostService {
     private final PostRepository postRepository;
+    private final GymRepository gymRepository;
 
     public void createPost(PostCreateRequestDto postCreateRequestDto, UserDetailsImpl userDetails) {
+        Gym gym = findGym(postCreateRequestDto.getGymId());
 
         Post post = Post.builder()
                 .title(postCreateRequestDto.getTitle())
                 .content(postCreateRequestDto.getContent())
                 .category(postCreateRequestDto.getCategory())
-                .image_url(postCreateRequestDto.getImage_url())
-                .video_url(postCreateRequestDto.getVideo_url())
+                .imageUrl(postCreateRequestDto.getImageUrl())
+                .videoUrl(postCreateRequestDto.getVideoUrl())
                 .user(userDetails.getUser())
-                .gym(postCreateRequestDto.getGymId())
+                .gym(gym)
                 .build();
 
         postRepository.save(post);
@@ -54,14 +60,14 @@ public class PostService {
         Post post = findPost(postId);
 
         if (!post.getUser().getId().equals(userDetails.getUser().getId())) {
-            throw new RejectedExecutionException("게시글 생성자만 수정할 수 있습니다.");
+            throw new CustomException(ErrorCode.NOT_POST_WRITER);
         }
 
         post.update(postCreateRequestDto.getTitle(),
                 postCreateRequestDto.getContent(),
                 postCreateRequestDto.getCategory(),
-                postCreateRequestDto.getImage_url(),
-                postCreateRequestDto.getVideo_url());
+                postCreateRequestDto.getImageUrl(),
+                postCreateRequestDto.getVideoUrl());
 
         postRepository.save(post);
     }
@@ -70,7 +76,7 @@ public class PostService {
         Post post = findPost(postId);
 
         if (!post.getUser().getId().equals(userDetails.getUser().getId())) {
-            throw new RejectedExecutionException("게시글 생성자만 삭제할 수 있습니다.");
+            throw new CustomException(ErrorCode.NOT_POST_WRITER);
         }
 
         postRepository.delete(post);
@@ -78,7 +84,13 @@ public class PostService {
 
     public Post findPost(Long id) {
         return postRepository.findById(id).orElseThrow(
-                () -> new IllegalArgumentException("게시글이 존재하지 않습니다.")
+                () -> new CustomException(ErrorCode.NOT_FOUND)
+        );
+    }
+    //짐으로 변경
+    public Gym findGym(Long id) {
+        return gymRepository.findById(id).orElseThrow(
+                () -> new CustomException(ErrorCode.NOT_FOUND)
         );
     }
 }

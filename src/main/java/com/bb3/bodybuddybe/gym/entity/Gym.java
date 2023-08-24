@@ -50,9 +50,4 @@ public class Gym {
         this.name = name;
         this.roadAddress = roadAddress;
     }
-
-    @Builder
-    public Gym(Long id){
-        this.id = id;
-    }
 }

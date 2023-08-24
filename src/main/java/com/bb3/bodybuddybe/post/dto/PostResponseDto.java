@@ -13,16 +13,16 @@ public class PostResponseDto extends ApiResponseDto {
     private String title;
     private String content;
     private String category;
-    private String image_url;
-    private String video_url;
-    private LocalDateTime post_date;
+    private String imageUrl;
+    private String videoUrl;
+    private LocalDateTime postDate;
 
     public PostResponseDto(Post post) {
         this.title = post.getTitle();
         this.content = post.getContent();
         this.category = post.getCategory();
-        this.image_url = post.getImage_url();
-        this.video_url = post.getVideo_url();
-        this.post_date = post.getCreatedAt();
+        this.imageUrl = post.getImageUrl();
+        this.videoUrl = post.getVideoUrl();
+        this.postDate = post.getCreatedAt();
     }
 }

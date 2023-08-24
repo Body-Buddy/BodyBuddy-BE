@@ -8,7 +8,7 @@ public class PostCreateRequestDto {
     private String title;
     private String content;
     private String category;
-    private String image_url;
-    private String video_url;
-    private Gym gymId;
+    private String imageUrl;
+    private String videoUrl;
+    private Long gymId;
 }
