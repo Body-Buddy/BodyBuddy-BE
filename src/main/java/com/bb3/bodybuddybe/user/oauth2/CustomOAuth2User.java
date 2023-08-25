@@ -1,6 +1,6 @@
 package com.bb3.bodybuddybe.user.oauth2;
 
-import com.bb3.bodybuddybe.user.UserRoleEnum;
+
 import com.bb3.bodybuddybe.user.service.Role;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;

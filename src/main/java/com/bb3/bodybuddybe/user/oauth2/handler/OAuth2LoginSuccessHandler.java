@@ -1,7 +1,7 @@
 package com.bb3.bodybuddybe.user.oauth2.handler;
 
 
-import com.bb3.bodybuddybe.user.UserRoleEnum;
+
 import com.bb3.bodybuddybe.user.oauth2.CustomOAuth2User;
 import com.bb3.bodybuddybe.user.service.Role;
 import jakarta.servlet.ServletException;

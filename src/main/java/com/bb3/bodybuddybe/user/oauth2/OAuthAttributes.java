@@ -1,7 +1,8 @@
 package com.bb3.bodybuddybe.user.oauth2;
 
-import com.bb3.bodybuddybe.user.UserRoleEnum;
+
 import com.bb3.bodybuddybe.user.entity.User;
+import com.bb3.bodybuddybe.user.enums.SocialType;
 import com.bb3.bodybuddybe.user.oauth2.userInfo.GoogleOAuth2UserInfo;
 import com.bb3.bodybuddybe.user.oauth2.userInfo.KakaoOAuth2UserInfo;
 import com.bb3.bodybuddybe.user.oauth2.userInfo.NaverOAuth2UserInfo;

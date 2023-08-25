@@ -1,13 +1,15 @@
 package com.bb3.bodybuddybe.user.entity;
 
-import com.bb3.bodybuddybe.chat.entity.Chat;
 import com.bb3.bodybuddybe.chat.entity.GroupChatMember;
 import com.bb3.bodybuddybe.chat.entity.Message;
-import com.bb3.bodybuddybe.gym.entity.Gym;
 import com.bb3.bodybuddybe.gym.entity.UserGym;
-import com.bb3.bodybuddybe.user.UserBlockEnum;
-import com.bb3.bodybuddybe.user.UserRoleEnum;
-import com.bb3.bodybuddybe.user.oauth2.SocialType;
+
+import com.bb3.bodybuddybe.matching.entity.MatchingCriteria;
+import com.bb3.bodybuddybe.matching.enums.AgeRangeEnum;
+import com.bb3.bodybuddybe.matching.enums.GenderEnum;
+import com.bb3.bodybuddybe.user.enums.UserBlockEnum;
+import com.bb3.bodybuddybe.user.enums.UserRoleEnum;
+import com.bb3.bodybuddybe.user.enums.SocialType;
 import com.bb3.bodybuddybe.user.service.Role;
 import jakarta.persistence.*;
 import lombok.*;
@@ -16,7 +18,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.bb3.bodybuddybe.user.UserBlockEnum.ACTIVE;
+import static com.bb3.bodybuddybe.user.enums.UserBlockEnum.ACTIVE;
+
 
 @Entity
 @NoArgsConstructor
@@ -69,6 +72,17 @@ public class User {
     private String socialId; // 로그인한 소셜 타입의 식별자 값 (일반 로그인인 경우 null)
 
     private String refreshToken; // 리프레시 토큰
+
+    @Column
+    @Enumerated(EnumType.STRING)
+    private GenderEnum gender;
+
+    @Column
+    @Enumerated(EnumType.STRING)
+    private AgeRangeEnum ageRange;
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private MatchingCriteria matchingCriteria;
 
     // 유저 권한 설정 메소드
     public void authorizeUser() {

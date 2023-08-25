@@ -4,7 +4,7 @@ package com.bb3.bodybuddybe.user.oauth2.service;
 import com.bb3.bodybuddybe.user.entity.User;
 import com.bb3.bodybuddybe.user.oauth2.CustomOAuth2User;
 import com.bb3.bodybuddybe.user.oauth2.OAuthAttributes;
-import com.bb3.bodybuddybe.user.oauth2.SocialType;
+import com.bb3.bodybuddybe.user.enums.SocialType;
 import com.bb3.bodybuddybe.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,10 +24,10 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequest, OAuth2User> {
 
-    private final UserRepository userRepository;
+        private final UserRepository userRepository;
 
-    private static final String NAVER = "naver";
-    private static final String KAKAO = "kakao";
+        private static final String NAVER = "naver";
+        private static final String KAKAO = "kakao";
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {

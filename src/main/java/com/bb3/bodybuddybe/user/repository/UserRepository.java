@@ -1,7 +1,7 @@
 package com.bb3.bodybuddybe.user.repository;
 
 import com.bb3.bodybuddybe.user.entity.User;
-import com.bb3.bodybuddybe.user.oauth2.SocialType;
+import com.bb3.bodybuddybe.user.enums.SocialType;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
