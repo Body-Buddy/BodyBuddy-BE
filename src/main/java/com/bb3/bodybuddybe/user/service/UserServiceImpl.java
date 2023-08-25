@@ -2,7 +2,7 @@ package com.bb3.bodybuddybe.user.service;
 
 import com.bb3.bodybuddybe.common.exception.CustomException;
 import com.bb3.bodybuddybe.common.exception.ErrorCode;
-import com.bb3.bodybuddybe.common.image.ImageUploader;
+import com.bb3.bodybuddybe.common.image.ImageUploadService;
 import com.bb3.bodybuddybe.matching.enums.GenderEnum;
 import com.bb3.bodybuddybe.user.dto.ProfileResponseDto;
 import com.bb3.bodybuddybe.user.dto.ProfileUpdateRequestDto;
@@ -10,6 +10,7 @@ import com.bb3.bodybuddybe.user.dto.SignupRequestDto;
 import com.bb3.bodybuddybe.user.dto.UserStatusRequestDto;
 import com.bb3.bodybuddybe.user.entity.User;
 import com.bb3.bodybuddybe.user.enums.UserRoleEnum;
+import com.bb3.bodybuddybe.user.enums.UserStatusEnum;
 import com.bb3.bodybuddybe.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -17,15 +18,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-
-
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final ImageUploader imageUploader;
+    private final ImageUploadService imageUploadService;
 
     @Override
     @Transactional
@@ -55,13 +53,17 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public void changeUserStatus(UserStatusRequestDto requestDto, User user) {
-        if (!user.getPassword().equals(passwordEncoder.encode(requestDto.getPassword()))) {
-            throw new CustomException(ErrorCode.PASSWORD_NOT_MATCHED);
+    public void changeStatus(UserStatusRequestDto requestDto, User user) {
+        if (user.getStatus() == requestDto.getStatus()) {
+            throw new CustomException(ErrorCode.STATUS_NOT_CHANGED);
         }
 
-        if(user.getStatus() == requestDto.getStatus()) {
-            throw new CustomException(ErrorCode.STATUS_NOT_CHANGED);
+        if (user.getStatus() == UserStatusEnum.BLOCKED) {
+            throw new CustomException(ErrorCode.USER_BLOCKED);
+        }
+
+        if (!user.getPassword().equals(passwordEncoder.encode(requestDto.getPassword()))) {
+            throw new CustomException(ErrorCode.PASSWORD_NOT_MATCHED);
         }
 
         user.changeStatus(requestDto.getStatus());
@@ -71,13 +73,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public void uploadProfileImage(MultipartFile file, User user) {
         String name = "user/" + user.getId();
-        String imageUrl;
-
-        try {
-            imageUrl = imageUploader.upload(file, name);
-        } catch (IOException e) {
-            throw new CustomException(ErrorCode.IMAGE_UPLOAD_FAILED);
-        }
+        String imageUrl = imageUploadService.upload(file, name);
 
         user.updateProfileImage(imageUrl);
     }
@@ -90,7 +86,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true)
-    public ProfileResponseDto getCurrentUserProfile(User user) {
+    public ProfileResponseDto getProfile(Long userId) {
+        User user = findById(userId);
         return new ProfileResponseDto(user);
+    }
+
+    private User findById(Long id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
     }
 }

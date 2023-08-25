@@ -14,7 +14,7 @@ public interface UserService {
     void signup(SignupRequestDto requestDto);
 
     @Transactional
-    void changeUserStatus(UserStatusRequestDto requestDto, User user);
+    void changeStatus(UserStatusRequestDto requestDto, User user);
 
     @Transactional
     void uploadProfileImage(MultipartFile file, User user) throws IOException;
@@ -23,5 +23,5 @@ public interface UserService {
     void updateProfile(ProfileUpdateRequestDto requestDto, User user);
 
     @Transactional(readOnly = true)
-    ProfileResponseDto getCurrentUserProfile(User user);
+    ProfileResponseDto getProfile(Long userId);
 }

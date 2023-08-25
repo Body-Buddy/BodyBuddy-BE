@@ -2,7 +2,7 @@ package com.bb3.bodybuddybe.user.service;
 
 import com.bb3.bodybuddybe.common.exception.CustomException;
 import com.bb3.bodybuddybe.common.exception.ErrorCode;
-import com.bb3.bodybuddybe.common.image.ImageUploader;
+import com.bb3.bodybuddybe.common.image.ImageUploadService;
 import com.bb3.bodybuddybe.matching.enums.GenderEnum;
 import com.bb3.bodybuddybe.user.dto.SignupRequestDto;
 import com.bb3.bodybuddybe.user.dto.UserStatusRequestDto;
@@ -39,7 +39,7 @@ class UserServiceImplTest {
     private PasswordEncoder passwordEncoder;
 
     @Mock
-    private ImageUploader imageUploader;
+    private ImageUploadService imageUploadService;
 
     @BeforeEach
     void setUp() {
@@ -139,7 +139,7 @@ class UserServiceImplTest {
         when(user.getStatus()).thenReturn(UserStatusEnum.INACTIVE);
 
         // when
-        userService.changeUserStatus(requestDto, user);
+        userService.changeStatus(requestDto, user);
 
         // then
         verify(user).changeStatus(requestDto.getStatus());
@@ -159,7 +159,7 @@ class UserServiceImplTest {
 
         // when
         CustomException thrownException = assertThrows(CustomException.class, () ->
-                userService.changeUserStatus(requestDto, user)
+                userService.changeStatus(requestDto, user)
         );
 
         // then
@@ -181,7 +181,7 @@ class UserServiceImplTest {
 
         // when
         CustomException thrownException = assertThrows(CustomException.class, () ->
-                userService.changeUserStatus(requestDto, user)
+                userService.changeStatus(requestDto, user)
         );
 
         // then
@@ -200,6 +200,6 @@ class UserServiceImplTest {
         userService.uploadProfileImage(mock(MultipartFile.class), user);
 
         // then
-        verify(imageUploader).upload(any(MultipartFile.class), eq("user/1"));
+        verify(imageUploadService).upload(any(MultipartFile.class), eq("user/1"));
     }
 }

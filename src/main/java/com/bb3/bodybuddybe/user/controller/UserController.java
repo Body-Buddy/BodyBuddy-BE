@@ -14,8 +14,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/users")
@@ -43,9 +41,9 @@ public class UserController {
     }
 
     @PutMapping("/{userId}/status")
-    public ResponseEntity<ApiResponseDto> changeUserStatus(@RequestBody @Valid UserStatusRequestDto requestDto,
+    public ResponseEntity<ApiResponseDto> changeStatus(@RequestBody @Valid UserStatusRequestDto requestDto,
                                                            @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        userService.changeUserStatus(requestDto, userDetails.getUser());
+        userService.changeStatus(requestDto, userDetails.getUser());
         return ResponseEntity.ok(new ApiResponseDto("회원 상태 변경 성공", HttpStatus.OK.value()));
     }
 
@@ -64,8 +62,8 @@ public class UserController {
     }
 
     @GetMapping("/{userId}/profile")
-    public ResponseEntity<ProfileResponseDto> getCurrentUserProfile(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-        ProfileResponseDto profileResponseDto = userService.getCurrentUserProfile(userDetails.getUser());
+    public ResponseEntity<ProfileResponseDto> getProfile(@PathVariable Long userId) {
+        ProfileResponseDto profileResponseDto = userService.getProfile(userId);
         return ResponseEntity.ok(profileResponseDto);
     }
 }

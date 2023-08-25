@@ -32,6 +32,9 @@ public enum ErrorCode {
     STATUS_NOT_CHANGED(HttpStatus.BAD_REQUEST, "U007", "이미 변경된 상태입니다."),
     IMAGE_UPLOAD_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "U008", "프로필 이미지 업로드에 실패했습니다."),
     FILE_CONVERT_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "U009", "파일 변환에 실패했습니다."),
+    USER_BLOCKED(HttpStatus.BAD_REQUEST, "U010", "차단된 사용자의 상태 변경은 관리자 권한이 필요합니다."),
+    FILE_UPLOAD_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "U011", "파일 업로드에 실패했습니다."),
+    S3_UPLOAD_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "U012", "S3 업로드에 실패했습니다."),
     ;
 
     private final HttpStatus httpStatus;
