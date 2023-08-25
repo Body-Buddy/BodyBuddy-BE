@@ -99,6 +99,7 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Message> messageList = new ArrayList<>();
 
+
     // 유저 권한 설정 메소드
 
 

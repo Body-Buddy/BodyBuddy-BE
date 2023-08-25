@@ -32,10 +32,6 @@ public class GroupChatMember {
     private Chat chat;
 
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
-
     public void setUsers(User user) {
         this.user = user;
     }
