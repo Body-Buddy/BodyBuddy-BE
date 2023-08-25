@@ -34,6 +34,7 @@ public class EmailServiceImpl implements EmailService {
     @Value("${spring.mail.username}")
     private String from;
 
+    @Override
     public void sendVerificationCode(EmailRequestDto requestDto) {
         String email = requestDto.getEmail();
         String code = generateVerificationCode();
@@ -76,6 +77,7 @@ public class EmailServiceImpl implements EmailService {
         }
     }
 
+    @Override
     public void verifyCode(EmailVerificationRequestDto requestDto) {
         String email = requestDto.getEmail();
         String code = requestDto.getVerificationCode();

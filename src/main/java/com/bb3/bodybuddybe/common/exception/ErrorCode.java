@@ -31,6 +31,7 @@ public enum ErrorCode {
     EMAIL_SENDING_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "U006", "이메일 전송에 실패했습니다."),
     STATUS_NOT_CHANGED(HttpStatus.BAD_REQUEST, "U007", "이미 변경된 상태입니다."),
     IMAGE_UPLOAD_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "U008", "프로필 이미지 업로드에 실패했습니다."),
+    FILE_CONVERT_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "U009", "파일 변환에 실패했습니다."),
     ;
 
     private final HttpStatus httpStatus;
