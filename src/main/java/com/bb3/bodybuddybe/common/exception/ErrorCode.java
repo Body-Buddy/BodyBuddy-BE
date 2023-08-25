@@ -13,10 +13,16 @@ public enum ErrorCode {
 
     // post
     NOT_POST_WRITER(HttpStatus.BAD_REQUEST,"P001" ,"게시글 생성자만 수정할 수 있습니다." ),
-    NOT_FOUND(HttpStatus.BAD_REQUEST,"P002","게시글이 존재하지 않습니다.");
+    NOT_FOUND(HttpStatus.BAD_REQUEST,"P002","게시글이 존재하지 않습니다."),
 
     // matching
     MATCHING_CRITERIA_NOT_FOUND(HttpStatus.BAD_REQUEST, "M001", "사용자의 매칭 기준이 존재하지 않습니다."),
+
+    // chat
+    CHAT_NOT_FOUND(HttpStatus.BAD_REQUEST, "C001", "존재하지 않는 채팅방 입니다."),
+
+    // user
+    USER_NOT_FOUND(HttpStatus.BAD_REQUEST, "U001", "존재하지 않는 사용자 입니다."),
     ;
 
     private final HttpStatus httpStatus;
