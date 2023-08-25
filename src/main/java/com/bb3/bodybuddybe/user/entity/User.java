@@ -3,19 +3,21 @@ package com.bb3.bodybuddybe.user.entity;
 import com.bb3.bodybuddybe.matching.entity.MatchingCriteria;
 import com.bb3.bodybuddybe.matching.enums.AgeRangeEnum;
 import com.bb3.bodybuddybe.matching.enums.GenderEnum;
-import com.bb3.bodybuddybe.user.enums.UserBlockEnum;
+import com.bb3.bodybuddybe.user.dto.ProfileUpdateRequestDto;
 import com.bb3.bodybuddybe.user.enums.UserRoleEnum;
+import com.bb3.bodybuddybe.user.enums.UserStatusEnum;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-import static com.bb3.bodybuddybe.user.enums.UserBlockEnum.허가;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 @Entity
-@NoArgsConstructor
 @Getter
-@Setter
+@Table(name = "users")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,17 +26,21 @@ public class User {
     @Column(nullable = false, unique = true)
     private String username;
 
-    @Column(nullable = false, unique = true)
-    private String nickname;
-
     @Column(nullable = false)
     private String password;
 
-    @Column(nullable = false)
-    private String passwordDecoded;
-
     @Column(nullable = false, unique = true)
     private String email;
+
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private GenderEnum gender;
+
+    @Column(nullable = false)
+    private LocalDate birthDate;
+
+    @Column
+    private String nickname;
 
     @Column
     private String imageUrl;
@@ -42,45 +48,67 @@ public class User {
     @Column
     private String introduction;
 
-    @Column
-    @Enumerated(EnumType.STRING)
-    private GenderEnum gender;
-
-    @Column
-    @Enumerated(EnumType.STRING)
-    private AgeRangeEnum ageRange;
-
     @Column(nullable = false)
     @Enumerated(value = EnumType.STRING)
     private UserRoleEnum role;
 
     @Column(nullable = false)
     @Enumerated(value = EnumType.STRING)
-    private UserBlockEnum status;
+    private UserStatusEnum status;
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private MatchingCriteria matchingCriteria;
 
-//    @OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
-//    private List<Notification> notificationList = new ArrayList<>();
-//    @OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
-//    private List<Comment> commentList = new ArrayList<>();
-//    @OneToMany(mappedBy = "users", cascade = CascadeType.REMOVE)
-//    private List<Post> postList = new ArrayList<>();
-//    @OneToMany(mappedBy = "owner", cascade = CascadeType.PERSIST, orphanRemoval = true)
-//    private List<UserGym> userGymList = new ArrayList<>();
-//    @OneToMany(mappedBy = "user", cascade = CascadeType.PERSIST, orphanRemoval = true)
-//    private List<Message> messageList = new ArrayList<>();
-//    @OneToMany(mappedBy = "user", cascade = CascadeType.PERSIST, orphanRemoval = true)
-//    private List<GroupChatMember> groupChatMemberList = new ArrayList<>();
-
-    public User(String username, String nickname, String password, String passwordDecoded, String email, UserRoleEnum role) {
+    public User(String username, String password, String email, String birthDate, GenderEnum gender, UserRoleEnum role) {
         this.username = username;
-        this.nickname = nickname;
         this.password = password;
-        this.passwordDecoded = passwordDecoded;
         this.email = email;
+        this.gender = gender;
         this.role = role;
-        this.status = 허가;
+        this.birthDate = LocalDate.parse(birthDate, DateTimeFormatter.ofPattern("yyyyMMdd"));
+    }
+
+    public AgeRangeEnum getAgeRange() {
+        int age = getAge();
+
+        if (age < 20) {
+            return AgeRangeEnum.S10s;
+        } else if (age < 30) {
+            return AgeRangeEnum.S20s;
+        } else if (age < 40) {
+            return AgeRangeEnum.S30s;
+        } else if (age < 50) {
+            return AgeRangeEnum.S40s;
+        } else if (age < 60) {
+            return AgeRangeEnum.S50s;
+        } else {
+            return AgeRangeEnum.S60plus;
+        }
+    }
+
+    public int getAge() {
+        LocalDate currentDate = LocalDate.now();
+        int age = currentDate.getYear() - birthDate.getYear();
+
+        if (birthDate.getMonthValue() > currentDate.getMonthValue() ||
+                (birthDate.getMonthValue() == currentDate.getMonthValue() &&
+                        birthDate.getDayOfMonth() > currentDate.getDayOfMonth())) {
+            age--;  // 생일이 아직 지나지 않은 경우를 고려함
+        }
+
+        return age;
+    }
+
+    public void updateProfileImage(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
+    public void updateProfile(ProfileUpdateRequestDto requestDto) {
+        this.nickname = requestDto.getNickname();
+        this.introduction = requestDto.getIntroduction();
+    }
+
+    public void changeStatus(UserStatusEnum status) {
+        this.status = status;
     }
 }

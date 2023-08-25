@@ -10,7 +10,7 @@ import com.bb3.bodybuddybe.matching.dto.CriteriaUpdateRequestDto;
 import com.bb3.bodybuddybe.matching.entity.MatchingCriteria;
 import com.bb3.bodybuddybe.matching.enums.GoalEnum;
 import com.bb3.bodybuddybe.matching.repository.MatchingCriteriaRepository;
-import com.bb3.bodybuddybe.user.dto.UserProfileDto;
+import com.bb3.bodybuddybe.user.dto.ProfileResponseDto;
 import com.bb3.bodybuddybe.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -50,7 +50,7 @@ public class MatchingServiceImpl implements MatchingService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<UserProfileDto> getMatchingUsers(Long gymId, User user) {
+    public List<ProfileResponseDto> getMatchingUsers(Long gymId, User user) {
         if (!userGymRepository.existsByUserAndGymId(user, gymId)) {
             throw new CustomException(ErrorCode.NOT_MY_GYM);
         }
@@ -65,7 +65,7 @@ public class MatchingServiceImpl implements MatchingService {
         return allUsersInGym.stream()
                 .filter(other -> !other.getId().equals(user.getId()))
                 .sorted(Comparator.comparingInt(other -> -calculateMatchScore(userCriteria, other)))
-                .map(UserProfileDto::new)
+                .map(ProfileResponseDto::new)
                 .toList();
     }
 
