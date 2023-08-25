@@ -1,21 +1,33 @@
 package com.bb3.bodybuddybe.user.entity;
 
+import com.bb3.bodybuddybe.chat.entity.GroupChatMember;
+import com.bb3.bodybuddybe.chat.entity.Message;
+import com.bb3.bodybuddybe.gym.entity.UserGym;
+
 import com.bb3.bodybuddybe.matching.entity.MatchingCriteria;
 import com.bb3.bodybuddybe.matching.enums.AgeRangeEnum;
 import com.bb3.bodybuddybe.matching.enums.GenderEnum;
 import com.bb3.bodybuddybe.user.enums.UserBlockEnum;
 import com.bb3.bodybuddybe.user.enums.UserRoleEnum;
+import com.bb3.bodybuddybe.user.enums.SocialType;
+import com.bb3.bodybuddybe.user.service.Role;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
-import static com.bb3.bodybuddybe.user.enums.UserBlockEnum.허가;
+import java.util.ArrayList;
+import java.util.List;
+
+import static com.bb3.bodybuddybe.user.enums.UserBlockEnum.ACTIVE;
+
 
 @Entity
 @NoArgsConstructor
 @Getter
 @Setter
+@Table(name = "users")
+@AllArgsConstructor
+@Builder
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -42,6 +54,25 @@ public class User {
     @Column
     private String introduction;
 
+    @Column(nullable = false)
+    @Enumerated(value = EnumType.STRING)
+    private UserRoleEnum role;
+
+    @Column(nullable = false)
+    @Enumerated(value = EnumType.STRING)
+    private Role socialRole;
+
+    @Column(nullable = false)
+    @Enumerated(value = EnumType.STRING)
+    private UserBlockEnum status;
+
+    @Enumerated(EnumType.STRING)
+    private SocialType socialType; // KAKAO, NAVER, GOOGLE
+
+    private String socialId; // 로그인한 소셜 타입의 식별자 값 (일반 로그인인 경우 null)
+
+    private String refreshToken; // 리프레시 토큰
+
     @Column
     @Enumerated(EnumType.STRING)
     private GenderEnum gender;
@@ -50,37 +81,55 @@ public class User {
     @Enumerated(EnumType.STRING)
     private AgeRangeEnum ageRange;
 
-    @Column(nullable = false)
-    @Enumerated(value = EnumType.STRING)
-    private UserRoleEnum role;
-
-    @Column(nullable = false)
-    @Enumerated(value = EnumType.STRING)
-    private UserBlockEnum status;
-
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private MatchingCriteria matchingCriteria;
 
-//    @OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
-//    private List<Notification> notificationList = new ArrayList<>();
-//    @OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
-//    private List<Comment> commentList = new ArrayList<>();
-//    @OneToMany(mappedBy = "users", cascade = CascadeType.REMOVE)
-//    private List<Post> postList = new ArrayList<>();
-//    @OneToMany(mappedBy = "owner", cascade = CascadeType.PERSIST, orphanRemoval = true)
-//    private List<UserGym> userGymList = new ArrayList<>();
-//    @OneToMany(mappedBy = "user", cascade = CascadeType.PERSIST, orphanRemoval = true)
-//    private List<Message> messageList = new ArrayList<>();
-//    @OneToMany(mappedBy = "user", cascade = CascadeType.PERSIST, orphanRemoval = true)
-//    private List<GroupChatMember> groupChatMemberList = new ArrayList<>();
+    // 유저 권한 설정 메소드
+    public void authorizeUser() {
+        this.role = UserRoleEnum.USER;
+    }
+
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<GroupChatMember> groupChatMemberList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<UserGym> userGymList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<Message> messageList = new ArrayList<>();
+
+    // 유저 권한 설정 메소드
+
+
+    // 비밀번호 암호화 메소드
+    public void passwordEncode(PasswordEncoder passwordEncoder) {
+        this.password = passwordEncoder.encode(this.password);
+    }
+
+    //== 유저 필드 업데이트 ==//
+    public void updateNickname(String updateNickname) {
+        this.nickname = updateNickname;
+    }
+
+
+
+    public void updatePassword(String updatePassword, PasswordEncoder passwordEncoder) {
+        this.password = passwordEncoder.encode(updatePassword);
+    }
+
+    public void updateRefreshToken(String updateRefreshToken) {
+        this.refreshToken = updateRefreshToken;
+    }
+
 
     public User(String username, String nickname, String password, String passwordDecoded, String email, UserRoleEnum role) {
-        this.username = username;
-        this.nickname = nickname;
-        this.password = password;
+        this.username=username;
+        this.nickname=nickname;
+        this.password=password;
         this.passwordDecoded = passwordDecoded;
-        this.email = email;
-        this.role = role;
-        this.status = 허가;
+        this.email=email;
+         this.role=role;
+        this.status = ACTIVE;
     }
 }

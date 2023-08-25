@@ -28,8 +28,10 @@ public class Message {
     @Column
     private String content;
 
+
     @Enumerated(EnumType.STRING)
     private MessageType type;
+
 
     @ManyToOne
     @JoinColumn(name = "user_id")

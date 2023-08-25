@@ -2,9 +2,9 @@ package com.bb3.bodybuddybe.user.service;
 
 import com.bb3.bodybuddybe.common.dto.ApiResponseDto;
 import com.bb3.bodybuddybe.common.image.ImageUploader;
-import com.bb3.bodybuddybe.user.enums.UserRoleEnum;
 import com.bb3.bodybuddybe.user.dto.*;
 import com.bb3.bodybuddybe.user.entity.User;
+import com.bb3.bodybuddybe.user.enums.UserRoleEnum;
 import com.bb3.bodybuddybe.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -29,18 +29,13 @@ public class UserServiceImpl implements UserService {
     private final String POSTOWNER_TOKEN = "1111";
 
     @Override
-    public void signup(AuthRequestDto requestDto) {
-        String username = requestDto.getUsername();
-        String passwordDecoded = requestDto.getPassword();
-        String password = passwordEncoder.encode(requestDto.getPassword()); // 패스워드 평문 암호화
-        String nickname = requestDto.getNickname();
-        String email = requestDto.getEmail();
+    public void signup(AuthRequestDto requestDto){
 
-        if (userRepository.findByUsername(username).isPresent()) {
-            throw new IllegalArgumentException();
-        }
 
-        if (userRepository.findByEmail(email).isPresent()) {
+        if(userRepository.findByUsername(requestDto.getUsername()).isPresent()){
+            throw new IllegalArgumentException();}
+
+        if(userRepository.findByEmail(requestDto.getEmail()).isPresent()){
             throw new IllegalArgumentException();
         }
 
@@ -49,13 +44,25 @@ public class UserServiceImpl implements UserService {
             if (!POSTOWNER_TOKEN.equals(requestDto.getPostownerToken())) {
                 throw new IllegalArgumentException();
             }
-            role = UserRoleEnum.POSTOWNER;
+            role = UserRoleEnum.POST_OWNER;
         }
 
         // 사용자 등록
-        User user = new User(username, nickname, password, passwordDecoded, email, role);
+        User user = User.builder()
+                .username(requestDto.getUsername())
+                .nickname(requestDto.getNickname())
+                .password(requestDto.getPassword())
+                .passwordDecoded(passwordEncoder.encode(requestDto.getPassword())) // 패스워드 평문 암호화
+                .email(requestDto.getEmail())
+                .role(UserRoleEnum.USER)
+                .build();
+
         userRepository.save(user);
+
     }
+
+
+
 
     @Override
     public ResponseEntity<ApiResponseDto> changeUserInfo(MultipartFile profilePic, String introduction, String password, User user) throws IOException {
@@ -71,6 +78,7 @@ public class UserServiceImpl implements UserService {
         String newPW = password;
         Map<String, String> map = new HashMap<String, String>();
         map.put("pw", user.getPassword());
+
 
         for (Map.Entry<String, String> entry : map.entrySet()) {
             if (!(entry.getValue() == null)) {
@@ -89,7 +97,8 @@ public class UserServiceImpl implements UserService {
         return new ResponseEntity<>(apiResponseDto, HttpStatus.OK);
     }
 
-    public boolean isValidString(String input) {
+
+    public boolean isValidString(String input){
         if (input.length() < 8 || input.length() > 15) {
             return false;
         }
@@ -99,7 +108,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserProfileDto getUserProfile(User user) {
-        User users = userRepository.findById(user.getId()).orElseThrow(() -> new IllegalArgumentException("회원정보가 없습니다."));
+        User users = userRepository.findById(user.getId()).orElseThrow(()-> new IllegalArgumentException("회원정보가 없습니다."));
         return new UserProfileDto(users);
     }
 
@@ -111,8 +120,9 @@ public class UserServiceImpl implements UserService {
         return new ResponseEntity<>(profileResponseDto, HttpStatus.OK);
     }
 
+
     @Override
-    public void delete(DeleteRequestDto requestDto, User user) {
+    public void delete(DeleteRequestDto requestDto, User user){
         if (!requestDto.getPassword().equals(user.getPasswordDecoded())) {
             throw new IllegalArgumentException("비밀번호가 틀립니다.");
         }

@@ -22,8 +22,7 @@ public enum ErrorCode {
     CHAT_NOT_FOUND(HttpStatus.BAD_REQUEST, "C001", "존재하지 않는 채팅방 입니다."),
 
     // user
-    USER_NOT_FOUND(HttpStatus.BAD_REQUEST, "U001", "존재하지 않는 사용자 입니다."),
-    ;
+    USER_NOT_FOUND(HttpStatus.BAD_REQUEST, "U001", "존재하지 않는 사용자 입니다.");
 
     private final HttpStatus httpStatus;
     private final String code;
