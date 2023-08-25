@@ -1,5 +1,6 @@
 package com.bb3.bodybuddybe.post.entity;
 
+import com.bb3.bodybuddybe.comment.entity.Comment;
 import com.bb3.bodybuddybe.common.timestamped.TimeStamped;
 import com.bb3.bodybuddybe.gym.entity.Gym;
 import com.bb3.bodybuddybe.user.entity.User;
@@ -7,6 +8,9 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -39,6 +43,12 @@ public class Post extends TimeStamped {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "gym_id")
     private Gym gym;
+
+    @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE)
+    private List<Comment> comments = new ArrayList<>();
+
+    @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<Comment> commentList = new ArrayList<>();
 
     @Builder
     public Post(String title, String content, String category, String imageUrl, String videoUrl, User user, Gym gym) {
