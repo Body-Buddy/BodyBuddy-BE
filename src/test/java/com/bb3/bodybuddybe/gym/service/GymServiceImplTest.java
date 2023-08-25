@@ -36,7 +36,7 @@ class GymServiceImplTest {
     WebClient.Builder webClientBuilder;
 
     @Mock
-    private WebClient webClient;
+    WebClient webClient;
 
     @Mock
     GymRepository gymRepository;
@@ -105,7 +105,7 @@ class GymServiceImplTest {
         requestDto.setId("448766559");
         requestDto.setName("스포애니 노원점");
 
-        User user = new User();
+        User user = mock(User.class);
         Gym existingGym = new Gym(requestDto);
 
         when(gymRepository.findByKakaoPlaceId(requestDto.getId())).thenReturn(Optional.of(existingGym));
@@ -133,7 +133,7 @@ class GymServiceImplTest {
         requestDto.setId("27440935");
         requestDto.setName("에이블짐 노원본점");
 
-        User user = new User();
+        User user = mock(User.class);
         Gym newGym = new Gym(requestDto);
 
         when(gymRepository.findByKakaoPlaceId(requestDto.getId())).thenReturn(Optional.empty());
@@ -162,17 +162,16 @@ class GymServiceImplTest {
         requestDto.setId("448766559");
         requestDto.setName("스포애니 노원점");
 
-        User user = new User();
+        User user = mock(User.class);
         Gym existingGym = new Gym(requestDto);
-        UserGym userGym = new UserGym(user, existingGym);
 
         when(gymRepository.findByKakaoPlaceId(requestDto.getId())).thenReturn(Optional.of(existingGym));
         when(userGymRepository.existsByUserAndGym(user, existingGym)).thenReturn(true);
 
         // when
-        CustomException thrownException = assertThrows(CustomException.class, () -> {
-            gymService.addToMyGyms(requestDto, user);
-        });
+        CustomException thrownException = assertThrows(CustomException.class, () ->
+            gymService.addToMyGyms(requestDto, user)
+        );
 
         // then
         verify(gymRepository).findByKakaoPlaceId(requestDto.getId());
@@ -184,7 +183,7 @@ class GymServiceImplTest {
     @DisplayName("나의 헬스장 목록을 조회한다.")
     void testGetMyGyms() {
         // given
-        User user = new User();
+        User user = mock(User.class);
         Gym gym1 = new Gym("448766559", "스포애니 노원점", "서울 노원구 동일로 1361");
         Gym gym2 = new Gym("27440935", "에이블짐 노원본점", "서울 노원구 상계로 77");
         List<UserGym> userGyms = List.of(new UserGym(user, gym1), new UserGym(user, gym2));
@@ -213,7 +212,7 @@ class GymServiceImplTest {
     @DisplayName("나의 헬스장 목록에서 헬스장을 성공적으로 삭제한다.")
     void testDeleteFromMyGyms_success() {
         // given
-        User user = new User();
+        User user = mock(User.class);
         Long gymId = 1L;
         Gym gym = new Gym("448766559", "스포애니 노원점", "서울 노원구 동일로 1361");
         UserGym userGym = new UserGym(user, gym);
@@ -234,7 +233,7 @@ class GymServiceImplTest {
     @DisplayName("등록하지 않은 헬스장을 삭제하려고 할 때 예외를 발생시킨다.")
     void testDeleteFromMyGyms_failure() {
         // given
-        User user = new User();
+        User user = mock(User.class);
         Long gymId = 1L;
         Gym gym = new Gym("27479746", "J요가", "서울 노원구 석계로 105");
 
@@ -242,9 +241,9 @@ class GymServiceImplTest {
         when(userGymRepository.findByUserAndGym(user, gym)).thenReturn(Optional.empty());
 
         // when
-        CustomException thrownException = assertThrows(CustomException.class, () -> {
-            gymService.deleteFromMyGyms(gymId, user);
-        });
+        CustomException thrownException = assertThrows(CustomException.class, () ->
+            gymService.deleteFromMyGyms(gymId, user)
+        );
 
         // then
         verify(gymRepository).findById(gymId);

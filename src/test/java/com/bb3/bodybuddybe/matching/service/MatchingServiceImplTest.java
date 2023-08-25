@@ -212,9 +212,9 @@ class MatchingServiceImplTest {
         when(userGymRepository.existsByUserAndGymId(currentUser, gymId)).thenReturn(false);
 
         // when
-        CustomException thrownException = assertThrows(CustomException.class, () -> {
-            matchingService.getMatchingUsers(gymId, currentUser);
-        });
+        CustomException thrownException = assertThrows(CustomException.class, () ->
+            matchingService.getMatchingUsers(gymId, currentUser)
+        );
 
         // then
         verify(userGymRepository).existsByUserAndGymId(currentUser, gymId);

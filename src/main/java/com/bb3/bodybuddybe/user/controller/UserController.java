@@ -51,7 +51,7 @@ public class UserController {
 
     @PostMapping("/{userId}/image")
     public ResponseEntity<ApiResponseDto> uploadProfileImage(@RequestParam("file") MultipartFile file,
-                                                             @AuthenticationPrincipal UserDetailsImpl userDetails) throws IOException {
+                                                             @AuthenticationPrincipal UserDetailsImpl userDetails) {
         userService.uploadProfileImage(file, userDetails.getUser());
         return ResponseEntity.ok(new ApiResponseDto("프로필 이미지 수정 성공", HttpStatus.OK.value()));
     }
