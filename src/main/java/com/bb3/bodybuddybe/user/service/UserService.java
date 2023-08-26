@@ -14,10 +14,16 @@ public interface UserService {
     void signup(SignupRequestDto requestDto);
 
     @Transactional
-    void changeStatus(UserStatusRequestDto requestDto, User user);
+    void deleteUser(UserDeleteRequestDto requestDto, User user);
 
     @Transactional
     void uploadProfileImage(MultipartFile file, User user) throws IOException;
+
+    @Transactional(readOnly = true)
+    ProfileImageResponseDto getProfileImage(Long userId);
+
+    @Transactional
+    void deleteProfileImage(Long userId, User user);
 
     @Transactional
     void updateProfile(ProfileUpdateRequestDto requestDto, User user);

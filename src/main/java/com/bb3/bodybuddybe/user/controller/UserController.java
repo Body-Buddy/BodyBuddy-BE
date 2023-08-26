@@ -10,7 +10,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -23,35 +22,48 @@ public class UserController {
     private final EmailServiceImpl emailService;
 
     @PostMapping("/signup")
-    public ResponseEntity<ApiResponseDto> signup(@Valid @RequestBody SignupRequestDto requestDto, BindingResult bindingResult) {
+    public ResponseEntity<ApiResponseDto> signup(@Valid @RequestBody SignupRequestDto requestDto) {
         userService.signup(requestDto);
         return ResponseEntity.ok(new ApiResponseDto("회원가입 성공", HttpStatus.OK.value()));
     }
 
-    @PostMapping("/email-verification")
+    @PostMapping("/email-verification/request")
     public ResponseEntity<ApiResponseDto> sendVerificationCode(@RequestBody @Valid EmailRequestDto requestDto) {
         emailService.sendVerificationCode(requestDto);
         return ResponseEntity.ok(new ApiResponseDto("이메일 인증 코드 전송 성공", HttpStatus.OK.value()));
     }
 
-    @PostMapping("/verify-code")
-    public ResponseEntity<ApiResponseDto> verifyCode(@RequestBody @Valid EmailVerificationRequestDto requestDto) {
-        emailService.verifyCode(requestDto);
+    @PostMapping("/email-verification/confirm")
+    public ResponseEntity<ApiResponseDto> confirmVerification(@RequestBody @Valid EmailConfirmRequestDto requestDto) {
+        emailService.confirmVerification(requestDto);
         return ResponseEntity.ok(new ApiResponseDto("이메일 인증 성공", HttpStatus.OK.value()));
     }
 
-    @PutMapping("/{userId}/status")
-    public ResponseEntity<ApiResponseDto> changeStatus(@RequestBody @Valid UserStatusRequestDto requestDto,
+    @DeleteMapping("/{userId}")
+    public ResponseEntity<ApiResponseDto> deleteUser(@RequestBody @Valid UserDeleteRequestDto requestDto,
                                                            @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        userService.changeStatus(requestDto, userDetails.getUser());
-        return ResponseEntity.ok(new ApiResponseDto("회원 상태 변경 성공", HttpStatus.OK.value()));
+        userService.deleteUser(requestDto, userDetails.getUser());
+        return ResponseEntity.ok(new ApiResponseDto("회원 탈퇴 성공", HttpStatus.OK.value()));
     }
 
-    @PostMapping("/{userId}/image")
+    @PutMapping("/{userId}/profile-image")
     public ResponseEntity<ApiResponseDto> uploadProfileImage(@RequestParam("file") MultipartFile file,
                                                              @AuthenticationPrincipal UserDetailsImpl userDetails) {
         userService.uploadProfileImage(file, userDetails.getUser());
         return ResponseEntity.ok(new ApiResponseDto("프로필 이미지 수정 성공", HttpStatus.OK.value()));
+    }
+
+    @GetMapping("/{userId}/profile-image")
+    public ResponseEntity<ProfileImageResponseDto> getProfileImage(@PathVariable Long userId) {
+        ProfileImageResponseDto profileImageResponseDto = userService.getProfileImage(userId);
+        return ResponseEntity.ok(profileImageResponseDto);
+    }
+
+    @DeleteMapping("/{userId}/profile-image")
+    public ResponseEntity<ApiResponseDto> deleteProfileImage(@PathVariable Long userId,
+                                                             @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        userService.deleteProfileImage(userId, userDetails.getUser());
+        return ResponseEntity.ok(new ApiResponseDto("프로필 이미지 삭제 성공", HttpStatus.OK.value()));
     }
 
     @PutMapping("/{userId}/profile")

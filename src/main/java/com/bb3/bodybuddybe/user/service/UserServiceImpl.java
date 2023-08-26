@@ -2,15 +2,11 @@ package com.bb3.bodybuddybe.user.service;
 
 import com.bb3.bodybuddybe.common.exception.CustomException;
 import com.bb3.bodybuddybe.common.exception.ErrorCode;
-import com.bb3.bodybuddybe.common.image.ImageUploadService;
+import com.bb3.bodybuddybe.common.image.ImageUploader;
 import com.bb3.bodybuddybe.matching.enums.GenderEnum;
-import com.bb3.bodybuddybe.user.dto.ProfileResponseDto;
-import com.bb3.bodybuddybe.user.dto.ProfileUpdateRequestDto;
-import com.bb3.bodybuddybe.user.dto.SignupRequestDto;
-import com.bb3.bodybuddybe.user.dto.UserStatusRequestDto;
+import com.bb3.bodybuddybe.user.dto.*;
 import com.bb3.bodybuddybe.user.entity.User;
 import com.bb3.bodybuddybe.user.enums.UserRoleEnum;
-import com.bb3.bodybuddybe.user.enums.UserStatusEnum;
 import com.bb3.bodybuddybe.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -23,7 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final ImageUploadService imageUploadService;
+    private final ImageUploader imageUploader;
 
     @Override
     @Transactional
@@ -53,29 +49,32 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public void changeStatus(UserStatusRequestDto requestDto, User user) {
-        if (user.getStatus() == requestDto.getStatus()) {
-            throw new CustomException(ErrorCode.STATUS_NOT_CHANGED);
-        }
-
-        if (user.getStatus() == UserStatusEnum.BLOCKED) {
-            throw new CustomException(ErrorCode.USER_BLOCKED);
-        }
-
+    public void deleteUser(UserDeleteRequestDto requestDto, User user) {
         if (!user.getPassword().equals(passwordEncoder.encode(requestDto.getPassword()))) {
             throw new CustomException(ErrorCode.PASSWORD_NOT_MATCHED);
         }
 
-        user.changeStatus(requestDto.getStatus());
+        userRepository.delete(user);
     }
 
     @Override
     @Transactional
     public void uploadProfileImage(MultipartFile file, User user) {
         String name = "user/" + user.getId();
-        String imageUrl = imageUploadService.upload(file, name);
+        String imageUrl = imageUploader.upload(file, name);
 
         user.updateProfileImage(imageUrl);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public ProfileImageResponseDto getProfileImage(Long userId) {
+        return null;
+    }
+
+    @Override
+    @Transactional
+    public void deleteProfileImage(Long userId, User user) {
     }
 
     @Override

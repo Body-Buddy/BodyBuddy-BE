@@ -66,6 +66,7 @@ public class User {
         this.gender = gender;
         this.role = role;
         this.birthDate = LocalDate.parse(birthDate, DateTimeFormatter.ofPattern("yyyyMMdd"));
+        this.status = UserStatusEnum.ACTIVE;
     }
 
     public AgeRangeEnum getAgeRange() {
@@ -106,9 +107,5 @@ public class User {
     public void updateProfile(ProfileUpdateRequestDto requestDto) {
         this.nickname = requestDto.getNickname();
         this.introduction = requestDto.getIntroduction();
-    }
-
-    public void changeStatus(UserStatusEnum status) {
-        this.status = status;
     }
 }

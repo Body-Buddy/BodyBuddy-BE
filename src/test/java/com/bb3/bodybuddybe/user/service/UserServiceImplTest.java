@@ -2,12 +2,10 @@ package com.bb3.bodybuddybe.user.service;
 
 import com.bb3.bodybuddybe.common.exception.CustomException;
 import com.bb3.bodybuddybe.common.exception.ErrorCode;
-import com.bb3.bodybuddybe.common.image.ImageUploadService;
+import com.bb3.bodybuddybe.common.image.ImageUploader;
 import com.bb3.bodybuddybe.matching.enums.GenderEnum;
 import com.bb3.bodybuddybe.user.dto.SignupRequestDto;
-import com.bb3.bodybuddybe.user.dto.UserStatusRequestDto;
 import com.bb3.bodybuddybe.user.entity.User;
-import com.bb3.bodybuddybe.user.enums.UserStatusEnum;
 import com.bb3.bodybuddybe.user.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -39,7 +37,7 @@ class UserServiceImplTest {
     private PasswordEncoder passwordEncoder;
 
     @Mock
-    private ImageUploadService imageUploadService;
+    private ImageUploader imageUploader;
 
     @BeforeEach
     void setUp() {
@@ -127,69 +125,6 @@ class UserServiceImplTest {
     }
 
     @Test
-    @DisplayName("유저의 상태를 성공적으로 변경한다.")
-    void testChangeStatus_success() {
-        // given
-        User user = mock(User.class);
-        UserStatusRequestDto requestDto = new UserStatusRequestDto();
-        requestDto.setStatus(UserStatusEnum.ACTIVE);
-
-        when(user.getPassword()).thenReturn("encodedPassword");
-        when(passwordEncoder.encode(requestDto.getPassword())).thenReturn("encodedPassword");
-        when(user.getStatus()).thenReturn(UserStatusEnum.INACTIVE);
-
-        // when
-        userService.changeStatus(requestDto, user);
-
-        // then
-        verify(user).changeStatus(requestDto.getStatus());
-    }
-
-    @Test
-    @DisplayName("유저 상태 변경 시 비밀번호가 일치하지 않으면 예외를 발생시킨다.")
-    void testChangeStatus_wrongPassword() {
-        // given
-        User user = mock(User.class);
-        UserStatusRequestDto requestDto = new UserStatusRequestDto();
-        requestDto.setStatus(UserStatusEnum.ACTIVE);
-
-        when(user.getPassword()).thenReturn("encodedPassword");
-        when(passwordEncoder.encode(requestDto.getPassword())).thenReturn("wrongPassword");
-        when(user.getStatus()).thenReturn(UserStatusEnum.INACTIVE);
-
-        // when
-        CustomException thrownException = assertThrows(CustomException.class, () ->
-                userService.changeStatus(requestDto, user)
-        );
-
-        // then
-        verify(user, never()).changeStatus(requestDto.getStatus());
-        assertEquals(ErrorCode.PASSWORD_NOT_MATCHED, thrownException.getErrorCode());
-    }
-
-    @Test
-    @DisplayName("유저 상태 변경 시 변경할 상태가 현재 상태와 같으면 예외를 발생시킨다.")
-    void testChangeStatus_sameStatus() {
-        // given
-        User user = mock(User.class);
-        UserStatusRequestDto requestDto = new UserStatusRequestDto();
-        requestDto.setStatus(UserStatusEnum.ACTIVE);
-
-        when(user.getPassword()).thenReturn("encodedPassword");
-        when(passwordEncoder.encode(requestDto.getPassword())).thenReturn("encodedPassword");
-        when(user.getStatus()).thenReturn(UserStatusEnum.ACTIVE);
-
-        // when
-        CustomException thrownException = assertThrows(CustomException.class, () ->
-                userService.changeStatus(requestDto, user)
-        );
-
-        // then
-        verify(user, never()).changeStatus(requestDto.getStatus());
-        assertEquals(ErrorCode.STATUS_NOT_CHANGED, thrownException.getErrorCode());
-    }
-
-    @Test
     @DisplayName("유저의 프로필 이미지를 성공적으로 업로드한다.")
     void uploadProfileImage_success() throws IOException {
         // given
@@ -200,6 +135,6 @@ class UserServiceImplTest {
         userService.uploadProfileImage(mock(MultipartFile.class), user);
 
         // then
-        verify(imageUploadService).upload(any(MultipartFile.class), eq("user/1"));
+        verify(imageUploader).upload(any(MultipartFile.class), eq("user/1"));
     }
 }
