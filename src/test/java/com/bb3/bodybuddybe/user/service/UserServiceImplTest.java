@@ -135,6 +135,6 @@ class UserServiceImplTest {
 
         // then
         String imageUrl = verify(imageUploader).upload(any(MultipartFile.class));
-        verify(user).setImageUrl(imageUrl);
+        verify(user).updateImageUrl(imageUrl);
     }
 }

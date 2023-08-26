@@ -61,7 +61,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public void uploadProfileImage(MultipartFile file, User user) {
         String imageUrl = imageUploader.upload(file);
-        user.setImageUrl(imageUrl);
+        user.updateImageUrl(imageUrl);
     }
 
     @Override
@@ -74,7 +74,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public void deleteProfileImage(User user) {
         imageUploader.deleteFromUrl(user.getImageUrl());
-        user.setImageUrl(null);
+        user.updateImageUrl(null);
     }
 
     @Override

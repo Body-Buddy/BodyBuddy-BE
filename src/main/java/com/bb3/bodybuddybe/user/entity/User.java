@@ -3,33 +3,28 @@ package com.bb3.bodybuddybe.user.entity;
 import com.bb3.bodybuddybe.chat.entity.GroupChatMember;
 import com.bb3.bodybuddybe.chat.entity.Message;
 import com.bb3.bodybuddybe.gym.entity.UserGym;
-
 import com.bb3.bodybuddybe.matching.entity.MatchingCriteria;
 import com.bb3.bodybuddybe.matching.enums.AgeRangeEnum;
 import com.bb3.bodybuddybe.matching.enums.GenderEnum;
 import com.bb3.bodybuddybe.user.dto.ProfileUpdateRequestDto;
+import com.bb3.bodybuddybe.user.enums.SocialType;
 import com.bb3.bodybuddybe.user.enums.UserRoleEnum;
 import com.bb3.bodybuddybe.user.enums.UserStatusEnum;
-import com.bb3.bodybuddybe.user.enums.SocialType;
 import com.bb3.bodybuddybe.user.service.Role;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.*;
-import org.springframework.security.crypto.password.PasswordEncoder;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import static com.bb3.bodybuddybe.user.enums.UserBlockEnum.ACTIVE;
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Entity
 @Getter
+@Builder
 @Table(name = "users")
+@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class User {
     @Id
