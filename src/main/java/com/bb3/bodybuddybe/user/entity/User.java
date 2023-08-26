@@ -1,18 +1,31 @@
 package com.bb3.bodybuddybe.user.entity;
 
+import com.bb3.bodybuddybe.chat.entity.GroupChatMember;
+import com.bb3.bodybuddybe.chat.entity.Message;
+import com.bb3.bodybuddybe.gym.entity.UserGym;
+
 import com.bb3.bodybuddybe.matching.entity.MatchingCriteria;
 import com.bb3.bodybuddybe.matching.enums.AgeRangeEnum;
 import com.bb3.bodybuddybe.matching.enums.GenderEnum;
 import com.bb3.bodybuddybe.user.dto.ProfileUpdateRequestDto;
 import com.bb3.bodybuddybe.user.enums.UserRoleEnum;
 import com.bb3.bodybuddybe.user.enums.UserStatusEnum;
+import com.bb3.bodybuddybe.user.enums.SocialType;
+import com.bb3.bodybuddybe.user.service.Role;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.*;
+import org.springframework.security.crypto.password.PasswordEncoder;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import static com.bb3.bodybuddybe.user.enums.UserBlockEnum.ACTIVE;
+
 
 @Entity
 @Getter
@@ -54,10 +67,30 @@ public class User {
 
     @Column(nullable = false)
     @Enumerated(value = EnumType.STRING)
+    private Role socialRole;
+
+    @Column(nullable = false)
+    @Enumerated(value = EnumType.STRING)
     private UserStatusEnum status;
+
+    @Enumerated(EnumType.STRING)
+    private SocialType socialType; // KAKAO, NAVER, GOOGLE
+
+    private String socialId; // 로그인한 소셜 타입의 식별자 값 (일반 로그인인 경우 null)
+
+    private String refreshToken; // 리프레시 토큰
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private MatchingCriteria matchingCriteria;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<GroupChatMember> groupChatMemberList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<UserGym> userGymList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<Message> messageList = new ArrayList<>();
 
     public User(String username, String password, String email, String birthDate, GenderEnum gender, UserRoleEnum role) {
         this.username = username;
@@ -67,6 +100,31 @@ public class User {
         this.role = role;
         this.birthDate = LocalDate.parse(birthDate, DateTimeFormatter.ofPattern("yyyyMMdd"));
         this.status = UserStatusEnum.ACTIVE;
+    }
+
+    public void authorizeUser() {
+        this.role = UserRoleEnum.USER;
+    }
+
+    public void updateNickname(String updateNickname) {
+        this.nickname = updateNickname;
+    }
+
+    public void updatePassword(String updatePassword) {
+        this.password = updatePassword;
+    }
+
+    public void updateRefreshToken(String updateRefreshToken) {
+        this.refreshToken = updateRefreshToken;
+    }
+
+    public void updateImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
+    public void updateProfile(ProfileUpdateRequestDto requestDto) {
+        this.nickname = requestDto.getNickname();
+        this.introduction = requestDto.getIntroduction();
     }
 
     public AgeRangeEnum getAgeRange() {
@@ -98,14 +156,5 @@ public class User {
         }
 
         return age;
-    }
-
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
-    }
-
-    public void updateProfile(ProfileUpdateRequestDto requestDto) {
-        this.nickname = requestDto.getNickname();
-        this.introduction = requestDto.getIntroduction();
     }
 }

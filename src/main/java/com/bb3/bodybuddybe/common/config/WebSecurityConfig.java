@@ -5,6 +5,10 @@ import com.bb3.bodybuddybe.common.security.JwtAuthenticationFilter;
 import com.bb3.bodybuddybe.common.security.JwtAuthorizationFilter;
 import com.bb3.bodybuddybe.common.security.UserDetailsServiceImpl;
 import com.bb3.bodybuddybe.common.security.UserVerificationFilter;
+import com.bb3.bodybuddybe.user.oauth2.handler.JwtService;
+import com.bb3.bodybuddybe.user.oauth2.handler.OAuth2LoginFailureHandler;
+import com.bb3.bodybuddybe.user.oauth2.handler.OAuth2LoginSuccessHandler;
+import com.bb3.bodybuddybe.user.oauth2.service.CustomOAuth2UserService;
 import com.bb3.bodybuddybe.user.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -31,10 +35,17 @@ public class WebSecurityConfig {
     private final ObjectMapper objectMapper;
     private final AuthenticationConfiguration authenticationConfiguration;
     private final UserRepository userRepository;
+    private final JwtService jwtService;
+    private final OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
+    private final OAuth2LoginFailureHandler oAuth2LoginFailureHandler;
+    private final CustomOAuth2UserService customOAuth2UserService;
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
+
+    //config-> filter선언 ->사용가능
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
         return configuration.getAuthenticationManager();
@@ -55,7 +66,7 @@ public class WebSecurityConfig {
         return new UserVerificationFilter(objectMapper);
     }
 
-    @Bean
+    @Bean //security filter
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         // CSRF, CORS 설정
         http.csrf(csrf -> csrf.disable());
@@ -69,9 +80,10 @@ public class WebSecurityConfig {
         http.authorizeHttpRequests((authorizeHttpRequests) ->
                 authorizeHttpRequests
                         .anyRequest().permitAll()
+
         );
         // 필터 관리
-        http.addFilterBefore(jwtAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(jwtAuthorizationFilter(), JwtAuthenticationFilter.class);
         http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
         http.addFilterBefore(userVerificationFilter(), UsernamePasswordAuthenticationFilter.class);
         return http.build();

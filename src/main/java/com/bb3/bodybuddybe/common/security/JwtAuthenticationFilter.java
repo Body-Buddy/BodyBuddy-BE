@@ -21,6 +21,9 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import java.io.IOException;
 
+import static com.bb3.bodybuddybe.user.enums.UserBlockEnum.BLOCKED;
+
+
 @Slf4j(topic = "로그인 및 JWT 생성")
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
     private final JwtUtil jwtUtil;
@@ -38,7 +41,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         try {
             SignupRequestDto requestDto = new ObjectMapper().readValue(request.getInputStream(), SignupRequestDto.class);
             User user = userRepository.findByUsername(requestDto.getUsername()).orElseThrow(() -> new IllegalArgumentException("유저가 없습니다."));
-            if (user.getStatus().equals(UserStatusEnum.BLOCKED)) {
+            if (user.getStatus() == UserStatusEnum.BLOCKED) {
                 ApiResponseDto apiResponseDto = new ApiResponseDto("차단된 회원입니다.", HttpStatus.BAD_REQUEST.value());
                 response.setStatus(HttpStatus.BAD_REQUEST.value());
                 response.setContentType("application/json");
