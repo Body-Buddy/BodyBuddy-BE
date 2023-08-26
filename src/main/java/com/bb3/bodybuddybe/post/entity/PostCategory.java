@@ -1,7 +1,7 @@
 package com.bb3.bodybuddybe.post.entity;
 
 public enum PostCategory {
-    Gym,
+    GYM,
     CLIMBING,
     YOGA,
     SWIMMING,

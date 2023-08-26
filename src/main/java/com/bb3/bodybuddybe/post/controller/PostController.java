@@ -50,8 +50,8 @@ public class PostController {
     }
     //제목으로 게시물 조회
     @GetMapping("/posts/title")
-    public ResponseEntity<PostTitleListResponseDto> getPostsByTitle(@RequestParam String postTItle) {
-        PostTitleListResponseDto postTitleListResponseDto = postService.getPostsByTitle(postTItle);
+    public ResponseEntity<PostTitleListResponseDto> getPostsByTitle(@RequestParam String title) {
+        PostTitleListResponseDto postTitleListResponseDto = postService.getPostsByTitle(title);
 
         return ResponseEntity.ok().body(postTitleListResponseDto);
     }

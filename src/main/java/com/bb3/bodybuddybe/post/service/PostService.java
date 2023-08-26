@@ -67,8 +67,8 @@ public class PostService {
     }
 
     //제목으로 게시물 조회
-    public PostTitleListResponseDto getPostsByTitle(String postTitle) {
-        PostTitleListResponseDto postTitleListResponseDto = new PostTitleListResponseDto(postRepository.findByPostTitle(postTitle)
+    public PostTitleListResponseDto getPostsByTitle(String title) {
+        PostTitleListResponseDto postTitleListResponseDto = new PostTitleListResponseDto(postRepository.findByTitle(title)
                 .stream()
                 .map(PostResponseDto::new)
                 .toList());
@@ -108,14 +108,14 @@ public class PostService {
     //게시물 ID로 게시물 찾기
     public Post findPost(Long id) {
         return postRepository.findById(id).orElseThrow(
-                () -> new CustomException(ErrorCode.NOT_FOUND)
+                () -> new CustomException(ErrorCode.NOT_FOUND_POST)
         );
     }
 
     //헬스장 ID로 헬스장 찾기
     public Gym findGym(Long id) {
         return gymRepository.findById(id).orElseThrow(
-                () -> new CustomException(ErrorCode.NOT_FOUND)
+                () -> new CustomException(ErrorCode.NOT_FOUND_GYM)
         );
     }
 }
