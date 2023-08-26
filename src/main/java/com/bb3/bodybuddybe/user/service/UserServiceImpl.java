@@ -60,21 +60,21 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void uploadProfileImage(MultipartFile file, User user) {
-        String name = "user/" + user.getId();
-        String imageUrl = imageUploader.upload(file, name);
-
-        user.updateProfileImage(imageUrl);
+        String imageUrl = imageUploader.upload(file);
+        user.setImageUrl(imageUrl);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public ProfileImageResponseDto getProfileImage(Long userId) {
-        return null;
+    public String getProfileImage(User user) {
+        return user.getImageUrl();
     }
 
     @Override
     @Transactional
-    public void deleteProfileImage(Long userId, User user) {
+    public void deleteProfileImage(User user) {
+        imageUploader.deleteFromUrl(user.getImageUrl());
+        user.setImageUrl(null);
     }
 
     @Override

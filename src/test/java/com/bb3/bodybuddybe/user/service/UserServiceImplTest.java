@@ -17,7 +17,6 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.time.LocalDate;
 import java.util.Optional;
 
@@ -126,7 +125,7 @@ class UserServiceImplTest {
 
     @Test
     @DisplayName("유저의 프로필 이미지를 성공적으로 업로드한다.")
-    void uploadProfileImage_success() throws IOException {
+    void uploadProfileImage_success() {
         // given
         User user = mock(User.class);
         when(user.getId()).thenReturn(1L);
@@ -135,6 +134,7 @@ class UserServiceImplTest {
         userService.uploadProfileImage(mock(MultipartFile.class), user);
 
         // then
-        verify(imageUploader).upload(any(MultipartFile.class), eq("user/1"));
+        String imageUrl = verify(imageUploader).upload(any(MultipartFile.class));
+        verify(user).setImageUrl(imageUrl);
     }
 }

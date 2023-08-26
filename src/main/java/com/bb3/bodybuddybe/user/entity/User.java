@@ -100,7 +100,7 @@ public class User {
         return age;
     }
 
-    public void updateProfileImage(String imageUrl) {
+    public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
     }
 

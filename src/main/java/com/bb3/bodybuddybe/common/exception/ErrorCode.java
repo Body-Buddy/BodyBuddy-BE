@@ -29,12 +29,9 @@ public enum ErrorCode {
     PASSWORD_NOT_MATCHED(HttpStatus.BAD_REQUEST, "U004", "비밀번호가 일치하지 않습니다."),
     INVALID_VERIFICATION_CODE(HttpStatus.BAD_REQUEST, "U005", "이메일 인증번호가 유효하지 않습니다."),
     EMAIL_SENDING_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "U006", "이메일 전송에 실패했습니다."),
-    STATUS_NOT_CHANGED(HttpStatus.BAD_REQUEST, "U007", "이미 변경된 상태입니다."),
-    IMAGE_UPLOAD_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "U008", "프로필 이미지 업로드에 실패했습니다."),
-    FILE_CONVERT_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "U009", "파일 변환에 실패했습니다."),
-    USER_BLOCKED(HttpStatus.BAD_REQUEST, "U010", "차단된 사용자의 상태 변경은 관리자 권한이 필요합니다."),
-    FILE_UPLOAD_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "U011", "파일 업로드에 실패했습니다."),
-    S3_UPLOAD_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "U012", "S3 업로드에 실패했습니다."),
+    FAILED_TO_UPLOAD_FILE(HttpStatus.INTERNAL_SERVER_ERROR, "U007", "S3 파일 업로드에 실패했습니다."),
+    INVALID_S3_URL(HttpStatus.INTERNAL_SERVER_ERROR, "U008", "유효하지 않은 S3 URL 입니다."),
+    FAILED_TO_DELETE_FILE(HttpStatus.INTERNAL_SERVER_ERROR, "U009", "S3 파일 삭제에 실패했습니다."),
     ;
 
     private final HttpStatus httpStatus;

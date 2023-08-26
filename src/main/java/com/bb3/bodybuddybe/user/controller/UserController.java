@@ -54,15 +54,14 @@ public class UserController {
     }
 
     @GetMapping("/{userId}/profile-image")
-    public ResponseEntity<ProfileImageResponseDto> getProfileImage(@PathVariable Long userId) {
-        ProfileImageResponseDto profileImageResponseDto = userService.getProfileImage(userId);
-        return ResponseEntity.ok(profileImageResponseDto);
+    public ResponseEntity<String> getProfileImage(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        String imageUrl = userService.getProfileImage(userDetails.getUser());
+        return ResponseEntity.ok(imageUrl);
     }
 
     @DeleteMapping("/{userId}/profile-image")
-    public ResponseEntity<ApiResponseDto> deleteProfileImage(@PathVariable Long userId,
-                                                             @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        userService.deleteProfileImage(userId, userDetails.getUser());
+    public ResponseEntity<ApiResponseDto> deleteProfileImage(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        userService.deleteProfileImage(userDetails.getUser());
         return ResponseEntity.ok(new ApiResponseDto("프로필 이미지 삭제 성공", HttpStatus.OK.value()));
     }
 
