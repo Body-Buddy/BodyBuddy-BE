@@ -2,7 +2,8 @@ package com.bb3.bodybuddybe.chat.service;
 
 import com.bb3.bodybuddybe.chat.dto.ChatRequestDto;
 import com.bb3.bodybuddybe.chat.dto.ChatResponseDto;
-import com.bb3.bodybuddybe.chat.dto.MessageDto;
+import com.bb3.bodybuddybe.chat.dto.MessageRequestDto;
+import com.bb3.bodybuddybe.chat.dto.MessageResponseDto;
 import com.bb3.bodybuddybe.chat.entity.Chat;
 import com.bb3.bodybuddybe.chat.entity.Message;
 import com.bb3.bodybuddybe.chat.repository.ChatRepository;
@@ -71,12 +72,7 @@ public class ChatService {
     }
 
     @Transactional
-    public void saveMessage(MessageDto message) {
-        Chat chat = chatRepository.findById(Long.parseLong(message.getChatId()))
-            .orElseThrow(() -> new CustomException(ErrorCode.CHAT_NOT_FOUND));
-
-        User user = userRepository.findByNickname(message.getSenderNickname())
-            .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+    public MessageResponseDto saveMessage(MessageRequestDto message, User user, Chat chat) {
 
         Message chatMessage = Message.builder()
             .type(message.getType())
@@ -87,15 +83,18 @@ public class ChatService {
 
         messageRepository.save(chatMessage);
 
+        return new MessageResponseDto(chatMessage);
+
     }
 
     @Transactional
     public <T> void getMessages(WebSocketSession session, Long chatId) {
-        List<MessageDto> messageDtos = messageRepository.findAllByChatId(chatId).stream()
-            .map(MessageDto::new)
+        List<MessageResponseDto> messageRequestDtos = messageRepository.findAllByChatId(chatId)
+            .stream()
+            .map(MessageResponseDto::new)
             .collect(Collectors.toList());
         try {
-            session.sendMessage(new TextMessage(objectMapper.writeValueAsString(messageDtos)));
+            session.sendMessage(new TextMessage(objectMapper.writeValueAsString(messageRequestDtos)));
         } catch (IOException e) {
             new IOException(e.getMessage());
         }
