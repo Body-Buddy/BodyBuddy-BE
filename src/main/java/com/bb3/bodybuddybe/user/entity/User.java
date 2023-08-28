@@ -27,6 +27,12 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class User {
+    private static final int AGE_20 = 20;
+    private static final int AGE_30 = 30;
+    private static final int AGE_40 = 40;
+    private static final int AGE_50 = 50;
+    private static final int AGE_60 = 60;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -125,29 +131,21 @@ public class User {
     public AgeRangeEnum getAgeRange() {
         int age = getAge();
 
-        if (age < 20) {
-            return AgeRangeEnum.S10s;
-        } else if (age < 30) {
-            return AgeRangeEnum.S20s;
-        } else if (age < 40) {
-            return AgeRangeEnum.S30s;
-        } else if (age < 50) {
-            return AgeRangeEnum.S40s;
-        } else if (age < 60) {
-            return AgeRangeEnum.S50s;
-        } else {
-            return AgeRangeEnum.S60plus;
-        }
+        if (age < AGE_20) return AgeRangeEnum.S10s;
+        if (age < AGE_30) return AgeRangeEnum.S20s;
+        if (age < AGE_40) return AgeRangeEnum.S30s;
+        if (age < AGE_50) return AgeRangeEnum.S40s;
+        if (age < AGE_60) return AgeRangeEnum.S50s;
+
+        return AgeRangeEnum.S60plus;
     }
 
     public int getAge() {
         LocalDate currentDate = LocalDate.now();
         int age = currentDate.getYear() - birthDate.getYear();
 
-        if (birthDate.getMonthValue() > currentDate.getMonthValue() ||
-                (birthDate.getMonthValue() == currentDate.getMonthValue() &&
-                        birthDate.getDayOfMonth() > currentDate.getDayOfMonth())) {
-            age--;  // 생일이 아직 지나지 않은 경우를 고려함
+        if (currentDate.isBefore(birthDate.withYear(currentDate.getYear()))) {
+            age--;  // 올해의 생일이 지났는지 확인
         }
 
         return age;
