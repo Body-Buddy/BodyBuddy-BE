@@ -73,6 +73,10 @@ public class PostService {
                 .map(PostResponseDto::new)
                 .toList());
 
+        if (postTitleListResponseDto.getPostTitleList().isEmpty()) {
+            throw new CustomException(ErrorCode.NOT_FOUND_POST);
+        }
+
         return postTitleListResponseDto;
     }
 
