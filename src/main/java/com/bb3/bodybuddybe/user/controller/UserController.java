@@ -16,13 +16,13 @@ import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/users")
+@RequestMapping("/api")
 public class UserController {
 
     private final UserServiceImpl userService;
     private final EmailServiceImpl emailService;
 
-    @PostMapping("/signup")
+    @PostMapping("/users/signup")
     public ResponseEntity<ApiResponseDto> signup(@Valid @RequestBody SignupRequestDto requestDto) {
         userService.signup(requestDto);
         return ResponseEntity.ok(new ApiResponseDto("회원가입 성공", HttpStatus.OK.value()));
@@ -40,40 +40,40 @@ public class UserController {
         return ResponseEntity.ok(new ApiResponseDto("이메일 인증 성공", HttpStatus.OK.value()));
     }
 
-    @DeleteMapping("/{userId}")
+    @DeleteMapping("/users/{userId}")
     public ResponseEntity<ApiResponseDto> deleteUser(@RequestBody @Valid UserDeleteRequestDto requestDto,
                                                            @AuthenticationPrincipal UserDetailsImpl userDetails) {
         userService.deleteUser(requestDto, userDetails.getUser());
         return ResponseEntity.ok(new ApiResponseDto("회원 탈퇴 성공", HttpStatus.OK.value()));
     }
 
-    @PutMapping("/{userId}/profile-image")
+    @PutMapping("/users/{userId}/image")
     public ResponseEntity<ApiResponseDto> uploadProfileImage(@RequestParam("file") MultipartFile file,
                                                              @AuthenticationPrincipal UserDetailsImpl userDetails) {
         userService.uploadProfileImage(file, userDetails.getUser());
         return ResponseEntity.ok(new ApiResponseDto("프로필 이미지 수정 성공", HttpStatus.OK.value()));
     }
 
-    @GetMapping("/{userId}/profile-image")
+    @GetMapping("/users/{userId}/image")
     public ResponseEntity<String> getProfileImage(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         String imageUrl = userService.getProfileImage(userDetails.getUser());
         return ResponseEntity.ok(imageUrl);
     }
 
-    @DeleteMapping("/{userId}/profile-image")
+    @DeleteMapping("/users/{userId}/image")
     public ResponseEntity<ApiResponseDto> deleteProfileImage(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         userService.deleteProfileImage(userDetails.getUser());
         return ResponseEntity.ok(new ApiResponseDto("프로필 이미지 삭제 성공", HttpStatus.OK.value()));
     }
 
-    @PutMapping("/{userId}/profile")
+    @PutMapping("/users/{userId}/profile")
     public ResponseEntity<ApiResponseDto> updateProfile(@RequestBody @Valid ProfileUpdateRequestDto requestDto,
                                                         @AuthenticationPrincipal UserDetailsImpl userDetails) {
         userService.updateProfile(requestDto, userDetails.getUser());
         return ResponseEntity.ok(new ApiResponseDto("프로필 수정 성공", HttpStatus.OK.value()));
     }
 
-    @GetMapping("/{userId}/profile")
+    @GetMapping("/users/{userId}/profile")
     public ResponseEntity<ProfileResponseDto> getProfile(@PathVariable Long userId) {
         ProfileResponseDto profileResponseDto = userService.getProfile(userId);
         return ResponseEntity.ok(profileResponseDto);
