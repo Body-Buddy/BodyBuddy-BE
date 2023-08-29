@@ -17,13 +17,20 @@ import java.util.List;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.stream.Collectors;
 
+/**
+ * 게시물 관련 서비스
+ */
 @Service
 @RequiredArgsConstructor
 public class PostService {
     private final PostRepository postRepository;
     private final GymRepository gymRepository;
 
-    //게시물 생성
+    /**
+     * 게시물 작성
+     * @param userDetails
+     * @param postCreateRequestDto
+     */
     public void createPost(PostCreateRequestDto postCreateRequestDto, UserDetailsImpl userDetails) {
         Gym gym = findGym(postCreateRequestDto.getGymId());
 
@@ -40,14 +47,24 @@ public class PostService {
         postRepository.save(post);
     }
 
-    //게시물 조회
+    /**
+     * 게시물 조회
+     * @param postId
+     * @return PostResponseDto
+     * @throws RejectedExecutionException 게시물이 없을 경우
+     */
     public PostResponseDto getPostById(Long postId) {
         Post post = findPost(postId);
 
         return new PostResponseDto(post);
     }
 
-    //헬스장 ID로 게시물 조회
+    /**
+     * 헬스장 ID로 게시물 조회
+     * @param gymId
+     * @return PostListResponseDto
+     * @throws RejectedExecutionException 게시물이 없을 경우
+     */
     public PostListResponseDto getPostsByGymId(Long gymId) {
         List<PostResponseDto> postList = postRepository.findAllByGymId(gymId).stream()
                 .map(PostResponseDto::new)
@@ -56,7 +73,12 @@ public class PostService {
         return new PostListResponseDto(postList);
     }
 
-    //카테고리로 게시물 조회
+    /**
+     * 카테고리로 게시물 조회
+     * @param postCategory
+     * @return PostCategoryListResponseDto
+     * @throws RejectedExecutionException 게시물이 없을 경우
+     */
     public PostCategoryListResponseDto getPostsByCategory(PostCategory postCategory) {
         PostCategoryListResponseDto postCategoryListResponseDto = new PostCategoryListResponseDto(postRepository.findByPostCategory(postCategory)
                 .stream()
@@ -66,7 +88,12 @@ public class PostService {
         return postCategoryListResponseDto;
     }
 
-    //제목으로 게시물 조회
+    /**
+     * 제목으로 게시물 조회
+     * @param title
+     * @return PostTitleListResponseDto
+     * @throws RejectedExecutionException 게시물이 없을 경우
+     */
     public PostTitleListResponseDto getPostsByTitle(String title) {
         PostTitleListResponseDto postTitleListResponseDto = new PostTitleListResponseDto(postRepository.findByTitle(title)
                 .stream()
@@ -80,7 +107,13 @@ public class PostService {
         return postTitleListResponseDto;
     }
 
-    //게시물 수정
+    /**
+     * 게시물 수정
+     * @param postId
+     * @param postCreateRequestDto
+     * @param userDetails
+     * @throws RejectedExecutionException 작성자가 다른 경우
+     */
     @Transactional
     public void updatePost(Long postId, PostCreateRequestDto postCreateRequestDto, UserDetailsImpl userDetails) {
         Post post = findPost(postId);
@@ -98,7 +131,12 @@ public class PostService {
         postRepository.save(post);
     }
 
-    //게시물 삭제
+    /**
+     * 게시물 삭제
+     * @param postId
+     * @param userDetails
+     * @throws RejectedExecutionException 게시물이 없을 경우
+     */
     public void deletePost(Long postId, UserDetailsImpl userDetails) {
         Post post = findPost(postId);
 
@@ -109,14 +147,24 @@ public class PostService {
         postRepository.delete(post);
     }
 
-    //게시물 ID로 게시물 찾기
+    /**
+     * 게시물 ID로 게시물 찾기
+     * @param id
+     * @return Post
+     * @throws RejectedExecutionException 게시물이 없을 경우
+     */
     public Post findPost(Long id) {
         return postRepository.findById(id).orElseThrow(
                 () -> new CustomException(ErrorCode.NOT_FOUND_POST)
         );
     }
 
-    //헬스장 ID로 헬스장 찾기
+    /**
+     * 헬스장 ID로 헬스장 찾기
+     * @param id
+     * @return Gym
+     * @throws RejectedExecutionException 헬스장이 없을 경우
+     */
     public Gym findGym(Long id) {
         return gymRepository.findById(id).orElseThrow(
                 () -> new CustomException(ErrorCode.NOT_FOUND_GYM)
