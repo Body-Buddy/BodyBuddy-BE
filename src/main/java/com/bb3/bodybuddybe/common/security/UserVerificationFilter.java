@@ -34,6 +34,13 @@ public class UserVerificationFilter extends OncePerRequestFilter {
 
         if (authentication != null && matcher.matches()) {
             String pathUserId = matcher.group(1);
+            String additionalPath = matcher.group(2);
+
+            if ("GET".equalsIgnoreCase(request.getMethod()) && "/profile".equals(additionalPath)) {
+                filterChain.doFilter(request, response);
+                return;
+            }
+
             Long userId = ((UserDetailsImpl) authentication.getPrincipal()).getUser().getId();
 
             if (!userId.toString().equals(pathUserId)) {

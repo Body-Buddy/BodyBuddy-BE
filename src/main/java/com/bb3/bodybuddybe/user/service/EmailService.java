@@ -1,15 +1,11 @@
 package com.bb3.bodybuddybe.user.service;
 
-import jakarta.mail.MessagingException;
-import jakarta.mail.internet.MimeMessage;
-
-import java.io.UnsupportedEncodingException;
+import com.bb3.bodybuddybe.user.dto.EmailRequestDto;
+import com.bb3.bodybuddybe.user.dto.EmailConfirmRequestDto;
 
 public interface EmailService {
-    MimeMessage createMessage(String to) throws MessagingException, UnsupportedEncodingException;
+    void sendVerificationCode(EmailRequestDto requestDto);
 
-    String createKey();
-
-    String sendSimpleMessage(String to) throws Exception;
+    void confirmVerification(EmailConfirmRequestDto requestDto);
 }
 

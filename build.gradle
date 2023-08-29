@@ -33,6 +33,8 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
     // spring-web
     implementation 'org.springframework.boot:spring-boot-starter-web'
+    // spring-websocket
+    implementation 'org.springframework.boot:spring-boot-starter-websocket'
     // mysql connector
     runtimeOnly 'com.mysql:mysql-connector-j'
 
@@ -41,6 +43,7 @@ dependencies {
     testImplementation 'org.springframework.security:spring-security-test'
 
     // JWT
+    implementation 'com.auth0:java-jwt:4.2.1'
     compileOnly group: 'io.jsonwebtoken', name: 'jjwt-api', version: '0.11.5'
     runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-impl', version: '0.11.5'
     runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-jackson', version: '0.11.5'
@@ -58,6 +61,12 @@ dependencies {
 
     // WebClient
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
+
+    //OAuth2Service
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+
+    // Redis
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 }
 
 tasks.named('test') {

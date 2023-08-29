@@ -3,7 +3,7 @@ package com.bb3.bodybuddybe.matching.service;
 import com.bb3.bodybuddybe.matching.dto.CriteriaCreateRequestDto;
 import com.bb3.bodybuddybe.matching.dto.CriteriaResponseDto;
 import com.bb3.bodybuddybe.matching.dto.CriteriaUpdateRequestDto;
-import com.bb3.bodybuddybe.user.dto.UserProfileDto;
+import com.bb3.bodybuddybe.user.dto.ProfileResponseDto;
 import com.bb3.bodybuddybe.user.entity.User;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,5 +20,5 @@ public interface MatchingService {
     void updateMatchingCriteria(CriteriaUpdateRequestDto requestDto, User user);
 
     @Transactional(readOnly = true)
-    List<UserProfileDto> getMatchingUsers(Long gymId, User user);
+    List<ProfileResponseDto> getMatchingUsers(Long gymId, User user);
 }
