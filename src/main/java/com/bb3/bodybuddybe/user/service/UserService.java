@@ -1,32 +1,34 @@
 package com.bb3.bodybuddybe.user.service;
 
-
-import com.bb3.bodybuddybe.common.dto.ApiResponseDto;
-import com.bb3.bodybuddybe.user.dto.*;
+import com.bb3.bodybuddybe.user.dto.ProfileResponseDto;
+import com.bb3.bodybuddybe.user.dto.ProfileUpdateRequestDto;
+import com.bb3.bodybuddybe.user.dto.SignupRequestDto;
+import com.bb3.bodybuddybe.user.dto.UserDeleteRequestDto;
 import com.bb3.bodybuddybe.user.entity.User;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-
 @Service
 public interface UserService {
-    void signup(AuthRequestDto requestDto);
+    @Transactional
+    void signup(SignupRequestDto requestDto);
 
     @Transactional
-    ResponseEntity<ApiResponseDto> changeUserInfo(MultipartFile profilePic, String introduction, String password, User user) throws IOException;
+    void deleteUser(UserDeleteRequestDto requestDto, User user);
 
-
-    boolean isValidString(String input);
-
-    @Transactional(readOnly = true)
-    UserProfileDto getUserProfile(User user);
+    @Transactional
+    void uploadProfileImage(MultipartFile file, User user);
 
     @Transactional(readOnly = true)
-    ResponseEntity<ProfileResponseDto> getProfile(User user);
+    String getProfileImage(User user);
 
-    void delete(DeleteRequestDto requestDto, User user);
+    @Transactional
+    void deleteProfileImage(User user);
 
+    @Transactional
+    void updateProfile(ProfileUpdateRequestDto requestDto, User user);
+
+    @Transactional(readOnly = true)
+    ProfileResponseDto getProfile(Long userId);
 }

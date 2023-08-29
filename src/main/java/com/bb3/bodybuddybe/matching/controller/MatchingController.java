@@ -6,7 +6,7 @@ import com.bb3.bodybuddybe.matching.dto.CriteriaCreateRequestDto;
 import com.bb3.bodybuddybe.matching.dto.CriteriaResponseDto;
 import com.bb3.bodybuddybe.matching.dto.CriteriaUpdateRequestDto;
 import com.bb3.bodybuddybe.matching.service.MatchingServiceImpl;
-import com.bb3.bodybuddybe.user.dto.UserProfileDto;
+import com.bb3.bodybuddybe.user.dto.ProfileResponseDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -44,9 +44,9 @@ public class MatchingController {
     }
 
     @GetMapping("/gyms/{gymId}/matches")
-    ResponseEntity<List<UserProfileDto>> getMatchingUsers(@PathVariable Long gymId,
-                                                         @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        List<UserProfileDto> matchingUsers = matchingService.getMatchingUsers(gymId, userDetails.getUser());
+    ResponseEntity<List<ProfileResponseDto>> getMatchingUsers(@PathVariable Long gymId,
+                                                              @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        List<ProfileResponseDto> matchingUsers = matchingService.getMatchingUsers(gymId, userDetails.getUser());
         return ResponseEntity.ok(matchingUsers);
     }
 }
