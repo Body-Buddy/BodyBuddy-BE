@@ -2,7 +2,7 @@ package com.bb3.bodybuddybe.common.security;
 
 import com.bb3.bodybuddybe.common.dto.ApiResponseDto;
 import com.bb3.bodybuddybe.common.jwt.JwtUtil;
-import com.bb3.bodybuddybe.user.dto.SignupRequestDto;
+import com.bb3.bodybuddybe.user.dto.LoginRequestDto;
 import com.bb3.bodybuddybe.user.entity.User;
 import com.bb3.bodybuddybe.user.enums.UserRoleEnum;
 import com.bb3.bodybuddybe.user.enums.UserStatusEnum;
@@ -37,8 +37,10 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
         log.info("로그인 시도");
         try {
-            SignupRequestDto requestDto = new ObjectMapper().readValue(request.getInputStream(), SignupRequestDto.class);
-            User user = userRepository.findByUsername(requestDto.getUsername()).orElseThrow(() -> new IllegalArgumentException("유저가 없습니다."));
+            LoginRequestDto requestDto = new ObjectMapper().readValue(request.getInputStream(), LoginRequestDto.class);
+            User user = userRepository.findByEmail(requestDto.getEmail())
+                    .orElseThrow(() -> new IllegalArgumentException("유저가 없습니다."));
+
             if (user.getStatus() == UserStatusEnum.BLOCKED) {
                 ApiResponseDto apiResponseDto = new ApiResponseDto("차단된 회원입니다.", HttpStatus.BAD_REQUEST.value());
                 response.setStatus(HttpStatus.BAD_REQUEST.value());
@@ -48,9 +50,10 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                 response.getWriter().write(json);
                 return null;
             }
+
             return getAuthenticationManager().authenticate(
                     new UsernamePasswordAuthenticationToken(
-                            requestDto.getUsername(),
+                            requestDto.getEmail(),
                             requestDto.getPassword(),
                             null
                     )
@@ -64,10 +67,10 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
         log.info("로그인성공");
-        String username = ((UserDetailsImpl) authResult.getPrincipal()).getUsername();
+        String email = ((UserDetailsImpl) authResult.getPrincipal()).getUsername();
         UserRoleEnum role = ((UserDetailsImpl) authResult.getPrincipal()).getUser().getRole();
 
-        String token = jwtUtil.createToken(username, role);
+        String token = jwtUtil.createToken(email, role);
         response.addHeader(JwtUtil.AUTHORIZATION_HEADER, token);
         ApiResponseDto apiResponseDto = new ApiResponseDto();
         apiResponseDto.setMessage("로그인 성공");

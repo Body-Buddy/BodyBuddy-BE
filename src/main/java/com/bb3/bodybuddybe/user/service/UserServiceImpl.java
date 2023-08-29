@@ -14,6 +14,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDate;
+
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
@@ -24,21 +26,16 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void signup(SignupRequestDto requestDto) {
-        String username = requestDto.getUsername();
-        String password = passwordEncoder.encode(requestDto.getPassword());
         String email = requestDto.getEmail();
-        String birthDate = requestDto.getBirthDate();
+        String password = passwordEncoder.encode(requestDto.getPassword());
         GenderEnum gender = requestDto.getGender();
-
-        if (userRepository.findByUsername(username).isPresent()) {
-            throw new CustomException(ErrorCode.DUPLICATED_USERNAME);
-        }
+        LocalDate birthDate = requestDto.getBirthDate();
 
         if (userRepository.findByEmail(email).isPresent()) {
             throw new CustomException(ErrorCode.DUPLICATED_EMAIL);
         }
 
-        User user = new User(username, password, email, birthDate, gender, UserRoleEnum.USER);
+        User user = new User(email, password, gender, birthDate, UserRoleEnum.USER);
 
         if (user.getAge() < 14) {
             throw new CustomException(ErrorCode.UNDER_AGE);

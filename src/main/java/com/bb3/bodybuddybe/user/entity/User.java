@@ -15,7 +15,6 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -93,13 +92,12 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Message> messageList = new ArrayList<>();
 
-    public User(String username, String password, String email, String birthDate, GenderEnum gender, UserRoleEnum role) {
-        this.username = username;
-        this.password = password;
+    public User(String email, String password, GenderEnum gender, LocalDate birthDate, UserRoleEnum role) {
         this.email = email;
+        this.password = password;
         this.gender = gender;
+        this.birthDate = birthDate;
         this.role = role;
-        this.birthDate = LocalDate.parse(birthDate, DateTimeFormatter.ofPattern("yyyyMMdd"));
         this.status = UserStatusEnum.ACTIVE;
     }
 
