@@ -25,6 +25,7 @@ import static com.bb3.bodybuddybe.user.enums.UserBlockEnum.BLOCKED;
 
 @Slf4j(topic = "로그인 및 JWT 생성")
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
+    private static final String NO_CHECK_URL = "/login"; // "/login"으로 들어오는 요청은 Filter 작동 X
     private final JwtUtil jwtUtil;
     private final UserRepository userRepository;
     public JwtAuthenticationFilter(JwtUtil jwtUtil, UserRepository userRepository) {

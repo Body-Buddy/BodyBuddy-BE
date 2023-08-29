@@ -66,11 +66,11 @@ public class WebSecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         // CSRF, CORS 설정
         http.csrf(csrf -> csrf.disable());
-        http.oauth2Login()
-                .successHandler(OAuth2LoginSuccessHandler())
-                .failureHandler(OAuth2LoginFailureHandler())
-                .userInfoEndpoint()
-                .userService(customOAuth2UserService);
+//        http.oauth2Login()
+//                .successHandler(OAuth2LoginSuccessHandler())
+//                .failureHandler(OAuth2LoginFailureHandler())
+//                .userInfoEndpoint()
+//                .userService(customOAuth2UserService);
 
         // 기본 설정인 Session 방식은 사용하지 않고 JWT 방식을 사용하기 위한 설정
         http.sessionManagement((sessionManagement) ->
