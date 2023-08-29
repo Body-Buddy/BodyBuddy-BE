@@ -28,6 +28,4 @@ public class GroupChatMember {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "chat_id")
     private Chat chat;
-
-
 }

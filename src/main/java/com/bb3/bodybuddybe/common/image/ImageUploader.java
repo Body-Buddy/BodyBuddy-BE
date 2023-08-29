@@ -1,54 +1,73 @@
 package com.bb3.bodybuddybe.common.image;
 
 import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.CannedAccessControlList;
+import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.bb3.bodybuddybe.common.exception.CustomException;
+import com.bb3.bodybuddybe.common.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Optional;
+import java.io.InputStream;
 import java.util.UUID;
+
+@Slf4j
+@Service
 @RequiredArgsConstructor
-@Component
 public class ImageUploader {
 
-    private final AmazonS3 amazonS3Client;
+    private final AmazonS3 s3Client;
 
     @Value("${cloud.aws.s3.bucket}")
-    private String bucket;
+    private String bucketName;
 
-    public String upload(MultipartFile multipartFile, String name) throws IOException {  // MultipartFile을 전달받아 File로 전환한 후 S3에 업로드
-        File uploadFile = convert(multipartFile)
-                .orElseThrow(() -> new IllegalArgumentException("MultipartFile -> File 전환 실패"));
+    public String upload(MultipartFile file) {
+        String fileName = generateFileName(file.getOriginalFilename());
+        try (InputStream fileInputStream = file.getInputStream()) {
+            ObjectMetadata metadata = new ObjectMetadata();
+            metadata.setContentType(file.getContentType());
+            metadata.setContentLength(file.getSize());
 
-        String fileName = name + "/" + uploadFile.getName();
-        String uploadImageUrl = putS3(uploadFile, fileName);
-        uploadFile.delete();    // 로컬에 생성된 File 삭제 (MultipartFile -> File 전환 하며 로컬에 파일 생성됨)
+            PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, fileName, fileInputStream, metadata);
+            s3Client.putObject(putObjectRequest);
 
-        return uploadImageUrl;      // 업로드된 파일의 S3 URL 주소 반환
-    }
+            return s3Client.getUrl(bucketName, fileName).toString();
 
-    private String putS3(File uploadFile, String fileName) {
-        amazonS3Client.putObject(
-                new PutObjectRequest(bucket, fileName, uploadFile)
-                        .withCannedAcl(CannedAccessControlList.PublicRead)    // PublicRead 권한으로 업로드
-        );
-        return amazonS3Client.getUrl(bucket, fileName).toString();
-    }
-
-    private Optional<File> convert(MultipartFile file) throws IOException {
-        File convertFile = new File(UUID.randomUUID().toString());
-        if (convertFile.createNewFile()) {
-            try (FileOutputStream fos = new FileOutputStream(convertFile)) {
-                fos.write(file.getBytes());
-                return Optional.of(convertFile);
-            }
+        } catch (IOException e) {
+            log.error("Failed to upload file to S3", e);
+            throw new CustomException(ErrorCode.FAILED_TO_UPLOAD_FILE);
         }
-        return Optional.empty();
+    }
+
+    private String generateFileName(String originalName) {
+        return UUID.randomUUID().toString() + "_" + originalName;
+    }
+
+    public void deleteFromUrl(String s3Url) {
+        String fileName = extractFileNameFromUrl(s3Url);
+        delete(fileName);
+    }
+
+    private String extractFileNameFromUrl(String s3Url) {
+        if (!s3Url.contains(bucketName)) {
+            log.error("Invalid S3 URL: {}", s3Url);
+            throw new CustomException(ErrorCode.INVALID_S3_URL);
+        }
+
+        // 버킷 이름 다음의 문자열을 객체 키로 간주
+        return s3Url.split(bucketName + "/")[1];
+    }
+
+    public void delete(String fileName) {
+        try {
+            s3Client.deleteObject(bucketName, fileName);
+        } catch (Exception e) {
+            log.error("Failed to delete file from S3", e);
+            throw new CustomException(ErrorCode.FAILED_TO_DELETE_FILE);
+        }
     }
 }
