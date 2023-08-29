@@ -64,6 +64,12 @@ dependencies {
 
     //OAuth2Service
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+
+    // Redis
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
+    //OAuth2Service
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 }
 
 tasks.named('test') {
