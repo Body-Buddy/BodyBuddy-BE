@@ -34,7 +34,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
     private final ChatRepository chatRepository;
     private final UserRepository userRepository;
     private final UserGymRepository userGymRepository;
-    private Set<WebSocketSession> sessions = new HashSet<>();
+    private final SessionManager sessionManager;
 
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message)
@@ -58,22 +58,22 @@ public class WebSocketHandler extends TextWebSocketHandler {
     }
 
     /*
-     * 클라이언트 연결 close 시 sessions에서 해당 session 제거
+     * 클라이언트 연결 close 시 sessionManager.sessions 해당 session 제거
      * 나갔다는 알림 보내주기
      */
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
 
-        // 삭제 전 sessions 확인 forEach 출력 (test)
-        sessions.forEach(socketSession -> {
+        // 삭제 전 sessionManager.sessions 확인 forEach 출력 (test)
+        sessionManager.getSessions().forEach(socketSession -> {
             Map<String, Object> attributes = socketSession.getAttributes();
             System.out.println("삭제 전 session attributes : " + attributes);
         });
 
-        sessions.remove(session);
+        sessionManager.deleteSession(session);
 
-        // 삭제 후 sessions 확인 forEach 출력 (test)
-        sessions.forEach(socketSession -> {
+        // 삭제 후 sessionManager.sessions 확인 forEach 출력 (test)
+        sessionManager.getSessions().forEach(socketSession -> {
             Map<String, Object> attributes = socketSession.getAttributes();
             System.out.println("삭제 후 session attributes : " + attributes);
         });
@@ -89,7 +89,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
     private void handlerActions(WebSocketSession session, MessageRequestDto chatMessage, User user, Chat chat) {
 
         if (chatMessage.getType().equals(MessageType.ENTER)) {
-            if (sessions.contains(session)) {   // <- ENTER 중복요청 시
+            if (sessionManager.getSessions().contains(session)) {   // <- ENTER 중복요청 시
                 alreadyExistEnter(session, chatMessage);
             } else {
                 newEnterSession(session, chatMessage, user, chat);
@@ -113,7 +113,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
     }
 
     private <T> void sendMessage(T message) {
-        sessions.parallelStream()
+        sessionManager.getSessions().parallelStream()
             .forEach(session -> chatService.sendMessage(session, message));
 
     }
@@ -124,7 +124,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
         session.getAttributes().put("userId", user.getId());
 
         // 채팅 볼 수 있도록 sessions에 추가
-        sessions.add(session);
+        sessionManager.addSession(session);
 
         // 입장했다는 알림으로 바꾸기.
         chatMessage.changeEnterMessage(chatMessage.getSenderNickname());
