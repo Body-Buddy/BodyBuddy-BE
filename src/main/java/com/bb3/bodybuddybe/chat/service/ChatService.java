@@ -6,8 +6,10 @@ import com.bb3.bodybuddybe.chat.dto.MessageRequestDto;
 import com.bb3.bodybuddybe.chat.dto.MessageResponseDto;
 import com.bb3.bodybuddybe.chat.entity.Chat;
 import com.bb3.bodybuddybe.chat.entity.Message;
+import com.bb3.bodybuddybe.chat.entity.UserChat;
 import com.bb3.bodybuddybe.chat.repository.ChatRepository;
 import com.bb3.bodybuddybe.chat.repository.MessageRepository;
+import com.bb3.bodybuddybe.chat.repository.UserChatRepository;
 import com.bb3.bodybuddybe.common.exception.CustomException;
 import com.bb3.bodybuddybe.common.exception.ErrorCode;
 import com.bb3.bodybuddybe.gym.entity.Gym;
@@ -36,6 +38,7 @@ public class ChatService {
     private final UserRepository userRepository;
     private final MessageRepository messageRepository;
     private final UserGymRepository userGymRepository;
+    private final UserChatRepository userChatRepository;
 
     // 채팅방 생성
     @Transactional
@@ -98,5 +101,15 @@ public class ChatService {
         } catch (IOException e) {
             new IOException(e.getMessage());
         }
+    }
+
+    public void saveUserChat(User user, Chat chat) {
+
+        UserChat userChat = UserChat.builder()
+            .user(user)
+            .chat(chat)
+            .build();
+
+        userChatRepository.save(userChat);
     }
 }

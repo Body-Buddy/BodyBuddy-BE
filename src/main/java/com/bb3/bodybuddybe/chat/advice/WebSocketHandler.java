@@ -78,6 +78,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
             System.out.println("삭제 후 session attributes : " + attributes);
         });
 
+        // 종료한 유저 나갔다는 알림 보내주기
         User user = userRepository.findById((Long) session.getAttributes().get("userId"))
             .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
@@ -91,11 +92,14 @@ public class WebSocketHandler extends TextWebSocketHandler {
             if (sessions.contains(session)) {   // <- ENTER 중복요청 시
                 alreadyExistEnter(session, chatMessage);
             } else {
-                newEnterSession(session, chatMessage, user);
+                newEnterSession(session, chatMessage, user, chat);
             }
 
         } else if (chatMessage.getType().equals(MessageType.TALK)) {
+
+            // session에 담긴 userId 출력하여 확인 (test)
             System.out.println("TALK, put되었던 session 출력 : " + session.getAttributes());
+
             if (session.getAttributes().isEmpty()) {    // ENTER(입장) 없이 TALK 요청 할 경우
                 throw new CustomException(ErrorCode.NEED_ENTER);
             }
@@ -114,25 +118,13 @@ public class WebSocketHandler extends TextWebSocketHandler {
 
     }
 
-    private void newEnterSession(WebSocketSession session, MessageRequestDto chatMessage, User user) {
-
-        // session 수정 전 비교확인 출력 (test)
-        System.out.println("put 전 session : " + session.getAttributes());
+    private void newEnterSession(WebSocketSession session, MessageRequestDto chatMessage, User user, Chat chat) {
 
         // session의 key, value 값으로 userId 넣어주기.
         session.getAttributes().put("userId", user.getId());
 
-        // session 수정 후 비교확인 출력 (test)
-        System.out.println("put 후 session : " + session.getAttributes());
-
         // 채팅 볼 수 있도록 sessions에 추가
         sessions.add(session);
-
-        // sessions에 추가 후 sessions 확인 forEach 출력 (test)
-        sessions.forEach(socketSession -> {
-            Map<String, Object> attributes = socketSession.getAttributes();
-            System.out.println("add 후 session attributes 반복문출력 : " + attributes);
-        });
 
         // 입장했다는 알림으로 바꾸기.
         chatMessage.changeEnterMessage(chatMessage.getSenderNickname());
