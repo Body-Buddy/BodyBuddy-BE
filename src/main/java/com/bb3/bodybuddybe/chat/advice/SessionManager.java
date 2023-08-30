@@ -11,8 +11,6 @@ import org.springframework.web.socket.WebSocketSession;
 
 @Service
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor(access = AccessLevel.PROTECTED)
 public class SessionManager {
     private Set<WebSocketSession> sessions = new HashSet<>();
 
