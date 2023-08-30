@@ -13,7 +13,8 @@ public enum ErrorCode {
 
     // post
     NOT_POST_WRITER(HttpStatus.BAD_REQUEST,"P001" ,"게시글 생성자만 수정할 수 있습니다." ),
-    NOT_FOUND(HttpStatus.BAD_REQUEST,"P002","게시글이 존재하지 않습니다."),
+    NOT_FOUND_POST(HttpStatus.BAD_REQUEST,"P002","게시글이 존재하지 않습니다."),
+    NOT_FOUND_GYM(HttpStatus.BAD_REQUEST,"P003","헬스장이 존재하지 않습니다."),
 
     // matching
     MATCHING_CRITERIA_NOT_FOUND(HttpStatus.BAD_REQUEST, "M001", "사용자의 매칭 기준이 존재하지 않습니다."),
@@ -23,7 +24,6 @@ public enum ErrorCode {
 
     // user
     USER_NOT_FOUND(HttpStatus.BAD_REQUEST, "U001", "존재하지 않는 사용자 입니다."),
-    DUPLICATED_USERNAME(HttpStatus.BAD_REQUEST, "U001", "중복된 사용자 아이디입니다."),
     DUPLICATED_EMAIL(HttpStatus.BAD_REQUEST, "U002", "이미 가입된 이메일입니다."),
     UNDER_AGE(HttpStatus.BAD_REQUEST, "U003", "만 14세 이상만 가입 가능합니다."),
     PASSWORD_NOT_MATCHED(HttpStatus.BAD_REQUEST, "U004", "비밀번호가 일치하지 않습니다."),

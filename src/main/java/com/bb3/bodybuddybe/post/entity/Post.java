@@ -27,14 +27,18 @@ public class Post extends TimeStamped {
     @Column(nullable = false)
     private String content;
 
-    @Column(nullable = false)
-    private String category;
+//    @Column(nullable = false)
+//    private String category;
 
     @Column
     private String imageUrl;
 
     @Column
     private String videoUrl;
+
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private PostCategory postCategory;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
@@ -51,20 +55,21 @@ public class Post extends TimeStamped {
     private List<Comment> commentList = new ArrayList<>();
 
     @Builder
-    public Post(String title, String content, String category, String imageUrl, String videoUrl, User user, Gym gym) {
+    public Post(String title, String content, PostCategory postCategory, String imageUrl, String videoUrl, User user, Gym gym) {
         this.title = title;
         this.content = content;
-        this.category = category;
+        this.postCategory = postCategory;
         this.imageUrl = imageUrl;
         this.videoUrl = videoUrl;
         this.user = user;
         this.gym = gym;
+
     }
 
-    public void update(String title, String content, String category, String imageUrl, String videoUrl) {
+    public void update(String title, String content, PostCategory postCategory, String imageUrl, String videoUrl) {
         this.title = title;
         this.content = content;
-        this.category = category;
+        this.postCategory = postCategory;
         this.imageUrl = imageUrl;
         this.videoUrl = videoUrl;
     }
