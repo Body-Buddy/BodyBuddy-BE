@@ -6,6 +6,7 @@ import com.bb3.bodybuddybe.common.image.ImageUploader;
 import com.bb3.bodybuddybe.matching.enums.GenderEnum;
 import com.bb3.bodybuddybe.user.dto.*;
 import com.bb3.bodybuddybe.user.entity.User;
+import com.bb3.bodybuddybe.user.enums.UserRoleEnum;
 import com.bb3.bodybuddybe.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
