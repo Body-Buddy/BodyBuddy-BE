@@ -2,10 +2,7 @@ package com.bb3.bodybuddybe.chat.advice;
 
 import java.util.HashSet;
 import java.util.Set;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.WebSocketSession;
 

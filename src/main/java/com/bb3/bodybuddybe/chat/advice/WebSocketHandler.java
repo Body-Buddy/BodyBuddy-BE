@@ -13,9 +13,6 @@ import com.bb3.bodybuddybe.user.entity.User;
 import com.bb3.bodybuddybe.user.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -66,16 +63,14 @@ public class WebSocketHandler extends TextWebSocketHandler {
 
         // 삭제 전 sessionManager.sessions 확인 forEach 출력 (test)
         sessionManager.getSessions().forEach(socketSession -> {
-            Map<String, Object> attributes = socketSession.getAttributes();
-            System.out.println("삭제 전 session attributes : " + attributes);
+            System.out.println("삭제 전 session attributes : " + socketSession.getAttributes());
         });
 
         sessionManager.deleteSession(session);
 
         // 삭제 후 sessionManager.sessions 확인 forEach 출력 (test)
         sessionManager.getSessions().forEach(socketSession -> {
-            Map<String, Object> attributes = socketSession.getAttributes();
-            System.out.println("삭제 후 session attributes : " + attributes);
+            System.out.println("삭제 전 session attributes : " + socketSession.getAttributes());
         });
 
         // 종료한 유저 나갔다는 알림 보내주기
