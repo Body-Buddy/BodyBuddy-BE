@@ -30,7 +30,6 @@ public class UserChat {
     @JoinColumn(name = "chat_id")
     private Chat chat;
 
-    @Builder
     public UserChat(User user, Chat chat) {
         this.user = user;
         this.chat = chat;

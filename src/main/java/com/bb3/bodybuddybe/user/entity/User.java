@@ -77,7 +77,7 @@ public class User {
     private MatchingCriteria matchingCriteria;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
-    private List<UserChat> groupChatMemberList = new ArrayList<>();
+    private List<UserChat> userChatList = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<UserGym> userGymList = new ArrayList<>();

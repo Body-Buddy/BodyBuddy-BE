@@ -23,6 +23,13 @@ public enum ErrorCode {
     CHAT_NOT_FOUND(HttpStatus.BAD_REQUEST, "C001", "존재하지 않는 채팅방 입니다."),
     CHAT_NOT_MY_GYM(HttpStatus.BAD_REQUEST, "C002", "사용자가 등록하지 않은 시설의 채팅방 입니다."),
     NEED_ENTER(HttpStatus.BAD_REQUEST, "C003", "ENTER 요청하여 채팅방 입장이 필요합니다."),
+    WEBSOCKET_SEND_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "C004", "웹소켓 메시지 전송에 실패했습니다."),
+    JSON_PROCESSING_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "C005", "JSON 처리에 실패했습니다."),
+    USER_NOT_CHAT_OWNER(HttpStatus.BAD_REQUEST, "C006", "채팅방 생성자만 수정할 수 있습니다."),
+    DUPLICATED_USERCHAT(HttpStatus.BAD_REQUEST, "C007", "이미 참여한 채팅방 입니다."),
+    USERCHAT_NOT_FOUND(HttpStatus.BAD_REQUEST, "C008", "채팅방에 참여하지 않았습니다."),
+    OWNER_CAN_NOT_LEAVE(HttpStatus.BAD_REQUEST, "C009", "채팅방 생성자는 방을 떠날 수 없습니다. 방 해체를 원하실 경우 채팅방 삭제를 해주세요."),
+
 
     // user
     USER_NOT_FOUND(HttpStatus.BAD_REQUEST, "U001", "존재하지 않는 사용자 입니다."),
