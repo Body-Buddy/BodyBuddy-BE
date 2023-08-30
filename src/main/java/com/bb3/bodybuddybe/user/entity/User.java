@@ -7,7 +7,6 @@ import com.bb3.bodybuddybe.matching.entity.MatchingCriteria;
 import com.bb3.bodybuddybe.matching.enums.AgeRangeEnum;
 import com.bb3.bodybuddybe.matching.enums.GenderEnum;
 import com.bb3.bodybuddybe.user.dto.ProfileUpdateRequestDto;
-import com.bb3.bodybuddybe.user.enums.SocialType;
 import com.bb3.bodybuddybe.user.enums.UserRoleEnum;
 import com.bb3.bodybuddybe.user.enums.UserStatusEnum;
 import com.bb3.bodybuddybe.user.service.Role;
@@ -39,6 +38,9 @@ public class User {
     @Column(nullable = false, unique = true)
     private String username;
 
+    @Column(nullable = false, unique = true)
+    private String nickname;
+
     @Column(nullable = false)
     private String password;
 
@@ -52,8 +54,6 @@ public class User {
     @Column(nullable = false)
     private LocalDate birthDate;
 
-    @Column
-    private String nickname;
 
     @Column
     private String imageUrl;
@@ -65,20 +65,13 @@ public class User {
     @Enumerated(value = EnumType.STRING)
     private UserRoleEnum role;
 
-    @Column(nullable = false)
-    @Enumerated(value = EnumType.STRING)
-    private Role socialRole;
+
 
     @Column(nullable = false)
     @Enumerated(value = EnumType.STRING)
     private UserStatusEnum status;
 
-    @Enumerated(EnumType.STRING)
-    private SocialType socialType; // KAKAO, NAVER, GOOGLE
 
-    private String socialId; // 로그인한 소셜 타입의 식별자 값 (일반 로그인인 경우 null)
-
-    private String refreshToken; // 리프레시 토큰
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private MatchingCriteria matchingCriteria;
@@ -105,17 +98,11 @@ public class User {
         this.role = UserRoleEnum.USER;
     }
 
-    public void updateNickname(String updateNickname) {
-        this.nickname = updateNickname;
-    }
-
     public void updatePassword(String updatePassword) {
         this.password = updatePassword;
     }
 
-    public void updateRefreshToken(String updateRefreshToken) {
-        this.refreshToken = updateRefreshToken;
-    }
+
 
     public void updateImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;

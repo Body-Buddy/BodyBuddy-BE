@@ -95,6 +95,7 @@ public class EmailServiceImpl implements EmailService {
         }
     }
 
+
     @Override
     public void confirmVerification(EmailConfirmRequestDto requestDto) {
         String email = requestDto.getEmail();
