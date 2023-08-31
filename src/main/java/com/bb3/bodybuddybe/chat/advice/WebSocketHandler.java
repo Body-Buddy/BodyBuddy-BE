@@ -1,18 +1,13 @@
 package com.bb3.bodybuddybe.chat.advice;
 
 import com.bb3.bodybuddybe.chat.dto.MessageRequestDto;
-import com.bb3.bodybuddybe.chat.dto.MessageResponseDto;
 import com.bb3.bodybuddybe.chat.entity.Chat;
 import com.bb3.bodybuddybe.chat.entity.MessageType;
-import com.bb3.bodybuddybe.chat.repository.ChatRepository;
 import com.bb3.bodybuddybe.chat.service.ChatService;
 import com.bb3.bodybuddybe.common.exception.CustomException;
 import com.bb3.bodybuddybe.common.exception.ErrorCode;
-import com.bb3.bodybuddybe.gym.repository.UserGymRepository;
 import com.bb3.bodybuddybe.user.entity.User;
-import com.bb3.bodybuddybe.user.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -28,11 +23,12 @@ public class WebSocketHandler extends TextWebSocketHandler {
 
     private final ObjectMapper objectMapper;
     private final ChatService chatService;
-    private final ChatRepository chatRepository;
-    private final UserRepository userRepository;
-    private final UserGymRepository userGymRepository;
     private final SessionManager sessionManager;
 
+    /*
+     * Json형태의 입력값과 해당 클라이언트 세션 받아와서 로직수행을 시작 하는 곳.
+     * MessageRequestDto필드대로 입력해준다.
+     */
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message)
         throws Exception {
@@ -42,75 +38,73 @@ public class WebSocketHandler extends TextWebSocketHandler {
         MessageRequestDto chatMessage = objectMapper.readValue(payload, MessageRequestDto.class);
 
         // 사용자, 채팅방 check
-        User user = userRepository.findByNickname(chatMessage.getSenderNickname())
-            .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
-        Chat chat = chatRepository.findById(Long.parseLong(chatMessage.getChatId()))
-            .orElseThrow(() -> new CustomException(ErrorCode.CHAT_NOT_FOUND));
-        if (!userGymRepository.existsByUserAndGymId(user, chat.getGym().getId())) {
-            throw new CustomException(ErrorCode.CHAT_NOT_MY_GYM);
-        }
+        User sendUser = chatService.findUser(chatMessage.getSenderUserId());
+        Chat chat = chatService.findChat(chatMessage.getChatId());
+        chatService.validateChatIsMyGym(sendUser, chat.getGym());
 
-        handlerActions(session, chatMessage, user, chat);
+        // 채팅방 참여완료 했는지 (UserChat에 있는지) check
+        chatService.validateJoinedChat(sendUser, chat);
+
+        handlerActions(session, chatMessage, sendUser, chat);
 
     }
 
     /*
-     * 클라이언트 연결 close 시 sessionManager.sessions 해당 session 제거
+     * 클라이언트 연결 종료됐을 시 수행되는 곳.
      * 나갔다는 알림 보내주기
      */
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
 
-        // 삭제 전 sessionManager.sessions 확인 forEach 출력 (test)
-        sessionManager.getSessions().forEach(socketSession -> {
-            System.out.println("삭제 전 session attributes : " + socketSession.getAttributes());
-        });
+        User user = chatService.findUser((Long) session.getAttributes().get("userId"));
 
-        sessionManager.deleteSession(session);
+        Long chatId = sessionManager.deleteSessionAndGetChatId(session);
 
-        // 삭제 후 sessionManager.sessions 확인 forEach 출력 (test)
-        sessionManager.getSessions().forEach(socketSession -> {
-            System.out.println("삭제 전 session attributes : " + socketSession.getAttributes());
-        });
+        MessageRequestDto message = MessageRequestDto.builder()
+            .type(MessageType.LEAVE)
+            .chatId(chatId)
+            .senderUserId(user.getId())
+            .content("")
+            .build();
+
+        message.changeLeaveMessage(user);
 
         // 종료한 유저 나갔다는 알림 보내주기
-        User user = userRepository.findById((Long) session.getAttributes().get("userId"))
-            .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
-
-        sendMessage(user.getNickname() + "님이 나갔습니다.");
+        sendMessage(chatId, message);
 
     }
 
     private void handlerActions(WebSocketSession session, MessageRequestDto chatMessage, User user, Chat chat) {
 
         if (chatMessage.getType().equals(MessageType.ENTER)) {
-            if (sessionManager.getSessions().contains(session)) {   // <- ENTER 중복요청 시
-                alreadyExistEnter(session, chatMessage);
-            } else {
-                newEnterSession(session, chatMessage, user, chat);
-            }
+
+            checkDuplicatedEnter(session, chatMessage, user, chat);
 
         } else if (chatMessage.getType().equals(MessageType.TALK)) {
 
-            // session에 담긴 userId 출력하여 확인 (test)
-            System.out.println("TALK, put되었던 session 출력 : " + session.getAttributes());
-
-            if (session.getAttributes().isEmpty()) {    // ENTER(입장) 없이 TALK 요청 할 경우
-                throw new CustomException(ErrorCode.NEED_ENTER);
-            }
+            checkEnterIsPresent(session);
 
             // TALK일 경우 message 저장
-            MessageResponseDto messageResponseDto = chatService.saveMessage(chatMessage, user, chat);
+            chatService.saveMessage(chatMessage, user, chat);
 
-            sendMessage(messageResponseDto);
+            sendMessage(chat.getId(), chatMessage);
         }
 
     }
 
-    private <T> void sendMessage(T message) {
-        sessionManager.getSessions().parallelStream()
-            .forEach(session -> chatService.sendMessage(session, message));
+    private void checkEnterIsPresent(WebSocketSession session) {
+        if (session.getAttributes().isEmpty()) {    // ENTER(입장) 없이 TALK 요청 할 경우
+            throw new CustomException(ErrorCode.NEED_ENTER);
+        }
+    }
 
+    private void checkDuplicatedEnter(WebSocketSession session, MessageRequestDto chatMessage,
+        User user, Chat chat) {
+        if (sessionManager.isEntered(session)) {   // <- ENTER 중복요청 시
+            alreadyExistEnter(session, chatMessage);
+        } else {
+            newEnterSession(session, chatMessage, user, chat);
+        }
     }
 
     private void newEnterSession(WebSocketSession session, MessageRequestDto chatMessage, User user, Chat chat) {
@@ -119,27 +113,29 @@ public class WebSocketHandler extends TextWebSocketHandler {
         session.getAttributes().put("userId", user.getId());
 
         // 채팅 볼 수 있도록 sessions에 추가
-        sessionManager.addSession(session);
+        sessionManager.addSession(chat.getId(), session);
 
         // 입장했다는 알림으로 바꾸기.
-        chatMessage.changeEnterMessage(chatMessage.getSenderNickname());
+        chatMessage.changeEnterMessage(user.getNickname());
 
         // 해당 채팅방 이전대화내용 불러오기
-        chatService.getMessages(session, Long.parseLong(chatMessage.getChatId()));
+        chatService.getMessages(session, chatMessage.getChatId());
 
-        sendMessage(chatMessage);
+        sendMessage(chat.getId(), chatMessage);
     }
 
     private void alreadyExistEnter(WebSocketSession session, MessageRequestDto chatMessage){
 
         // 이미 입장했다는 알림으로 바꾸기.
-        chatMessage.changeAlreadyEntered(chatMessage.getSenderNickname());
+        chatMessage.changeAlreadyEntered();
 
-        // 이미 입장했다는 메세지는 본인에게만 보여지면 되므로 해당 session에만 send 해줌.
-        try {
-            session.sendMessage(new TextMessage(objectMapper.writeValueAsString(chatMessage)));
-        } catch (IOException e) {
-            new IOException(e.getMessage());
-        }
+        chatService.sendMessage(session, chatMessage);
+    }
+
+    private void sendMessage(Long chatId, MessageRequestDto message) {
+        sessionManager.getSessionsByChatId(chatId)
+            .parallelStream()
+            .forEach(session -> chatService.sendMessage(session, message));
+
     }
 }
