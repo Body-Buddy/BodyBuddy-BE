@@ -2,9 +2,12 @@ package com.bb3.bodybuddybe.post.service;
 
 import com.bb3.bodybuddybe.common.exception.CustomException;
 import com.bb3.bodybuddybe.common.exception.ErrorCode;
+import com.bb3.bodybuddybe.common.image.ImageUploader;
 import com.bb3.bodybuddybe.common.security.UserDetailsImpl;
 import com.bb3.bodybuddybe.gym.entity.Gym;
 import com.bb3.bodybuddybe.gym.repository.GymRepository;
+import com.bb3.bodybuddybe.image.entity.Image;
+import com.bb3.bodybuddybe.image.repository.ImageRepository;
 import com.bb3.bodybuddybe.post.dto.*;
 import com.bb3.bodybuddybe.post.entity.Post;
 import com.bb3.bodybuddybe.post.entity.PostCategory;
@@ -12,6 +15,7 @@ import com.bb3.bodybuddybe.post.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.concurrent.RejectedExecutionException;
@@ -25,13 +29,17 @@ import java.util.stream.Collectors;
 public class PostService {
     private final PostRepository postRepository;
     private final GymRepository gymRepository;
+    private final ImageRepository imageRepository;
+    private final ImageUploader imageUploader;
 
     /**
      * 게시물 작성
-     * @param userDetails
+     *
      * @param postCreateRequestDto
+     * @param userDetails
+     * @param files
      */
-    public void createPost(PostCreateRequestDto postCreateRequestDto, UserDetailsImpl userDetails) {
+    public void createPost(PostCreateRequestDto postCreateRequestDto, UserDetailsImpl userDetails, List<MultipartFile> files) {
         Gym gym = findGym(postCreateRequestDto.getGymId());
 
         Post post = Post.builder()
@@ -45,6 +53,15 @@ public class PostService {
                 .build();
 
         postRepository.save(post);
+        if (files != null) {
+            for (MultipartFile file : files) {
+                String fileUrl = imageUploader.upload(file);
+                if (imageRepository.existsByImageUrlAndId(fileUrl, post.getId())) {
+                    throw new CustomException(ErrorCode.FILE_ALREADY_EXISTS);
+                }
+                imageRepository.save(Image.builder().imageUrl(fileUrl).post(post).build());
+            }
+        }
     }
 
     /**

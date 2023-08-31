@@ -30,8 +30,8 @@ public class Post extends TimeStamped {
 //    @Column(nullable = false)
 //    private String category;
 
-    @Column
-    private String imageUrl;
+//    @Column
+//    private String imageUrl;
 
     @Column
     private String videoUrl;
@@ -59,7 +59,6 @@ public class Post extends TimeStamped {
         this.title = title;
         this.content = content;
         this.postCategory = postCategory;
-        this.imageUrl = imageUrl;
         this.videoUrl = videoUrl;
         this.user = user;
         this.gym = gym;
@@ -70,7 +69,6 @@ public class Post extends TimeStamped {
         this.title = title;
         this.content = content;
         this.postCategory = postCategory;
-        this.imageUrl = imageUrl;
         this.videoUrl = videoUrl;
     }
 }
