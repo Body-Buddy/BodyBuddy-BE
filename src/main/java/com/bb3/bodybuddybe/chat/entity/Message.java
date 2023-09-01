@@ -1,5 +1,6 @@
 package com.bb3.bodybuddybe.chat.entity;
 
+import com.bb3.bodybuddybe.common.timestamped.TimeStamped;
 import com.bb3.bodybuddybe.user.entity.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -19,7 +20,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Message {
+public class Message extends TimeStamped {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,10 +29,8 @@ public class Message {
     @Column
     private String content;
 
-
     @Enumerated(EnumType.STRING)
     private MessageType type;
-
 
     @ManyToOne
     @JoinColumn(name = "user_id")

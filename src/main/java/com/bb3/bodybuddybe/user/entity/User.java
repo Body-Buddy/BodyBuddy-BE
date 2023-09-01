@@ -1,6 +1,6 @@
 package com.bb3.bodybuddybe.user.entity;
 
-import com.bb3.bodybuddybe.chat.entity.GroupChatMember;
+import com.bb3.bodybuddybe.chat.entity.UserChat;
 import com.bb3.bodybuddybe.chat.entity.Message;
 import com.bb3.bodybuddybe.gym.entity.UserGym;
 import com.bb3.bodybuddybe.matching.entity.MatchingCriteria;
@@ -77,7 +77,7 @@ public class User {
     private MatchingCriteria matchingCriteria;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
-    private List<GroupChatMember> groupChatMemberList = new ArrayList<>();
+    private List<UserChat> userChatList = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<UserGym> userGymList = new ArrayList<>();
