@@ -12,4 +12,9 @@ public class PostCreateRequestDto {
     private String imageUrl;
     private String videoUrl;
     private Long gymId;
+
+    public PostCreateRequestDto(String title, String content) {
+        this.title = title;
+        this.content = content;
+    }
 }

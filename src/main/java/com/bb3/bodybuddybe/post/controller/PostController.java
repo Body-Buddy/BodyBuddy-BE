@@ -5,6 +5,7 @@ import com.bb3.bodybuddybe.common.security.UserDetailsImpl;
 import com.bb3.bodybuddybe.post.dto.*;
 import com.bb3.bodybuddybe.post.entity.PostCategory;
 import com.bb3.bodybuddybe.post.service.PostService;
+import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,14 +27,16 @@ public class PostController {
     /**
      * 게시물 작성
      * @param userDetails
-     * @param postCreateRequestDto
+//     * @param postCreateRequestDto
      * @return ApiResponseDto
      */
     @PostMapping("/posts")
-    public ResponseEntity<ApiResponseDto> createPost(@AuthenticationPrincipal UserDetailsImpl userDetails,
-                                                     @RequestParam(value = "file", required = false) List<MultipartFile> files,
-                                                     @RequestBody PostCreateRequestDto postCreateRequestDto) {
-        postService.createPost(postCreateRequestDto, userDetails, files);
+    public ResponseEntity<ApiResponseDto> createPost(@RequestPart(value = "title") String title,
+                                                     @RequestPart(value = "content") String content,
+                                                     @Nullable @RequestPart(value = "file") List<MultipartFile> files,
+                                                     @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        PostCreateRequestDto requestDto = new PostCreateRequestDto(title, content);
+        postService.createPost(requestDto, userDetails, files);
         return ResponseEntity.ok().body(new ApiResponseDto("게시글이 작성되었습니다.", HttpStatus.CREATED.value()));
     }
 
