@@ -9,7 +9,6 @@ import com.bb3.bodybuddybe.matching.enums.GenderEnum;
 import com.bb3.bodybuddybe.user.dto.ProfileUpdateRequestDto;
 import com.bb3.bodybuddybe.user.enums.UserRoleEnum;
 import com.bb3.bodybuddybe.user.enums.UserStatusEnum;
-import com.bb3.bodybuddybe.user.service.Role;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -36,16 +35,10 @@ public class User {
     private Long id;
 
     @Column(nullable = false, unique = true)
-    private String username;
-
-    @Column(nullable = false, unique = true)
-    private String nickname;
+    private String email;
 
     @Column(nullable = false)
     private String password;
-
-    @Column(nullable = false, unique = true)
-    private String email;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
@@ -54,6 +47,8 @@ public class User {
     @Column(nullable = false)
     private LocalDate birthDate;
 
+    @Column
+    private String nickname;
 
     @Column
     private String imageUrl;
@@ -65,13 +60,9 @@ public class User {
     @Enumerated(value = EnumType.STRING)
     private UserRoleEnum role;
 
-
-
     @Column(nullable = false)
     @Enumerated(value = EnumType.STRING)
     private UserStatusEnum status;
-
-
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private MatchingCriteria matchingCriteria;
@@ -101,8 +92,6 @@ public class User {
     public void updatePassword(String updatePassword) {
         this.password = updatePassword;
     }
-
-
 
     public void updateImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
