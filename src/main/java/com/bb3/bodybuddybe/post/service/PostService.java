@@ -1,5 +1,6 @@
 package com.bb3.bodybuddybe.post.service;
 
+import com.bb3.bodybuddybe.post.dto.CategoryResponseDto;
 import com.bb3.bodybuddybe.post.dto.PostCreateRequestDto;
 import com.bb3.bodybuddybe.post.dto.PostResponseDto;
 import com.bb3.bodybuddybe.post.dto.PostUpdateRequestDto;
@@ -9,6 +10,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 public interface PostService {
 
     @Transactional
@@ -16,6 +19,8 @@ public interface PostService {
 
     @Transactional(readOnly = true)
     PostResponseDto getPostById(Long postId);
+
+    List<CategoryResponseDto> getCategories();
 
     @Transactional(readOnly = true)
     Page<PostResponseDto> getPostsByCategory(CategoryEnum category, Pageable pageable);

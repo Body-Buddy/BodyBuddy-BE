@@ -4,6 +4,7 @@ import com.bb3.bodybuddybe.common.exception.CustomException;
 import com.bb3.bodybuddybe.common.exception.ErrorCode;
 import com.bb3.bodybuddybe.gym.entity.Gym;
 import com.bb3.bodybuddybe.gym.repository.GymRepository;
+import com.bb3.bodybuddybe.post.dto.CategoryResponseDto;
 import com.bb3.bodybuddybe.post.dto.PostCreateRequestDto;
 import com.bb3.bodybuddybe.post.dto.PostResponseDto;
 import com.bb3.bodybuddybe.post.dto.PostUpdateRequestDto;
@@ -16,6 +17,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -43,6 +48,13 @@ public class PostServiceImpl implements PostService {
     @Transactional(readOnly = true)
     public PostResponseDto getPostById(Long postId) {
         return new PostResponseDto(findPost(postId));
+    }
+
+    @Override
+    public List<CategoryResponseDto> getCategories() {
+        return Arrays.stream(CategoryEnum.values())
+                .map(CategoryResponseDto::new)
+                .toList();
     }
 
     @Override

@@ -2,6 +2,7 @@ package com.bb3.bodybuddybe.post.controller;
 
 import com.bb3.bodybuddybe.common.dto.ApiResponseDto;
 import com.bb3.bodybuddybe.common.security.UserDetailsImpl;
+import com.bb3.bodybuddybe.post.dto.CategoryResponseDto;
 import com.bb3.bodybuddybe.post.dto.PostCreateRequestDto;
 import com.bb3.bodybuddybe.post.dto.PostResponseDto;
 import com.bb3.bodybuddybe.post.dto.PostUpdateRequestDto;
@@ -16,6 +17,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -34,9 +37,14 @@ public class PostController {
     @GetMapping("/posts/{postId}")
     public ResponseEntity<PostResponseDto> getPost(@PathVariable Long postId) {
         PostResponseDto postResponseDto = postService.getPostById(postId);
-
         return ResponseEntity.ok(postResponseDto);
     }
+
+    @GetMapping("/categories")
+    public List<CategoryResponseDto> getCategories() {
+        return postService.getCategories();
+    }
+
 
     @GetMapping("/posts")
     public ResponseEntity<Page<PostResponseDto>> getPostsByCategory(@RequestParam CategoryEnum category,
