@@ -17,8 +17,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api")
@@ -38,12 +36,6 @@ public class PostController {
         PostResponseDto postResponseDto = postService.getPostById(postId);
 
         return ResponseEntity.ok(postResponseDto);
-    }
-
-    @GetMapping("/categories")
-    public ResponseEntity<List<CategoryEnum>> getAllCategories() {
-        List<CategoryEnum> categories = postService.getAllCategories();
-        return ResponseEntity.ok(categories);
     }
 
     @GetMapping("/posts")

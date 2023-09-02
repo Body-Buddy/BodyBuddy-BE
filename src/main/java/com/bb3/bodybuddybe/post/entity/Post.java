@@ -3,7 +3,6 @@ package com.bb3.bodybuddybe.post.entity;
 import com.bb3.bodybuddybe.comment.entity.Comment;
 import com.bb3.bodybuddybe.common.timestamped.TimeStamped;
 import com.bb3.bodybuddybe.gym.entity.Gym;
-import com.bb3.bodybuddybe.post.dto.PostCreateRequestDto;
 import com.bb3.bodybuddybe.post.dto.PostUpdateRequestDto;
 import com.bb3.bodybuddybe.post.enums.CategoryEnum;
 import com.bb3.bodybuddybe.user.entity.User;

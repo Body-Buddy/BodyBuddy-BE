@@ -17,14 +17,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-
 @Service
 @RequiredArgsConstructor
-public class PostServiceImpl {
+public class PostServiceImpl implements PostService {
     private final PostRepository postRepository;
     private final GymRepository gymRepository;
 
+    @Override
     @Transactional
     public void createPost(PostCreateRequestDto requestDto, User user) {
         Gym gym = findGym(requestDto.getGymId());
@@ -40,33 +39,34 @@ public class PostServiceImpl {
         postRepository.save(post);
     }
 
+    @Override
     @Transactional(readOnly = true)
     public PostResponseDto getPostById(Long postId) {
         return new PostResponseDto(findPost(postId));
     }
 
-    public List<CategoryEnum> getAllCategories() {
-        return List.of(CategoryEnum.values());
-    }
-
+    @Override
     @Transactional(readOnly = true)
     public Page<PostResponseDto> getPostsByCategory(CategoryEnum category, Pageable pageable) {
         return postRepository.findAllByCategory(category, pageable)
                 .map(PostResponseDto::new);
     }
 
+    @Override
     @Transactional(readOnly = true)
     public Page<PostResponseDto> getPostsByGymId(Long gymId, Pageable pageable) {
         return postRepository.findAllByGym(findGym(gymId), pageable)
                 .map(PostResponseDto::new);
     }
 
+    @Override
     @Transactional(readOnly = true)
     public Page<PostResponseDto> searchPosts(String keyword, Pageable pageable) {
         return postRepository.findByTitleContainingOrContentContaining(keyword, keyword, pageable)
                 .map(PostResponseDto::new);
     }
 
+    @Override
     @Transactional
     public void updatePost(Long postId, PostUpdateRequestDto requestDto, User user) {
         Post post = findPost(postId);
@@ -74,6 +74,7 @@ public class PostServiceImpl {
         post.update(requestDto);
     }
 
+    @Override
     @Transactional
     public void deletePost(Long postId, User user) {
         Post post = findPost(postId);
