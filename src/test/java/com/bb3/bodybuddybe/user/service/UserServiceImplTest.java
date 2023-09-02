@@ -48,13 +48,11 @@ class UserServiceImplTest {
     void signup_success() {
         // given
         SignupRequestDto requestDto = new SignupRequestDto();
-        requestDto.setUsername("testUser");
-        requestDto.setPassword("testPassword");
         requestDto.setEmail("test@email.com");
-        requestDto.setBirthDate("20000101");
+        requestDto.setPassword("testPassword");
         requestDto.setGender(GenderEnum.F);
+        requestDto.setBirthDate(LocalDate.of(2000, 01, 01));
 
-        when(userRepository.findByUsername(requestDto.getUsername())).thenReturn(Optional.empty());
         when(userRepository.findByEmail(requestDto.getEmail())).thenReturn(Optional.empty());
         when(passwordEncoder.encode(requestDto.getPassword())).thenReturn("encodedPassword");
 
@@ -67,9 +65,8 @@ class UserServiceImplTest {
         verify(userRepository).save(userCaptor.capture());
 
         User user = userCaptor.getValue();
-        assertEquals(requestDto.getUsername(), user.getUsername());
-        assertEquals("encodedPassword", user.getPassword());
         assertEquals(requestDto.getEmail(), user.getEmail());
+        assertEquals("encodedPassword", user.getPassword());
         assertEquals(requestDto.getGender(), user.getGender());
         assertEquals(LocalDate.of(2000, 1, 1), user.getBirthDate());
     }
@@ -79,13 +76,11 @@ class UserServiceImplTest {
     void signup_emailAlreadyExists() {
         // given
         SignupRequestDto requestDto = new SignupRequestDto();
-        requestDto.setUsername("testUser");
+        requestDto.setEmail("test@email.com");
         requestDto.setPassword("testPassword");
-        requestDto.setEmail("testEmail");
-        requestDto.setBirthDate("20000101");
         requestDto.setGender(GenderEnum.F);
+        requestDto.setBirthDate(LocalDate.of(2000, 01, 01));
 
-        when(userRepository.findByUsername(requestDto.getUsername())).thenReturn(Optional.empty());
         when(userRepository.findByEmail(requestDto.getEmail())).thenReturn(Optional.of(mock(User.class)));
 
         // when
@@ -103,13 +98,11 @@ class UserServiceImplTest {
     void signup_ageUnder14() {
         // given
         SignupRequestDto requestDto = new SignupRequestDto();
-        requestDto.setUsername("testUser");
-        requestDto.setPassword("testPassword");
         requestDto.setEmail("test@email.com");
-        requestDto.setBirthDate("20200101");
+        requestDto.setPassword("testPassword");
         requestDto.setGender(GenderEnum.M);
+        requestDto.setBirthDate(LocalDate.of(2020, 01, 01));
 
-        when(userRepository.findByUsername(requestDto.getUsername())).thenReturn(Optional.empty());
         when(userRepository.findByEmail(requestDto.getEmail())).thenReturn(Optional.empty());
         when(passwordEncoder.encode(requestDto.getPassword())).thenReturn("encodedPassword");
 

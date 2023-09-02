@@ -14,15 +14,15 @@ public class CommentResponseDto{
     private String content;
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
-    private String username;
+    private String nickname;
     private List<CommentResponseDto> commentList;
 
-    public CommentResponseDto(Comment comment, String username) {
+    public CommentResponseDto(Comment comment, String nickname) {
         this.id = comment.getId();
         this.content = comment.getContent();
         this.createdAt = comment.getCreatedAt();
         this.modifiedAt = comment.getModifiedAt();
-        this.username = username;
+        this.nickname = nickname;
     }
 
     public CommentResponseDto(Comment comment){
@@ -30,7 +30,7 @@ public class CommentResponseDto{
         this.content = comment.getContent();
         this.createdAt = comment.getCreatedAt();
         this.modifiedAt = comment.getModifiedAt();
-        this.username = comment.getUser().getUsername();
+        this.nickname = comment.getUser().getNickname();
         this.commentList = comment.getChild().stream()
                 .map(CommentResponseDto::new)
                 .sorted(Comparator.comparing(CommentResponseDto::getCreatedAt).reversed())

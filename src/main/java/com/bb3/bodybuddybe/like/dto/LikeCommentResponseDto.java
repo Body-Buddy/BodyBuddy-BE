@@ -5,12 +5,12 @@ import lombok.Getter;
 
 @Getter
 public class LikeCommentResponseDto {
-    private String username;
+    private String nickname;
     private Long commentId;
 
 
     public LikeCommentResponseDto(LikeComment likeComment) {
-        this.username = likeComment.getUser().getUsername();
+        this.nickname = likeComment.getUser().getNickname();
         this.commentId = likeComment.getComment().getId();
     }
 }
