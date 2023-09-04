@@ -2,110 +2,83 @@ package com.bb3.bodybuddybe.post.controller;
 
 import com.bb3.bodybuddybe.common.dto.ApiResponseDto;
 import com.bb3.bodybuddybe.common.security.UserDetailsImpl;
-import com.bb3.bodybuddybe.post.dto.*;
-import com.bb3.bodybuddybe.post.entity.PostCategory;
-import com.bb3.bodybuddybe.post.service.PostService;
+import com.bb3.bodybuddybe.post.dto.CategoryResponseDto;
+import com.bb3.bodybuddybe.post.dto.PostCreateRequestDto;
+import com.bb3.bodybuddybe.post.dto.PostResponseDto;
+import com.bb3.bodybuddybe.post.dto.PostUpdateRequestDto;
+import com.bb3.bodybuddybe.post.enums.CategoryEnum;
+import com.bb3.bodybuddybe.post.service.PostServiceImpl;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-/**
- * 게시물 관련 컨트롤러
- */
+
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api")
 public class PostController {
-    private final PostService postService;
 
-    /**
-     * 게시물 작성
-     * @param userDetails
-     * @param postCreateRequestDto
-     * @return ApiResponseDto
-     */
+    private final PostServiceImpl postService;
+
     @PostMapping("/posts")
-    public ResponseEntity<ApiResponseDto> createPost(@AuthenticationPrincipal UserDetailsImpl userDetails,
-                                                     @RequestBody PostCreateRequestDto postCreateRequestDto) {
-        postService.createPost(postCreateRequestDto, userDetails);
-        return ResponseEntity.ok().body(new ApiResponseDto("게시글이 작성되었습니다.", HttpStatus.CREATED.value()));
+    public ResponseEntity<ApiResponseDto> createPost(@RequestBody PostCreateRequestDto requestDto,
+                                                     @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        postService.createPost(requestDto, userDetails.getUser());
+        return ResponseEntity.ok(new ApiResponseDto("게시글이 작성되었습니다.", HttpStatus.CREATED.value()));
     }
 
-    /**
-     * 게시물 조회
-     * @param postId
-     * @return PostResponseDto
-     */
     @GetMapping("/posts/{postId}")
     public ResponseEntity<PostResponseDto> getPost(@PathVariable Long postId) {
         PostResponseDto postResponseDto = postService.getPostById(postId);
-
-        return ResponseEntity.ok().body(postResponseDto);
+        return ResponseEntity.ok(postResponseDto);
     }
 
-    /**
-     * 헬스장 게시물 목록 조회
-     * @param gymId
-     * @return PostListResponseDto
-     */
+    @GetMapping("/categories")
+    public List<CategoryResponseDto> getCategories() {
+        return postService.getCategories();
+    }
+
+
+    @GetMapping("/posts")
+    public ResponseEntity<Page<PostResponseDto>> getPostsByCategory(@RequestParam CategoryEnum category,
+            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
+        Page<PostResponseDto> posts = postService.getPostsByCategory(category, pageable);
+        return ResponseEntity.ok(posts);
+    }
+
     @GetMapping("/gyms/{gymId}/posts")
-    public ResponseEntity<PostListResponseDto> getPostsByGymId(@PathVariable Long gymId) {
-        PostListResponseDto postListResponseDto = postService.getPostsByGymId(gymId);
-
-        return ResponseEntity.ok().body(postListResponseDto);
+    public ResponseEntity<Page<PostResponseDto>> getPostsByGymId(@PathVariable Long gymId,
+            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
+        Page<PostResponseDto> posts = postService.getPostsByGymId(gymId, pageable);
+        return ResponseEntity.ok(posts);
     }
 
-    /**
-     * 게시물 카테고리 조회
-     * @param postCategory
-     * @return PostListResponseDto
-     */
-    @GetMapping("/posts/category")
-    public ResponseEntity<PostCategoryListResponseDto> getPostsByCategory(@RequestParam PostCategory postCategory) {
-        PostCategoryListResponseDto postCategoryListResponseDto = postService.getPostsByCategory(postCategory);
-
-        return ResponseEntity.ok().body(postCategoryListResponseDto);
-    }
-    /**
-     * 게시물 제목으로 조회
-     * @param title
-     * @return PostTitleListResponseDto
-     */
-    @GetMapping("/posts/title")
-    public ResponseEntity<PostTitleListResponseDto> getPostsByTitle(@RequestParam String title) {
-        PostTitleListResponseDto postTitleListResponseDto = postService.getPostsByTitle(title);
-
-        return ResponseEntity.ok().body(postTitleListResponseDto);
+    @GetMapping("/posts/search")
+    public ResponseEntity<Page<PostResponseDto>> searchPosts(@RequestParam String keyword,
+            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
+        Page<PostResponseDto> posts = postService.searchPosts(keyword, pageable);
+        return ResponseEntity.ok(posts);
     }
 
-    /**
-     * 게시물 수정
-     * @param postId
-     * @param postCreateRequestDto
-     * @param userDetails
-     * @return ApiResponseDto
-     */
     @PutMapping("/posts/{postId}")
     public ResponseEntity<ApiResponseDto> updatePost(@PathVariable Long postId,
-                                                     @RequestBody PostCreateRequestDto postCreateRequestDto,
+                                                     @RequestBody PostUpdateRequestDto requestDto,
                                                      @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        postService.updatePost(postId, postCreateRequestDto, userDetails);
-
-        return ResponseEntity.ok().body(new ApiResponseDto("게시글이 수정되었습니다.", HttpStatus.OK.value()));
+        postService.updatePost(postId, requestDto, userDetails.getUser());
+        return ResponseEntity.ok(new ApiResponseDto("게시글이 수정되었습니다.", HttpStatus.OK.value()));
     }
 
-    /**
-     * 게시물 삭제
-     * @param userDetails
-     * @param postId
-     * @return ApiResponseDto
-     */
     @DeleteMapping("/posts/{postId}")
-    public ResponseEntity<ApiResponseDto> deletePost(@AuthenticationPrincipal UserDetailsImpl userDetails,
-                                                     @PathVariable Long postId) {
-        postService.deletePost(postId, userDetails);
-
-        return ResponseEntity.ok().body(new ApiResponseDto("게시글이 삭제되었습니다.", HttpStatus.OK.value()));
+    public ResponseEntity<ApiResponseDto> deletePost(@PathVariable Long postId,
+                                                     @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        postService.deletePost(postId, userDetails.getUser());
+        return ResponseEntity.ok(new ApiResponseDto("게시글이 삭제되었습니다.", HttpStatus.OK.value()));
     }
 }
