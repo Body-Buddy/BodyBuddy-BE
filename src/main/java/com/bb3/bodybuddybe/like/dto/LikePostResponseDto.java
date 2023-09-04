@@ -6,10 +6,10 @@ import lombok.Getter;
 @Getter
 public class LikePostResponseDto {
 
-    private String username;
+    private String nickname;
     private Long postId;
     public LikePostResponseDto(LikePost likePost) {
-        this.username = likePost.getUser().getUsername();
+        this.nickname = likePost.getUser().getNickname();
         this.postId = likePost.getPost().getId();
     }
 }
