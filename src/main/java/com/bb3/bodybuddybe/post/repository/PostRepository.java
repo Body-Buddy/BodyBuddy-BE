@@ -1,16 +1,16 @@
 package com.bb3.bodybuddybe.post.repository;
 
+import com.bb3.bodybuddybe.gym.entity.Gym;
 import com.bb3.bodybuddybe.post.entity.Post;
-import com.bb3.bodybuddybe.post.entity.PostCategory;
+import com.bb3.bodybuddybe.post.enums.CategoryEnum;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.Collection;
-import java.util.List;
-
 public interface PostRepository extends JpaRepository <Post, Long> {
-    List<Post> findAllByGymId(Long id);
+    Page<Post> findAllByGym(Gym gym, Pageable pageable);
 
-    List<Post> findByPostCategory(PostCategory postCategory);
+    Page<Post> findAllByCategory(CategoryEnum category, Pageable pageable);
 
-    List<Post> findByTitle(String postTitle);
+    Page<Post> findByTitleContainingOrContentContaining(String keyword1, String keyword2, Pageable pageable);
 }
