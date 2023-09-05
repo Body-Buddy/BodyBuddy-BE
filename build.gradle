@@ -62,14 +62,13 @@ dependencies {
     // WebClient
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
 
-    //OAuth2Service
+    // OAuth2
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 
     // Redis
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
-    //OAuth2Service
-    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+
 }
 
 tasks.named('test') {
