@@ -38,7 +38,7 @@ public class PostController {
                                                      @RequestPart(value = "content") String content,
                                                      @RequestPart(value = "category") CategoryEnum category,
                                                      @RequestPart(value = "gymId") Long gymId,
-                                                     @Nullable @RequestPart(value = "file") List<MultipartFile> files,
+                                                     @Nullable @RequestPart(value = "files") List<MultipartFile> files,
                                                      @AuthenticationPrincipal UserDetailsImpl userDetails) {
         PostCreateRequestDto requestDto = new PostCreateRequestDto(title, content, category, gymId);
         postService.createPost(requestDto, userDetails.getUser(), files);
