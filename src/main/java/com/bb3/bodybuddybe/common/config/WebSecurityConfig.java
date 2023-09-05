@@ -62,8 +62,21 @@ public class WebSecurityConfig {
     }
 
     @Bean
+
     public AuthenticationSuccessHandler authenticationSuccessHandler(){
-        return new OAuth2SuccessHandler(jwtUtil, refreshTokenRepository);
+        return new OAuth2SuccessHandler(jwtUtil, refreshTokenRepository);}
+    @Bean
+    CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173"));
+        configuration.setAllowedMethods(Arrays.asList("HEAD", "GET", "POST", "PUT"));
+        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Cache-Control", "Content-Type"));
+        configuration.setExposedHeaders(Arrays.asList("Authorization")); // Authorization 헤더 노출
+        configuration.setAllowCredentials(true);
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/api/**", configuration);
+        return source;
+
     }
 
     public UserVerificationFilter userVerificationFilter() {
