@@ -4,7 +4,10 @@ import com.bb3.bodybuddybe.common.exception.CustomException;
 import com.bb3.bodybuddybe.common.exception.ErrorCode;
 import com.bb3.bodybuddybe.common.image.ImageUploader;
 import com.bb3.bodybuddybe.matching.enums.GenderEnum;
-import com.bb3.bodybuddybe.user.dto.*;
+import com.bb3.bodybuddybe.user.dto.ProfileResponseDto;
+import com.bb3.bodybuddybe.user.dto.ProfileUpdateRequestDto;
+import com.bb3.bodybuddybe.user.dto.SignupRequestDto;
+import com.bb3.bodybuddybe.user.dto.UserDeleteRequestDto;
 import com.bb3.bodybuddybe.user.entity.User;
 import com.bb3.bodybuddybe.user.enums.UserRoleEnum;
 import com.bb3.bodybuddybe.user.repository.UserRepository;
@@ -59,6 +62,7 @@ public class UserServiceImpl implements UserService {
     public void uploadProfileImage(MultipartFile file, User user) {
         String imageUrl = imageUploader.upload(file);
         user.updateImageUrl(imageUrl);
+        userRepository.save(user);
     }
 
     @Override
@@ -72,12 +76,14 @@ public class UserServiceImpl implements UserService {
     public void deleteProfileImage(User user) {
         imageUploader.deleteFromUrl(user.getImageUrl());
         user.updateImageUrl(null);
+        userRepository.save(user);
     }
 
     @Override
     @Transactional
     public void updateProfile(ProfileUpdateRequestDto requestDto, User user) {
         user.updateProfile(requestDto);
+        userRepository.save(user);
     }
 
     @Override
