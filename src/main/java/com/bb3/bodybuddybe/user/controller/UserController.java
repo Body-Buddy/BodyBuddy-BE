@@ -35,6 +35,7 @@ public class UserController {
         return ResponseEntity.ok(new ApiResponseDto("이메일 인증 코드 전송 성공", HttpStatus.OK.value()));
     }
 
+
     @PostMapping("/email-verification/confirm")
     public ResponseEntity<ApiResponseDto> confirmVerification(@RequestBody @Valid EmailConfirmRequestDto requestDto) {
         emailService.confirmVerification(requestDto);

@@ -7,5 +7,9 @@ public interface EmailService {
     void sendVerificationCode(EmailRequestDto requestDto);
 
     void confirmVerification(EmailConfirmRequestDto requestDto);
+
+
+
+
 }
 
