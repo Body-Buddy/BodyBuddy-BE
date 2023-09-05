@@ -112,6 +112,11 @@ public class User {
         this.nickname = requestDto.getNickname();
         this.introduction = requestDto.getIntroduction();
     }
+    public User update(String nickname, String profileImageUrl) {
+        this.nickname = nickname;
+        this.imageUrl = profileImageUrl;
+        return this;
+    }
 
     public AgeRangeEnum getAgeRange() {
         int age = getAge();

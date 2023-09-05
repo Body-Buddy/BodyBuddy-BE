@@ -10,4 +10,7 @@ import java.util.Optional;
 @Repository
 public interface MatchingCriteriaRepository extends JpaRepository<MatchingCriteria, Long> {
     Optional<MatchingCriteria> findByUser(User user);
+
+
+
 }
