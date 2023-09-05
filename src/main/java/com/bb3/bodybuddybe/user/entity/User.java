@@ -1,14 +1,16 @@
 package com.bb3.bodybuddybe.user.entity;
 
-import com.bb3.bodybuddybe.chat.entity.UserChat;
+import com.bb3.bodybuddybe.chat.entity.GroupChatMember;
 import com.bb3.bodybuddybe.chat.entity.Message;
 import com.bb3.bodybuddybe.gym.entity.UserGym;
 import com.bb3.bodybuddybe.matching.entity.MatchingCriteria;
 import com.bb3.bodybuddybe.matching.enums.AgeRangeEnum;
 import com.bb3.bodybuddybe.matching.enums.GenderEnum;
+import com.bb3.bodybuddybe.user.dto.ChangedPasswordRequestDto;
 import com.bb3.bodybuddybe.user.dto.ProfileUpdateRequestDto;
 import com.bb3.bodybuddybe.user.enums.UserRoleEnum;
 import com.bb3.bodybuddybe.user.enums.UserStatusEnum;
+import com.bb3.bodybuddybe.user.service.Role;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -35,10 +37,16 @@ public class User {
     private Long id;
 
     @Column(nullable = false, unique = true)
-    private String email;
+    private String username;
+
+    @Column(nullable = false, unique = true)
+    private String nickname;
 
     @Column(nullable = false)
     private String password;
+
+    @Column(nullable = false, unique = true)
+    private String email;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
@@ -47,8 +55,6 @@ public class User {
     @Column(nullable = false)
     private LocalDate birthDate;
 
-    @Column
-    private String nickname;
 
     @Column
     private String imageUrl;
@@ -60,15 +66,19 @@ public class User {
     @Enumerated(value = EnumType.STRING)
     private UserRoleEnum role;
 
+
+
     @Column(nullable = false)
     @Enumerated(value = EnumType.STRING)
     private UserStatusEnum status;
+
+
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private MatchingCriteria matchingCriteria;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
-    private List<UserChat> userChatList = new ArrayList<>();
+    private List<GroupChatMember> groupChatMemberList = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<UserGym> userGymList = new ArrayList<>();
@@ -93,6 +103,8 @@ public class User {
         this.password = updatePassword;
     }
 
+
+
     public void updateImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
     }
@@ -101,6 +113,12 @@ public class User {
         this.nickname = requestDto.getNickname();
         this.introduction = requestDto.getIntroduction();
     }
+    public User update(String nickname, String profileImageUrl) {
+        this.nickname = nickname;
+        this.imageUrl = profileImageUrl;
+        return this;
+    }
+
 
     public AgeRangeEnum getAgeRange() {
         int age = getAge();

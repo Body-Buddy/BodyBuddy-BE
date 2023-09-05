@@ -1,9 +1,6 @@
 package com.bb3.bodybuddybe.user.service;
 
-import com.bb3.bodybuddybe.user.dto.ProfileResponseDto;
-import com.bb3.bodybuddybe.user.dto.ProfileUpdateRequestDto;
-import com.bb3.bodybuddybe.user.dto.SignupRequestDto;
-import com.bb3.bodybuddybe.user.dto.UserDeleteRequestDto;
+import com.bb3.bodybuddybe.user.dto.*;
 import com.bb3.bodybuddybe.user.entity.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,4 +28,6 @@ public interface UserService {
 
     @Transactional(readOnly = true)
     ProfileResponseDto getProfile(Long userId);
+
+
 }

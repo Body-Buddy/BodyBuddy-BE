@@ -24,6 +24,7 @@ public class UserController {
 
     @PostMapping("/users/signup")
     public ResponseEntity<ApiResponseDto> signup(@Valid @RequestBody SignupRequestDto requestDto) {
+
         userService.signup(requestDto);
         return ResponseEntity.ok(new ApiResponseDto("회원가입 성공", HttpStatus.OK.value()));
     }
@@ -33,6 +34,7 @@ public class UserController {
         emailService.sendVerificationCode(requestDto);
         return ResponseEntity.ok(new ApiResponseDto("이메일 인증 코드 전송 성공", HttpStatus.OK.value()));
     }
+
 
     @PostMapping("/email-verification/confirm")
     public ResponseEntity<ApiResponseDto> confirmVerification(@RequestBody @Valid EmailConfirmRequestDto requestDto) {

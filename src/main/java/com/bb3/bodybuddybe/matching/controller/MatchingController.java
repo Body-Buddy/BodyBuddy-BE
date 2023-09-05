@@ -28,7 +28,7 @@ public class MatchingController {
                                                           @AuthenticationPrincipal UserDetailsImpl userDetails) {
         matchingService.createMatchingCriteria(requestDto, userDetails.getUser());
         return ResponseEntity.ok(new ApiResponseDto("매칭 기준 생성 성공", HttpStatus.OK.value()));
-    }
+    }   //
 
     @GetMapping("/users/{userId}/criteria")
     ResponseEntity<CriteriaResponseDto> getMatchingCriteria(@AuthenticationPrincipal UserDetailsImpl userDetails) {

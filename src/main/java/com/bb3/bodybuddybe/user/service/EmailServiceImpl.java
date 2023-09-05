@@ -46,6 +46,8 @@ public class EmailServiceImpl implements EmailService {
         sendHtmlMessage(email, subject, htmlContent);
     }
 
+
+
     private String generateVerificationCode() {
         StringBuilder code = new StringBuilder(CODE_LENGTH);
 
