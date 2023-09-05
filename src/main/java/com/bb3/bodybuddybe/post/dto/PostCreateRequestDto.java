@@ -5,6 +5,9 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @Getter
 @Setter
@@ -22,8 +25,13 @@ public class PostCreateRequestDto {
     @NotNull(message = "헬스장 id를 입력해주세요.")
     private Long gymId;
 
-    public PostCreateRequestDto(String title, String content) {
+    private List<MultipartFile> images;
+    private List<MultipartFile> videos;
+
+    public PostCreateRequestDto(String title, String content, CategoryEnum category, Long gymId) {
         this.title = title;
         this.content = content;
+        this.category = category;
+        this.gymId = gymId;
     }
 }

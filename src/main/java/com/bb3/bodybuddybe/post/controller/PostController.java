@@ -2,7 +2,6 @@ package com.bb3.bodybuddybe.post.controller;
 
 import com.bb3.bodybuddybe.common.dto.ApiResponseDto;
 import com.bb3.bodybuddybe.common.security.UserDetailsImpl;
-
 import com.bb3.bodybuddybe.post.dto.CategoryResponseDto;
 import com.bb3.bodybuddybe.post.dto.PostCreateRequestDto;
 import com.bb3.bodybuddybe.post.dto.PostResponseDto;
@@ -10,6 +9,7 @@ import com.bb3.bodybuddybe.post.dto.PostUpdateRequestDto;
 import com.bb3.bodybuddybe.post.enums.CategoryEnum;
 import com.bb3.bodybuddybe.post.service.PostServiceImpl;
 
+import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,6 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 
 import java.util.List;
@@ -33,9 +34,14 @@ public class PostController {
     private final PostServiceImpl postService;
 
     @PostMapping("/posts")
-    public ResponseEntity<ApiResponseDto> createPost(@RequestBody PostCreateRequestDto requestDto,
+    public ResponseEntity<ApiResponseDto> createPost(@RequestPart(value = "title") String title,
+                                                     @RequestPart(value = "content") String content,
+                                                     @RequestPart(value = "category") CategoryEnum category,
+                                                     @RequestPart(value = "gymId") Long gymId,
+                                                     @Nullable @RequestPart(value = "file") List<MultipartFile> files,
                                                      @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        postService.createPost(requestDto, userDetails.getUser());
+        PostCreateRequestDto requestDto = new PostCreateRequestDto(title, content, category, gymId);
+        postService.createPost(requestDto, userDetails.getUser(), files);
         return ResponseEntity.ok(new ApiResponseDto("게시글이 작성되었습니다.", HttpStatus.CREATED.value()));
 
     }

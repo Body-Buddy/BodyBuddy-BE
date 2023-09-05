@@ -13,9 +13,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 public interface PostService {
-    
+
     @Transactional
-    void createPost(PostCreateRequestDto requestDto, User user);
+    void createPost(PostCreateRequestDto requestDto, User user, List<MultipartFile> files);
 
     @Transactional(readOnly = true)
     PostResponseDto getPostById(Long postId);
