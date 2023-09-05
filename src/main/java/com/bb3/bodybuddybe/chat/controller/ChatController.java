@@ -2,6 +2,7 @@ package com.bb3.bodybuddybe.chat.controller;
 
 import com.bb3.bodybuddybe.chat.dto.ChatRequestDto;
 import com.bb3.bodybuddybe.chat.dto.ChatResponseDto;
+import com.bb3.bodybuddybe.chat.entity.Chat;
 import com.bb3.bodybuddybe.chat.service.ChatService;
 import com.bb3.bodybuddybe.common.dto.ApiResponseDto;
 import com.bb3.bodybuddybe.common.security.UserDetailsImpl;
@@ -26,7 +27,7 @@ public class ChatController {
 
     private final ChatService chatService;
 
-    // 채팅방 생성
+    // 채팅방 생성 (그룹방)
     @PostMapping("/chats/{gymId}")
     public ResponseEntity<ApiResponseDto> createChatRoom(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                                          @RequestBody ChatRequestDto chatRequestDto,
@@ -36,19 +37,28 @@ public class ChatController {
         return ResponseEntity.ok(new ApiResponseDto("채팅방 생성 성공." + " 방 이름 : " + roomName, HttpStatus.OK.value()));
     }
 
-    // 특정한 GYM 내 채팅방 전체목록 조회
+    // GYM 내 채팅방 전체목록 조회
     @GetMapping("/chats/{gymId}")
     public ResponseEntity<List<ChatResponseDto>> getAllChatsByGym(@PathVariable Long gymId) {
         List<ChatResponseDto> response = chatService.getAllChatsByGym(gymId);
         return ResponseEntity.ok(response);
     }
 
-    // 내가 참여한 채팅방 목록 조회
+    // Gym내에 내가 참여한 채팅방 목록 조회
     @GetMapping("/gym/{gymId}/chats")
     public ResponseEntity<List<ChatResponseDto>> getMyChats(@PathVariable Long gymId,
                                                             @AuthenticationPrincipal UserDetailsImpl userDetails) {
         List<ChatResponseDto> response = chatService.getMyChats(gymId, userDetails.getUser());
         return ResponseEntity.ok(response);
+    }
+
+    // 1대1 채팅방 생성 또는 가져오기
+    @PostMapping("/gym/{gymId}/direct-chats/{toChatUserId}")
+    public ResponseEntity<ChatResponseDto> getOrCreateDirectChatRoom(@PathVariable Long gymId,
+                                                                     @PathVariable Long toChatUserId,
+                                                                     @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        ChatResponseDto chatResponseDto = chatService.getOrCreateDirectChatRoom(gymId, userDetails.getUser(), toChatUserId);
+        return ResponseEntity.ok(chatResponseDto);
     }
 
     // 채팅방 수정(방이름 or ChatType)
