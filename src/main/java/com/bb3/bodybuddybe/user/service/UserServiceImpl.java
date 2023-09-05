@@ -89,6 +89,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional(readOnly = true)
     public ProfileResponseDto getProfile(Long userId) {
+
         User user = findById(userId);
         return new ProfileResponseDto(user);
     }
@@ -97,4 +98,9 @@ public class UserServiceImpl implements UserService {
         return userRepository.findById(id)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
     }
-}
+
+
+
+    }
+
+
