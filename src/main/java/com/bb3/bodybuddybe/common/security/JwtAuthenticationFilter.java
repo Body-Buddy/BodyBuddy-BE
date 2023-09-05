@@ -2,6 +2,8 @@ package com.bb3.bodybuddybe.common.security;
 
 import com.bb3.bodybuddybe.common.dto.ApiResponseDto;
 import com.bb3.bodybuddybe.common.jwt.JwtUtil;
+import com.bb3.bodybuddybe.common.oauth2.entity.RefreshToken;
+import com.bb3.bodybuddybe.common.oauth2.repository.RefreshTokenRepository;
 import com.bb3.bodybuddybe.user.dto.LoginRequestDto;
 import com.bb3.bodybuddybe.user.entity.User;
 import com.bb3.bodybuddybe.user.enums.UserRoleEnum;
@@ -20,36 +22,26 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import java.io.IOException;
+import java.util.UUID;
 
 
 @Slf4j(topic = "로그인 및 JWT 생성")
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
     private final JwtUtil jwtUtil;
-    private final UserRepository userRepository;
+    private final RefreshTokenRepository refreshTokenRepository;
 
-    public JwtAuthenticationFilter(JwtUtil jwtUtil, UserRepository userRepository) {
+    public JwtAuthenticationFilter(JwtUtil jwtUtil, RefreshTokenRepository refreshTokenRepository) {
         this.jwtUtil = jwtUtil;
-        this.userRepository = userRepository;
-        setFilterProcessesUrl("/users/login");
+        this.refreshTokenRepository = refreshTokenRepository;
+        setFilterProcessesUrl("/api/users/login");
     }
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
         log.info("로그인 시도");
+
         try {
             LoginRequestDto requestDto = new ObjectMapper().readValue(request.getInputStream(), LoginRequestDto.class);
-            User user = userRepository.findByEmail(requestDto.getEmail())
-                    .orElseThrow(() -> new IllegalArgumentException("유저가 없습니다."));
-
-            if (user.getStatus() == UserStatusEnum.BLOCKED) {
-                ApiResponseDto apiResponseDto = new ApiResponseDto("차단된 회원입니다.", HttpStatus.BAD_REQUEST.value());
-                response.setStatus(HttpStatus.BAD_REQUEST.value());
-                response.setContentType("application/json");
-                response.setCharacterEncoding("UTF-8");
-                String json = new ObjectMapper().writeValueAsString(apiResponseDto);
-                response.getWriter().write(json);
-                return null;
-            }
 
             return getAuthenticationManager().authenticate(
                     new UsernamePasswordAuthenticationToken(
@@ -65,26 +57,36 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     }
 
     @Override
-    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
-        log.info("로그인성공");
-        String email = ((UserDetailsImpl) authResult.getPrincipal()).getUsername();
-        UserRoleEnum role = ((UserDetailsImpl) authResult.getPrincipal()).getUser().getRole();
+    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult)
+            throws IOException {
+        log.info("로그인 성공 및 JWT 생성");
+        User user = ((UserDetailsImpl) authResult.getPrincipal()).getUser();
+        String username = user.getUsername();
+        UserRoleEnum role = user.getRole();
+        Long id = user.getId();
+//
+//        System.out.println(id);
+//        Optional<RefreshToken> refreshToken = refreshTokenRepository.findByMemberId(id);
+//        refreshToken.ifPresent(token -> System.out.println(token.getRefreshToken()));
+//        refreshToken.ifPresent(token -> refreshTokenRepository.deleteByMemberId(id));
 
-        String token = jwtUtil.createToken(email, role);
+        String refreshTokenVal = UUID.randomUUID().toString();
+        refreshTokenRepository.save(new RefreshToken(refreshTokenVal));
+        String token = jwtUtil.createToken(username, role);
+
+        response.addHeader("RefreshToken", refreshTokenVal);
         response.addHeader(JwtUtil.AUTHORIZATION_HEADER, token);
-        ApiResponseDto apiResponseDto = new ApiResponseDto();
-        apiResponseDto.setMessage("로그인 성공");
-        apiResponseDto.setStatusCode(HttpStatus.OK.value());
-        response.setStatus(HttpStatus.OK.value());
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
-        String json = new ObjectMapper().writeValueAsString(apiResponseDto);
-        response.getWriter().write(json);
-
     }
 
     @Override
-    protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) {
-        response.setStatus(401);
+    protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed)
+            throws IOException {
+        log.info("로그인 실패");
+
+        // 응답에 성공 메시지를 추가하여 클라이언트에 전달
+        response.setCharacterEncoding("UTF-8");
+        response.getWriter().write("메세지 : 로그인 실패\nstatus : 401");
+        response.getWriter().flush();
+
     }
 }

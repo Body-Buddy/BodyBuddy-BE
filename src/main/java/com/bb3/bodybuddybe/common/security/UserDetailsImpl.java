@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 public class UserDetailsImpl implements UserDetails {
+
     private final User user;
 
     public UserDetailsImpl(User user) {
@@ -20,10 +21,6 @@ public class UserDetailsImpl implements UserDetails {
         return user;
     }
 
-    public String getRole() {
-        return user.getRole().toString();
-    }
-
     @Override
     public String getPassword() {
         return user.getPassword();
@@ -31,9 +28,12 @@ public class UserDetailsImpl implements UserDetails {
 
     @Override
     public String getUsername() {
-        return user.getUsername();
+        return user.getEmail();
     }
 
+    public UserRoleEnum getRole(){
+        return user.getRole();
+    }
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         UserRoleEnum role = user.getRole();

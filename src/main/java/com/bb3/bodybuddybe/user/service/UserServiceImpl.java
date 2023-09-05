@@ -83,6 +83,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional(readOnly = true)
     public ProfileResponseDto getProfile(Long userId) {
+
         User user = findById(userId);
         return new ProfileResponseDto(user);
     }

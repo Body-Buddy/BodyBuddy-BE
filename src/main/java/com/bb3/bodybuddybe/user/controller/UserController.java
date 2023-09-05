@@ -24,6 +24,7 @@ public class UserController {
 
     @PostMapping("/users/signup")
     public ResponseEntity<ApiResponseDto> signup(@Valid @RequestBody SignupRequestDto requestDto) {
+
         userService.signup(requestDto);
         return ResponseEntity.ok(new ApiResponseDto("회원가입 성공", HttpStatus.OK.value()));
     }
