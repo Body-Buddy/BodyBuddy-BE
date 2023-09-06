@@ -1,10 +1,9 @@
 package com.bb3.bodybuddybe.user.service;
 
-import com.bb3.bodybuddybe.user.dto.ProfileResponseDto;
-import com.bb3.bodybuddybe.user.dto.ProfileUpdateRequestDto;
-import com.bb3.bodybuddybe.user.dto.SignupRequestDto;
-import com.bb3.bodybuddybe.user.dto.UserDeleteRequestDto;
+import com.bb3.bodybuddybe.common.security.UserDetailsImpl;
+import com.bb3.bodybuddybe.user.dto.*;
 import com.bb3.bodybuddybe.user.entity.User;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -31,4 +30,13 @@ public interface UserService {
 
     @Transactional(readOnly = true)
     ProfileResponseDto getProfile(Long userId);
+
+    @Transactional
+    void socialAddProfile(SocialUpdateInform requestDto, User user);
+
+    @Transactional
+    void changePassword(ChangedPasswordRequestDto requestDto, User user);
+
+    void logout(User user, HttpServletRequest request);
+
 }

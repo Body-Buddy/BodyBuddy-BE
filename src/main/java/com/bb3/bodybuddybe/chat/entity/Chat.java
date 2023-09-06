@@ -58,8 +58,7 @@ public class Chat {
         this.ownerUser = ownerUser;
     }
 
-    public void updateChat(ChatType chatType, String roomname) {
-        this.chatType = chatType;
+    public void updateChat(String roomname) {
         this.roomname = roomname;
     }
 
