@@ -4,6 +4,7 @@ import com.bb3.bodybuddybe.common.jwt.JwtUtil;
 
 import com.bb3.bodybuddybe.common.oauth2.CustomOAuth2UserService;
 import com.bb3.bodybuddybe.common.oauth2.OAuth2SuccessHandler;
+import com.bb3.bodybuddybe.common.oauth2.repository.LogoutlistRepository;
 import com.bb3.bodybuddybe.common.oauth2.repository.RefreshTokenRepository;
 import com.bb3.bodybuddybe.common.security.JwtAuthenticationFilter;
 import com.bb3.bodybuddybe.common.security.JwtAuthorizationFilter;
@@ -38,6 +39,7 @@ public class WebSecurityConfig {
     private final CustomOAuth2UserService customOAuth2UserService;
     private final RefreshTokenRepository refreshTokenRepository;
     private final ObjectMapper objectMapper;
+    private final LogoutlistRepository logoutlistRepository;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -58,25 +60,12 @@ public class WebSecurityConfig {
 
     @Bean
     public JwtAuthorizationFilter jwtAuthorizationFilter() {
-        return new JwtAuthorizationFilter(jwtUtil, userDetailsService, refreshTokenRepository);
+        return new JwtAuthorizationFilter(jwtUtil, userDetailsService, refreshTokenRepository,logoutlistRepository);
     }
 
     @Bean
-
     public AuthenticationSuccessHandler authenticationSuccessHandler(){
-        return new OAuth2SuccessHandler(jwtUtil, refreshTokenRepository);}
-    @Bean
-    CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173"));
-        configuration.setAllowedMethods(Arrays.asList("HEAD", "GET", "POST", "PUT"));
-        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Cache-Control", "Content-Type"));
-        configuration.setExposedHeaders(Arrays.asList("Authorization")); // Authorization 헤더 노출
-        configuration.setAllowCredentials(true);
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/api/**", configuration);
-        return source;
-
+        return new OAuth2SuccessHandler(jwtUtil, refreshTokenRepository);
     }
 
     public UserVerificationFilter userVerificationFilter() {

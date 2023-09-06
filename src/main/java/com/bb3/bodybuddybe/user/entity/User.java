@@ -1,13 +1,15 @@
 package com.bb3.bodybuddybe.user.entity;
 
-import com.bb3.bodybuddybe.chat.entity.GroupChatMember;
+
 import com.bb3.bodybuddybe.chat.entity.Message;
+import com.bb3.bodybuddybe.chat.entity.UserChat;
 import com.bb3.bodybuddybe.gym.entity.UserGym;
 import com.bb3.bodybuddybe.matching.entity.MatchingCriteria;
 import com.bb3.bodybuddybe.matching.enums.AgeRangeEnum;
 import com.bb3.bodybuddybe.matching.enums.GenderEnum;
 import com.bb3.bodybuddybe.user.dto.ChangedPasswordRequestDto;
 import com.bb3.bodybuddybe.user.dto.ProfileUpdateRequestDto;
+import com.bb3.bodybuddybe.user.dto.SocialUpdateInform;
 import com.bb3.bodybuddybe.user.enums.UserRoleEnum;
 import com.bb3.bodybuddybe.user.enums.UserStatusEnum;
 import com.bb3.bodybuddybe.user.service.Role;
@@ -48,11 +50,11 @@ public class User {
     @Column(nullable = false, unique = true)
     private String email;
 
-    @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
+    @Column
+    @Enumerated
     private GenderEnum gender;
 
-    @Column(nullable = false)
+    @Column
     private LocalDate birthDate;
 
 
@@ -68,7 +70,7 @@ public class User {
 
 
 
-    @Column(nullable = false)
+    @Column
     @Enumerated(value = EnumType.STRING)
     private UserStatusEnum status;
 
@@ -78,13 +80,17 @@ public class User {
     private MatchingCriteria matchingCriteria;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
-    private List<GroupChatMember> groupChatMemberList = new ArrayList<>();
+    private List<UserChat> groupChatMemberList = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<UserGym> userGymList = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Message> messageList = new ArrayList<>();
+
+    public void setGroupChatMemberList(List<UserChat> groupChatMemberList) {
+        this.groupChatMemberList = groupChatMemberList;
+    }
 
     public User(String email, String password, GenderEnum gender, LocalDate birthDate, UserRoleEnum role) {
         this.email = email;
@@ -119,6 +125,11 @@ public class User {
         return this;
     }
 
+    public User updateSocialProfile(GenderEnum gender, LocalDate birthDate) {
+        this.gender = gender;
+        this.birthDate = birthDate;
+        return this;
+    }
 
     public AgeRangeEnum getAgeRange() {
         int age = getAge();
@@ -142,4 +153,6 @@ public class User {
 
         return age;
     }
+
+
 }

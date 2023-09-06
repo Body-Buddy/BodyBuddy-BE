@@ -2,6 +2,7 @@ package com.bb3.bodybuddybe.chat.controller;
 
 import com.bb3.bodybuddybe.chat.dto.ChatRequestDto;
 import com.bb3.bodybuddybe.chat.dto.ChatResponseDto;
+import com.bb3.bodybuddybe.chat.entity.Chat;
 import com.bb3.bodybuddybe.chat.service.ChatService;
 import com.bb3.bodybuddybe.common.dto.ApiResponseDto;
 import com.bb3.bodybuddybe.common.security.UserDetailsImpl;

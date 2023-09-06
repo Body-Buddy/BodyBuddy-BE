@@ -3,6 +3,7 @@ package com.bb3.bodybuddybe.common.security;
 import com.bb3.bodybuddybe.common.dto.ApiResponseDto;
 import com.bb3.bodybuddybe.common.jwt.JwtUtil;
 import com.bb3.bodybuddybe.common.oauth2.entity.RefreshToken;
+import com.bb3.bodybuddybe.common.oauth2.repository.LogoutlistRepository;
 import com.bb3.bodybuddybe.common.oauth2.repository.RefreshTokenRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
@@ -31,11 +32,15 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     private final JwtUtil jwtUtil;
     private final UserDetailsServiceImpl userDetailsService;
     private final RefreshTokenRepository refreshTokenRepository;
-    public JwtAuthorizationFilter(JwtUtil jwtUtil, UserDetailsServiceImpl userDetailsService, RefreshTokenRepository refreshTokenRepository) {
+    private final LogoutlistRepository logoutlistRepository;
+    public JwtAuthorizationFilter(JwtUtil jwtUtil, UserDetailsServiceImpl userDetailsService,
+                                  RefreshTokenRepository refreshTokenRepository,
+                                  LogoutlistRepository logoutlistRepository) {
         this.jwtUtil = jwtUtil;
         this.userDetailsService = userDetailsService;
         this.refreshTokenRepository = refreshTokenRepository;
-    }
+        this.logoutlistRepository =logoutlistRepository;
+        }
 
     @Override
     protected void doFilterInternal(HttpServletRequest req, HttpServletResponse res, FilterChain filterChain) throws ServletException, IOException {
@@ -81,6 +86,9 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         filterChain.doFilter(req, res);
     }
 
+    private void checkLogoutlist(String tokenValue) {
+        if(logoutlistRepository.existsById(tokenValue)) throw new IllegalArgumentException("로그아웃한 유저입니다.");
+    }
 
     // 인증 처리
     public void setAuthentication(String username) throws UsernameNotFoundException {
