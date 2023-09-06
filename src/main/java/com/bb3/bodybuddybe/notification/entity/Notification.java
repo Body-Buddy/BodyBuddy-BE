@@ -21,8 +21,8 @@ public class Notification extends TimeStamped {
     private NotificationType notificationType;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "sender_id")
-    private User sender;
+    @JoinColumn(name = "receiver_id")
+    private User receiver;
 
     private String message;
 

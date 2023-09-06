@@ -12,13 +12,13 @@ import lombok.*;
 public class NotificationRequestDto {
 
     private String message;
-    private User sender;
+    private User Receiver;
     private NotificationType notificationType;
 
-    public Notification toEntity(NotificationType notificationType, User sender) {
+    public Notification toEntity(NotificationType notificationType, User receiver) {
         return Notification.builder()
                 .message(this.message)
-                .sender(sender)
+                .receiver(receiver)
                 .notificationType(notificationType)
                 .isRead(false)
                 .build();

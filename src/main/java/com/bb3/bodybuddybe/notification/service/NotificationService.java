@@ -1,6 +1,5 @@
 package com.bb3.bodybuddybe.notification.service;
 
-import com.bb3.bodybuddybe.notification.repository.EmitterRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
