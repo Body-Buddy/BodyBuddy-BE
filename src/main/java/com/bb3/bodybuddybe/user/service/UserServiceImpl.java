@@ -3,21 +3,31 @@ package com.bb3.bodybuddybe.user.service;
 import com.bb3.bodybuddybe.common.exception.CustomException;
 import com.bb3.bodybuddybe.common.exception.ErrorCode;
 import com.bb3.bodybuddybe.common.image.ImageUploader;
+import com.bb3.bodybuddybe.common.jwt.JwtUtil;
+import com.bb3.bodybuddybe.common.oauth2.entity.LogoutList;
+import com.bb3.bodybuddybe.common.oauth2.entity.RefreshToken;
+import com.bb3.bodybuddybe.common.oauth2.repository.LogoutlistRepository;
+import com.bb3.bodybuddybe.common.oauth2.repository.RefreshTokenRepository;
+import com.bb3.bodybuddybe.common.security.UserDetailsImpl;
 import com.bb3.bodybuddybe.matching.enums.GenderEnum;
-import com.bb3.bodybuddybe.user.dto.ProfileResponseDto;
-import com.bb3.bodybuddybe.user.dto.ProfileUpdateRequestDto;
-import com.bb3.bodybuddybe.user.dto.SignupRequestDto;
-import com.bb3.bodybuddybe.user.dto.UserDeleteRequestDto;
+import com.bb3.bodybuddybe.user.dto.*;
 import com.bb3.bodybuddybe.user.entity.User;
 import com.bb3.bodybuddybe.user.enums.UserRoleEnum;
 import com.bb3.bodybuddybe.user.repository.UserRepository;
+import io.jsonwebtoken.Jwts;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.security.Key;
 import java.time.LocalDate;
+import java.util.Date;
 
 @Service
 @RequiredArgsConstructor
@@ -25,6 +35,9 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final ImageUploader imageUploader;
+    private final LogoutlistRepository logoutlistRepository;
+    private final JwtUtil jwtUtil;
+    private final RefreshTokenRepository refreshTokenRepository;
 
     @Override
     @Transactional
@@ -44,6 +57,46 @@ public class UserServiceImpl implements UserService {
             throw new CustomException(ErrorCode.UNDER_AGE);
         }
 
+        userRepository.save(user);
+    }
+
+    public void logout(User user, HttpServletRequest request) {
+        String refreshTokenVal = request.getHeader("RefreshToken").substring(7);
+        String accessTokenVal = jwtUtil.getJwtFromHeader(request);
+
+        try {
+            Key key = jwtUtil.getKey();
+            Date expiration = Jwts.parserBuilder()
+                    .setSigningKey(key)
+                    .build()
+                    .parseClaimsJws(accessTokenVal)
+                    .getBody()
+                    .getExpiration();
+            long expireTime = expiration.getTime() - System.currentTimeMillis();
+            logoutlistRepository.save(new LogoutList(accessTokenVal, expireTime / 1000));// MILLS를 1000으로 나눠서 초로 바꿔줌
+            RefreshToken refreshToken = refreshTokenRepository.findById(refreshTokenVal)
+                    .orElseThrow(() -> new IllegalArgumentException("리프레시 토큰이 없습니다."));
+            refreshTokenRepository.delete(refreshToken);
+            System.out.println(expiration.toString());
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    @Override
+    @Transactional
+    public void changePassword(ChangedPasswordRequestDto requestDto, User user){
+        String password = requestDto.getPassword();
+        user.updatePassword(password);
+        userRepository.save(user);
+    }
+
+    @Override
+    @Transactional
+    public void socialAddProfile(SocialUpdateInform requestDto, User user) {
+        GenderEnum gender = requestDto.getGender();
+        LocalDate birthDate = requestDto.getBirthDate();
+        user.updateSocialProfile(gender,birthDate);
         userRepository.save(user);
     }
 
@@ -89,6 +142,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional(readOnly = true)
     public ProfileResponseDto getProfile(Long userId) {
+
         User user = findById(userId);
         return new ProfileResponseDto(user);
     }
@@ -97,4 +151,8 @@ public class UserServiceImpl implements UserService {
         return userRepository.findById(id)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
     }
+
+
 }
+
+

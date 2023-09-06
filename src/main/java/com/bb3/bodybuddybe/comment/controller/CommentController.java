@@ -2,7 +2,7 @@ package com.bb3.bodybuddybe.comment.controller;
 
 import com.bb3.bodybuddybe.comment.dto.CommentRequestDto;
 import com.bb3.bodybuddybe.comment.dto.CommentUpdateRequestDto;
-import com.bb3.bodybuddybe.comment.service.CommentService;
+import com.bb3.bodybuddybe.comment.service.CommentServiceImpl;
 import com.bb3.bodybuddybe.common.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class CommentController {
 
-    private final CommentService commentService;
+    private final CommentServiceImpl commentService;
 
     @PostMapping("/comment")
     public ResponseEntity<?> save(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody CommentRequestDto requestDto){

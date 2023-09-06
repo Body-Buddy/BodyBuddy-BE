@@ -5,6 +5,7 @@ import com.bb3.bodybuddybe.chat.dto.ChatResponseDto;
 import com.bb3.bodybuddybe.chat.dto.MessageRequestDto;
 import com.bb3.bodybuddybe.chat.dto.MessageResponseDto;
 import com.bb3.bodybuddybe.chat.entity.Chat;
+import com.bb3.bodybuddybe.chat.entity.ChatType;
 import com.bb3.bodybuddybe.chat.entity.Message;
 import com.bb3.bodybuddybe.chat.entity.UserChat;
 import com.bb3.bodybuddybe.chat.repository.ChatRepository;
@@ -58,12 +59,12 @@ public class ChatService {
 
         Chat chat = Chat.builder()
             .roomName(chatRequestDto.getRoomName())
-            .chatType(chatRequestDto.getChatType())
+            .chatType(ChatType.GROUP)
             .gym(gym)
             .ownerUser(user)
             .build();
 
-        UserChat userChat = new UserChat(user, chat);
+        UserChat userChat = new UserChat(chat.getOwnerUser(), chat);
 
         chatRepository.save(chat);
         userChatRepository.save(userChat);
@@ -92,7 +93,7 @@ public class ChatService {
         Chat chat = findChat(chatId);
         validateUserIsChatOwner(user, chat);
 
-        chat.updateChat(chatRequestDto.getChatType(), chatRequestDto.getRoomName());
+        chat.updateChat(chatRequestDto.getRoomName());
 
         chatRepository.save(chat);
     }
@@ -103,6 +104,57 @@ public class ChatService {
         validateUserIsChatOwner(user, chat);
 
         chatRepository.delete(chat);
+    }
+
+    @Transactional
+    public ChatResponseDto getOrCreateDirectChatRoom(Long gymId, User user, Long toChatUserId) {
+        User toChatUser = findUser(toChatUserId);
+        Gym gym = findGym(gymId);
+
+        validateUserMembership(user,gym);
+
+        List<Chat> userDirectChats = chatRepository.findAllByGym_IdAndOwnerUserAndChatTypeContains(gymId, user, ChatType.DIRECT);
+
+        Chat directChatRoom = null;
+
+        for (Chat userDirectChat : userDirectChats) {
+            for (UserChat userChat : userDirectChat.getUserChatList()) {
+                if (userChat.getUser().getId()==toChatUserId) {
+                    directChatRoom = userDirectChat;
+                    break;
+                }
+            }
+        }
+
+        // 위 for문을 타도 null값인 경우 (1대1방이 존재하지 않는경우)
+        if (directChatRoom.equals(null)) {
+            Chat chat = Chat.builder()
+                .chatType(ChatType.DIRECT)
+                .roomName("님 과 1대1 채팅방")
+                .gym(gym)
+                .ownerUser(user)
+                .build();
+
+            chatRepository.save(chat);
+
+            UserChat userChat1 = new UserChat(chat.getOwnerUser(), chat);
+            UserChat userChat2 = new UserChat(toChatUser, chat);
+
+            userChatRepository.save(userChat1);
+            userChatRepository.save(userChat2);
+
+            directChatRoom = chat;
+        }
+
+        // Dto 변환
+        ChatResponseDto chatResponseDto = new ChatResponseDto(
+            directChatRoom.getId(),
+            directChatRoom.getRoomname(),
+            directChatRoom.getChatType(),
+            toChatUser
+        );
+
+        return chatResponseDto;
     }
 
 //--------------------------------------------------------------------------------------------------------------------------------------------

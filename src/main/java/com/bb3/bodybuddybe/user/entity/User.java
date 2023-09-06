@@ -1,14 +1,18 @@
 package com.bb3.bodybuddybe.user.entity;
 
-import com.bb3.bodybuddybe.chat.entity.UserChat;
+
 import com.bb3.bodybuddybe.chat.entity.Message;
+import com.bb3.bodybuddybe.chat.entity.UserChat;
 import com.bb3.bodybuddybe.gym.entity.UserGym;
 import com.bb3.bodybuddybe.matching.entity.MatchingCriteria;
 import com.bb3.bodybuddybe.matching.enums.AgeRangeEnum;
 import com.bb3.bodybuddybe.matching.enums.GenderEnum;
+import com.bb3.bodybuddybe.user.dto.ChangedPasswordRequestDto;
 import com.bb3.bodybuddybe.user.dto.ProfileUpdateRequestDto;
+import com.bb3.bodybuddybe.user.dto.SocialUpdateInform;
 import com.bb3.bodybuddybe.user.enums.UserRoleEnum;
 import com.bb3.bodybuddybe.user.enums.UserStatusEnum;
+import com.bb3.bodybuddybe.user.service.Role;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -36,21 +40,25 @@ public class User {
 
 
     @Column(nullable = false, unique = true)
-    private String email;
+    private String username;
+
+    @Column(nullable = false, unique = true)
+    private String nickname;
 
 
     @Column(nullable = false)
     private String password;
 
-    @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
-    private GenderEnum gender;
-
-    @Column(nullable = false)
-    private LocalDate birthDate;
+    @Column(nullable = false, unique = true)
+    private String email;
 
     @Column
-    private String nickname;
+    @Enumerated
+    private GenderEnum gender;
+
+    @Column
+    private LocalDate birthDate;
+
 
     @Column
     private String imageUrl;
@@ -62,21 +70,29 @@ public class User {
     @Enumerated(value = EnumType.STRING)
     private UserRoleEnum role;
 
-    @Column(nullable = false)
+
+
+    @Column
     @Enumerated(value = EnumType.STRING)
     private UserStatusEnum status;
+
+
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private MatchingCriteria matchingCriteria;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
-    private List<UserChat> userChatList = new ArrayList<>();
+    private List<UserChat> groupChatMemberList = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<UserGym> userGymList = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Message> messageList = new ArrayList<>();
+
+    public void setGroupChatMemberList(List<UserChat> groupChatMemberList) {
+        this.groupChatMemberList = groupChatMemberList;
+    }
 
     public User(String email, String password, GenderEnum gender, LocalDate birthDate, UserRoleEnum role) {
         this.email = email;
@@ -95,6 +111,8 @@ public class User {
         this.password = updatePassword;
     }
 
+
+
     public void updateImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
     }
@@ -102,6 +120,17 @@ public class User {
     public void updateProfile(ProfileUpdateRequestDto requestDto) {
         this.nickname = requestDto.getNickname();
         this.introduction = requestDto.getIntroduction();
+    }
+    public User update(String nickname, String profileImageUrl) {
+        this.nickname = nickname;
+        this.imageUrl = profileImageUrl;
+        return this;
+    }
+
+    public User updateSocialProfile(GenderEnum gender, LocalDate birthDate) {
+        this.gender = gender;
+        this.birthDate = birthDate;
+        return this;
     }
 
     public AgeRangeEnum getAgeRange() {
@@ -126,4 +155,6 @@ public class User {
 
         return age;
     }
+
+
 }

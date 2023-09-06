@@ -1,11 +1,13 @@
 package com.bb3.bodybuddybe.common.jwt;
 
+import com.bb3.bodybuddybe.common.oauth2.repository.RefreshTokenRepository;
 import com.bb3.bodybuddybe.user.enums.UserRoleEnum;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -17,8 +19,10 @@ import java.util.Date;
 
 @Slf4j(topic = "JwtUtil")
 @Component
+@RequiredArgsConstructor
 @Getter
 public class JwtUtil {
+    private final RefreshTokenRepository refreshTokenRepository;
     // Header KEY 값
     public static final String AUTHORIZATION_HEADER = "Authorization";
     // 사용자 권한 값의 KEY
@@ -26,7 +30,8 @@ public class JwtUtil {
     // Token 식별자
     public static final String BEARER_PREFIX = "Bearer ";
     // 토큰 만료시간
-    private final long TOKEN_TIME = 60 * 60 * 1000L * 24 * 7; // 일주일
+//    private final long TOKEN_TIME = 60 * 60 * 1000L; // 60분
+    private final long TOKEN_TIME = 60 * 60 * 1000L * 24 * 7;
 
     @Value("${jwt.secretKey}") // Base64 Encode 한 SecretKey
     private String secretKey;
@@ -45,7 +50,7 @@ public class JwtUtil {
 
         return BEARER_PREFIX +
                 Jwts.builder()
-                        .setSubject(username) // 사용자 식별자값 (이메일)
+                        .setSubject(username) // 사용자 식별자값(ID)
                         .claim(AUTHORIZATION_KEY, role) // 사용자 권한
                         .setExpiration(new Date(date.getTime() + TOKEN_TIME)) // 만료 시간
                         .setIssuedAt(date) // 발급일
@@ -66,7 +71,6 @@ public class JwtUtil {
     // header 에서 JWT 가져오기
     public String getJwtFromHeader(HttpServletRequest request) {
         String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
-        System.out.println(bearerToken);
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(BEARER_PREFIX)) {
             return bearerToken.substring(7);
         }
@@ -74,14 +78,12 @@ public class JwtUtil {
     }
 
     // 토큰 검증
-    public boolean validateToken(String token) {
+    public boolean validateToken(String accessToken) throws ExpiredJwtException{
         try {
-            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
+            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(accessToken);
             return true;
-        } catch (SecurityException | MalformedJwtException e) {
+        } catch (SecurityException | MalformedJwtException | SignatureException e) {
             log.error("Invalid JWT signature, 유효하지 않는 JWT 서명 입니다.");
-        } catch (ExpiredJwtException e) {
-            log.error("Expired JWT token, 만료된 JWT token 입니다.");
         } catch (UnsupportedJwtException e) {
             log.error("Unsupported JWT token, 지원되지 않는 JWT 토큰 입니다.");
         } catch (IllegalArgumentException e) {
