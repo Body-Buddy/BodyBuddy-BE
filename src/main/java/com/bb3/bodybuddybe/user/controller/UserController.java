@@ -30,14 +30,19 @@ public class UserController {
     }
 
 
-    @PostMapping("/users/socialprofile")
+    @PostMapping("/users/social-profile")
     public ResponseEntity<ApiResponseDto> socialAddProfile(@Valid @RequestBody SocialUpdateInform requestDto,
                                                            @AuthenticationPrincipal UserDetailsImpl userDetails ) {
         userService.socialAddProfile(requestDto,userDetails.getUser());
-        return ResponseEntity.ok(new ApiResponseDto("회원가입 성공", HttpStatus.OK.value()));
+        return ResponseEntity.ok(new ApiResponseDto("소셜로그인 사용자 프로필 추가 작성 성공", HttpStatus.OK.value()));
     }
 
-
+    @PostMapping("/users/change-password")
+    public ResponseEntity<ApiResponseDto> changePassword(@Valid @RequestBody ChangedPasswordRequestDto requestDto,
+                                                           @AuthenticationPrincipal UserDetailsImpl userDetails ) {
+        userService.changePassword(requestDto,userDetails.getUser());
+        return ResponseEntity.ok(new ApiResponseDto("비밀번호 변경 완료", HttpStatus.OK.value()));
+    }
 
 
     @PostMapping("/email-verification/request")

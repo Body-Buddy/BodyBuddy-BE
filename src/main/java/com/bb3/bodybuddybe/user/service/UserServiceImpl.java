@@ -47,6 +47,14 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
+    public void changePassword(ChangedPasswordRequestDto requestDto, User user){
+        String password = requestDto.getPassword();
+        user.updatePassword(password);
+        userRepository.save(user);
+    }
+
+    @Override
+    @Transactional
     public void socialAddProfile(SocialUpdateInform requestDto, User user) {
         GenderEnum gender = requestDto.getGender();
         LocalDate birthDate = requestDto.getBirthDate();

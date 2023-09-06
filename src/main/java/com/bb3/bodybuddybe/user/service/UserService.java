@@ -33,5 +33,6 @@ public interface UserService {
     @Transactional
     void socialAddProfile(SocialUpdateInform requestDto, User user);
 
-
+    @Transactional
+    void changePassword(ChangedPasswordRequestDto requestDto, User user);
 }
