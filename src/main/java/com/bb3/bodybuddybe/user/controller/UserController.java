@@ -2,10 +2,12 @@ package com.bb3.bodybuddybe.user.controller;
 
 
 import com.bb3.bodybuddybe.common.dto.ApiResponseDto;
+import com.bb3.bodybuddybe.common.oauth2.repository.LogoutlistRepository;
 import com.bb3.bodybuddybe.common.security.UserDetailsImpl;
 import com.bb3.bodybuddybe.user.dto.*;
 import com.bb3.bodybuddybe.user.service.EmailServiceImpl;
 import com.bb3.bodybuddybe.user.service.UserServiceImpl;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -22,12 +24,20 @@ public class UserController {
     private final UserServiceImpl userService;
     private final EmailServiceImpl emailService;
 
+
     @PostMapping("/users/signup")
     public ResponseEntity<ApiResponseDto> signup(@Valid @RequestBody SignupRequestDto requestDto) {
 
         userService.signup(requestDto);
         return ResponseEntity.ok(new ApiResponseDto("회원가입 성공", HttpStatus.OK.value()));
     }
+
+    @GetMapping("/logout") // @Post 변경 예정
+    public ResponseEntity logout(@AuthenticationPrincipal UserDetailsImpl userDetails, HttpServletRequest request){
+        userService.logout(userDetails.getUser(), request);
+        return ResponseEntity.ok().body("로그아웃 완료");
+    }
+
 
 
     @PostMapping("/users/social-profile")

@@ -3,6 +3,7 @@ package com.bb3.bodybuddybe.user.service;
 import com.bb3.bodybuddybe.common.security.UserDetailsImpl;
 import com.bb3.bodybuddybe.user.dto.*;
 import com.bb3.bodybuddybe.user.entity.User;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -35,4 +36,7 @@ public interface UserService {
 
     @Transactional
     void changePassword(ChangedPasswordRequestDto requestDto, User user);
+
+    void logout(User user, HttpServletRequest request);
+
 }

@@ -4,6 +4,7 @@ import com.bb3.bodybuddybe.common.jwt.JwtUtil;
 
 import com.bb3.bodybuddybe.common.oauth2.CustomOAuth2UserService;
 import com.bb3.bodybuddybe.common.oauth2.OAuth2SuccessHandler;
+import com.bb3.bodybuddybe.common.oauth2.repository.LogoutlistRepository;
 import com.bb3.bodybuddybe.common.oauth2.repository.RefreshTokenRepository;
 import com.bb3.bodybuddybe.common.security.JwtAuthenticationFilter;
 import com.bb3.bodybuddybe.common.security.JwtAuthorizationFilter;
@@ -38,6 +39,7 @@ public class WebSecurityConfig {
     private final CustomOAuth2UserService customOAuth2UserService;
     private final RefreshTokenRepository refreshTokenRepository;
     private final ObjectMapper objectMapper;
+    private final LogoutlistRepository logoutlistRepository;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -58,7 +60,7 @@ public class WebSecurityConfig {
 
     @Bean
     public JwtAuthorizationFilter jwtAuthorizationFilter() {
-        return new JwtAuthorizationFilter(jwtUtil, userDetailsService, refreshTokenRepository);
+        return new JwtAuthorizationFilter(jwtUtil, userDetailsService, refreshTokenRepository,logoutlistRepository);
     }
 
     @Bean
