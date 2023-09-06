@@ -9,6 +9,7 @@ import com.bb3.bodybuddybe.matching.enums.AgeRangeEnum;
 import com.bb3.bodybuddybe.matching.enums.GenderEnum;
 import com.bb3.bodybuddybe.user.dto.ChangedPasswordRequestDto;
 import com.bb3.bodybuddybe.user.dto.ProfileUpdateRequestDto;
+import com.bb3.bodybuddybe.user.dto.SocialUpdateInform;
 import com.bb3.bodybuddybe.user.enums.UserRoleEnum;
 import com.bb3.bodybuddybe.user.enums.UserStatusEnum;
 import com.bb3.bodybuddybe.user.service.Role;
@@ -124,6 +125,11 @@ public class User {
         return this;
     }
 
+    public User updateSocialProfile(GenderEnum gender, LocalDate birthDate) {
+        this.gender = gender;
+        this.birthDate = birthDate;
+        return this;
+    }
 
     public AgeRangeEnum getAgeRange() {
         int age = getAge();
@@ -147,4 +153,6 @@ public class User {
 
         return age;
     }
+
+
 }

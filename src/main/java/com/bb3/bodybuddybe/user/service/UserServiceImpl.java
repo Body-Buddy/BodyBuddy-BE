@@ -3,11 +3,9 @@ package com.bb3.bodybuddybe.user.service;
 import com.bb3.bodybuddybe.common.exception.CustomException;
 import com.bb3.bodybuddybe.common.exception.ErrorCode;
 import com.bb3.bodybuddybe.common.image.ImageUploader;
+import com.bb3.bodybuddybe.common.security.UserDetailsImpl;
 import com.bb3.bodybuddybe.matching.enums.GenderEnum;
-import com.bb3.bodybuddybe.user.dto.ProfileResponseDto;
-import com.bb3.bodybuddybe.user.dto.ProfileUpdateRequestDto;
-import com.bb3.bodybuddybe.user.dto.SignupRequestDto;
-import com.bb3.bodybuddybe.user.dto.UserDeleteRequestDto;
+import com.bb3.bodybuddybe.user.dto.*;
 import com.bb3.bodybuddybe.user.entity.User;
 import com.bb3.bodybuddybe.user.enums.UserRoleEnum;
 import com.bb3.bodybuddybe.user.repository.UserRepository;
@@ -44,6 +42,15 @@ public class UserServiceImpl implements UserService {
             throw new CustomException(ErrorCode.UNDER_AGE);
         }
 
+        userRepository.save(user);
+    }
+
+    @Override
+    @Transactional
+    public void socialAddProfile(SocialUpdateInform requestDto, User user) {
+        GenderEnum gender = requestDto.getGender();
+        LocalDate birthDate = requestDto.getBirthDate();
+        user.updateSocialProfile(gender,birthDate);
         userRepository.save(user);
     }
 
@@ -100,7 +107,6 @@ public class UserServiceImpl implements UserService {
     }
 
 
-
-    }
+}
 
 

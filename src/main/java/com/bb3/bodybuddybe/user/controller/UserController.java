@@ -29,6 +29,17 @@ public class UserController {
         return ResponseEntity.ok(new ApiResponseDto("회원가입 성공", HttpStatus.OK.value()));
     }
 
+
+    @PostMapping("/users/socialprofile")
+    public ResponseEntity<ApiResponseDto> socialAddProfile(@Valid @RequestBody SocialUpdateInform requestDto,
+                                                           @AuthenticationPrincipal UserDetailsImpl userDetails ) {
+        userService.socialAddProfile(requestDto,userDetails.getUser());
+        return ResponseEntity.ok(new ApiResponseDto("회원가입 성공", HttpStatus.OK.value()));
+    }
+
+
+
+
     @PostMapping("/email-verification/request")
     public ResponseEntity<ApiResponseDto> sendVerificationCode(@RequestBody @Valid EmailRequestDto requestDto) {
         emailService.sendVerificationCode(requestDto);
