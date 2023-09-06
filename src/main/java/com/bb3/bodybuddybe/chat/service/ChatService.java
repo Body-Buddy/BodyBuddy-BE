@@ -113,7 +113,7 @@ public class ChatService {
 
         validateUserMembership(user,gym);
 
-        List<Chat> userDirectChats = chatRepository.findAllByGym_IdAndOwnerUserAndChatType_Direct(gymId, user);
+        List<Chat> userDirectChats = chatRepository.findAllByGym_IdAndOwnerUserAndChatTypeContains(gymId, user, ChatType.DIRECT);
 
         Chat directChatRoom = null;
 
