@@ -31,7 +31,7 @@ public interface UserService {
     ProfileResponseDto getProfile(Long userId);
 
     @Transactional
-    void changePassword(ChangedPasswordRequestDto requestDto, User user);
+    void changePassword(PasswordChangeRequestDto requestDto, User user);
 
     @Transactional
     void socialSignup(SocialSignupRequestDto requestDto, User user);

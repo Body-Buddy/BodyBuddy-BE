@@ -88,7 +88,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public void changePassword(ChangedPasswordRequestDto requestDto, User user){
+    public void changePassword(PasswordChangeRequestDto requestDto, User user) {
         String password = requestDto.getPassword();
         user.updatePassword(password);
         userRepository.save(user);

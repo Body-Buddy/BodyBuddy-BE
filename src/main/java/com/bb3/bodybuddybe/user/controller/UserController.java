@@ -42,14 +42,6 @@ public class UserController {
         return ResponseEntity.ok().body("로그아웃 완료");
     }
 
-    @PostMapping("/users/password")
-    public ResponseEntity<ApiResponseDto> changePassword(@Valid @RequestBody ChangedPasswordRequestDto requestDto,
-                                                         @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        userService.changePassword(requestDto, userDetails.getUser());
-        return ResponseEntity.ok(new ApiResponseDto("비밀번호 변경 완료", HttpStatus.OK.value()));
-    }
-
-    //탈퇴 휴먼 /
     @PostMapping("/email-verification/request")
     public ResponseEntity<ApiResponseDto> sendVerificationCode(@RequestBody @Valid EmailRequestDto requestDto) {
         emailService.sendVerificationCode(requestDto);
@@ -68,6 +60,13 @@ public class UserController {
                                                      @AuthenticationPrincipal UserDetailsImpl userDetails) {
         userService.deleteUser(requestDto, userDetails.getUser());
         return ResponseEntity.ok(new ApiResponseDto("회원 탈퇴 성공", HttpStatus.OK.value()));
+    }
+
+    @PutMapping("/users/{userId}/password")
+    public ResponseEntity<ApiResponseDto> changePassword(@Valid @RequestBody PasswordChangeRequestDto requestDto,
+                                                         @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        userService.changePassword(requestDto, userDetails.getUser());
+        return ResponseEntity.ok(new ApiResponseDto("비밀번호 변경 성공", HttpStatus.OK.value()));
     }
 
     @PutMapping("/users/{userId}/image")

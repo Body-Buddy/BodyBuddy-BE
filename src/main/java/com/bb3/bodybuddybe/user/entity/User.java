@@ -2,6 +2,8 @@ package com.bb3.bodybuddybe.user.entity;
 
 import com.bb3.bodybuddybe.chat.entity.Message;
 import com.bb3.bodybuddybe.chat.entity.UserChat;
+import com.bb3.bodybuddybe.common.exception.CustomException;
+import com.bb3.bodybuddybe.common.exception.ErrorCode;
 import com.bb3.bodybuddybe.gym.entity.UserGym;
 import com.bb3.bodybuddybe.matching.entity.MatchingCriteria;
 import com.bb3.bodybuddybe.matching.enums.AgeRangeEnum;
@@ -95,8 +97,11 @@ public class User {
         this.status = UserStatusEnum.ACTIVE;
     }
 
-    public void updatePassword(String updatePassword) {
-        this.password = updatePassword;
+    public void updatePassword(String newPassword) {
+        if(this.password.equals(newPassword)) {
+            throw new CustomException(ErrorCode.SAME_PASSWORD);
+        }
+        this.password = newPassword;
     }
 
     public void updateImageUrl(String imageUrl) {
