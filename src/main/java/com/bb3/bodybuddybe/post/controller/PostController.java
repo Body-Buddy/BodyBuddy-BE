@@ -30,6 +30,7 @@ public class PostController {
     @PostMapping("/posts")
     public ResponseEntity<ApiResponseDto> createPost(@RequestBody PostCreateRequestDto requestDto,
                                                      @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        System.out.println(userDetails.getUsername());
         postService.createPost(requestDto, userDetails.getUser());
         return ResponseEntity.ok(new ApiResponseDto("게시글이 작성되었습니다.", HttpStatus.CREATED.value()));
     }
