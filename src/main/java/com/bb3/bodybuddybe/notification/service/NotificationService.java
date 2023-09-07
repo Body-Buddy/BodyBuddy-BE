@@ -1,5 +1,6 @@
 package com.bb3.bodybuddybe.notification.service;
 
+import com.bb3.bodybuddybe.like.entity.LikePost;
 import com.bb3.bodybuddybe.notification.dto.NotificationListResponseDto;
 import com.bb3.bodybuddybe.notification.dto.NotificationRequestDto;
 import com.bb3.bodybuddybe.notification.entity.Notification;
@@ -7,6 +8,7 @@ import com.bb3.bodybuddybe.user.entity.User;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 public interface NotificationService {
+    void notifyToUsersThatTheyHaveReceivedLike(LikePost likePost);
     SseEmitter subscribe(User user, String lastEventId);
     void send(NotificationRequestDto request);
     void sendToClient(SseEmitter emitter, String emitterId, String eventId, Object data);

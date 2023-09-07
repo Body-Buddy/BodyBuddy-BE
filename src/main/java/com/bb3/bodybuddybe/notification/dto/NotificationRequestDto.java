@@ -12,7 +12,7 @@ import lombok.*;
 public class NotificationRequestDto {
 
     private String message;
-    private User Receiver;
+    private User receiver;
     private NotificationType notificationType;
 
     public Notification toEntity(NotificationType notificationType, User receiver) {

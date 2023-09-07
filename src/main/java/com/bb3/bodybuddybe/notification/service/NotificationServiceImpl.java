@@ -2,10 +2,12 @@ package com.bb3.bodybuddybe.notification.service;
 
 import com.bb3.bodybuddybe.common.exception.CustomException;
 import com.bb3.bodybuddybe.common.exception.ErrorCode;
+import com.bb3.bodybuddybe.like.entity.LikePost;
 import com.bb3.bodybuddybe.notification.dto.NotificationListResponseDto;
 import com.bb3.bodybuddybe.notification.dto.NotificationRequestDto;
 import com.bb3.bodybuddybe.notification.dto.NotificationResponseDto;
 import com.bb3.bodybuddybe.notification.entity.Notification;
+import com.bb3.bodybuddybe.notification.entity.NotificationType;
 import com.bb3.bodybuddybe.notification.repository.EmitterRepositoryImpl;
 import com.bb3.bodybuddybe.notification.repository.NotificationRepository;
 import com.bb3.bodybuddybe.user.entity.User;
@@ -102,6 +104,25 @@ public class NotificationServiceImpl implements NotificationService {
                 .build();
         notificationRepository.save(notification);
         return notification;
+    }
+
+    @Override
+    @Transactional
+    public void notifyToUsersThatTheyHaveReceivedLike(LikePost likePost) {
+        User receiver = likePost.getPost().getUser(); // 글쓴이
+        String message =
+                likePost.getUser().getUsername() + "님이 \""
+                        + likePost.getPost().getTitle() + "\" 게시글에 대해 좋아요를 눌렀습니다.";
+
+//        String redirectUrl = CLIENT_BASIC_URL + "/posts/" + likePost.getPost().getId();
+
+        NotificationRequestDto requestDto = NotificationRequestDto.builder()
+                .notificationType(NotificationType.LIKE)
+                .message(message)
+                .receiver(receiver)
+                .build();
+
+        send(requestDto);
     }
 
     /**
