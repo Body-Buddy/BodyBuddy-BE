@@ -1,50 +1,37 @@
 package com.bb3.bodybuddybe.user.entity;
 
-
 import com.bb3.bodybuddybe.chat.entity.Message;
 import com.bb3.bodybuddybe.chat.entity.UserChat;
 import com.bb3.bodybuddybe.gym.entity.UserGym;
 import com.bb3.bodybuddybe.matching.entity.MatchingCriteria;
 import com.bb3.bodybuddybe.matching.enums.AgeRangeEnum;
 import com.bb3.bodybuddybe.matching.enums.GenderEnum;
-import com.bb3.bodybuddybe.user.dto.ChangedPasswordRequestDto;
 import com.bb3.bodybuddybe.user.dto.ProfileUpdateRequestDto;
-import com.bb3.bodybuddybe.user.dto.SocialUpdateInform;
+import com.bb3.bodybuddybe.user.dto.SocialSignupRequestDto;
 import com.bb3.bodybuddybe.user.enums.UserRoleEnum;
 import com.bb3.bodybuddybe.user.enums.UserStatusEnum;
-import com.bb3.bodybuddybe.user.service.Role;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-
 @Entity
 @Getter
-@Builder
 @Table(name = "users")
-@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class User {
-    private static final int AGE_20 = 20;
-    private static final int AGE_30 = 30;
-    private static final int AGE_40 = 40;
-    private static final int AGE_50 = 50;
-    private static final int AGE_60 = 60;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-
-    @Column(nullable = false, unique = true)
-    private String username;
-
-    @Column(nullable = false, unique = true)
+    @Column
     private String nickname;
-
 
     @Column(nullable = false)
     private String password;
@@ -53,12 +40,11 @@ public class User {
     private String email;
 
     @Column
-    @Enumerated
+    @Enumerated(value = EnumType.STRING)
     private GenderEnum gender;
 
     @Column
     private LocalDate birthDate;
-
 
     @Column
     private String imageUrl;
@@ -70,13 +56,9 @@ public class User {
     @Enumerated(value = EnumType.STRING)
     private UserRoleEnum role;
 
-
-
     @Column
     @Enumerated(value = EnumType.STRING)
     private UserStatusEnum status;
-
-
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private MatchingCriteria matchingCriteria;
@@ -103,15 +85,19 @@ public class User {
         this.status = UserStatusEnum.ACTIVE;
     }
 
-    public void authorizeUser() {
-        this.role = UserRoleEnum.USER;
+    @Builder
+    public User(String email, String password, String nickname, String imageUrl, UserRoleEnum role) {
+        this.email = email;
+        this.password = password;
+        this.nickname = nickname;
+        this.imageUrl = imageUrl;
+        this.role = role;
+        this.status = UserStatusEnum.ACTIVE;
     }
 
     public void updatePassword(String updatePassword) {
         this.password = updatePassword;
     }
-
-
 
     public void updateImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
@@ -121,27 +107,26 @@ public class User {
         this.nickname = requestDto.getNickname();
         this.introduction = requestDto.getIntroduction();
     }
+
     public User update(String nickname, String profileImageUrl) {
         this.nickname = nickname;
         this.imageUrl = profileImageUrl;
         return this;
     }
 
-    public User updateSocialProfile(GenderEnum gender, LocalDate birthDate) {
-        this.gender = gender;
-        this.birthDate = birthDate;
-        return this;
+    public void socialSignup(SocialSignupRequestDto requestDto) {
+        this.gender = requestDto.getGender();
+        this.birthDate = requestDto.getBirthDate();
     }
 
     public AgeRangeEnum getAgeRange() {
         int age = getAge();
 
-        if (age < AGE_20) return AgeRangeEnum.S10s;
-        if (age < AGE_30) return AgeRangeEnum.S20s;
-        if (age < AGE_40) return AgeRangeEnum.S30s;
-        if (age < AGE_50) return AgeRangeEnum.S40s;
-        if (age < AGE_60) return AgeRangeEnum.S50s;
-
+        if (age < 20) return AgeRangeEnum.S10s;
+        if (age < 30) return AgeRangeEnum.S20s;
+        if (age < 40) return AgeRangeEnum.S30s;
+        if (age < 50) return AgeRangeEnum.S40s;
+        if (age < 60) return AgeRangeEnum.S50s;
         return AgeRangeEnum.S60plus;
     }
 
@@ -155,6 +140,4 @@ public class User {
 
         return age;
     }
-
-
 }

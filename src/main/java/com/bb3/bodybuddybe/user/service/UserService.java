@@ -1,6 +1,5 @@
 package com.bb3.bodybuddybe.user.service;
 
-import com.bb3.bodybuddybe.common.security.UserDetailsImpl;
 import com.bb3.bodybuddybe.user.dto.*;
 import com.bb3.bodybuddybe.user.entity.User;
 import jakarta.servlet.http.HttpServletRequest;
@@ -32,10 +31,10 @@ public interface UserService {
     ProfileResponseDto getProfile(Long userId);
 
     @Transactional
-    void socialAddProfile(SocialUpdateInform requestDto, User user);
+    void changePassword(ChangedPasswordRequestDto requestDto, User user);
 
     @Transactional
-    void changePassword(ChangedPasswordRequestDto requestDto, User user);
+    void socialSignup(SocialSignupRequestDto requestDto, User user);
 
     void logout(User user, HttpServletRequest request);
 

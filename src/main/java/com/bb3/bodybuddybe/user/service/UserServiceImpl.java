@@ -8,7 +8,6 @@ import com.bb3.bodybuddybe.common.oauth2.entity.LogoutList;
 import com.bb3.bodybuddybe.common.oauth2.entity.RefreshToken;
 import com.bb3.bodybuddybe.common.oauth2.repository.LogoutlistRepository;
 import com.bb3.bodybuddybe.common.oauth2.repository.RefreshTokenRepository;
-import com.bb3.bodybuddybe.common.security.UserDetailsImpl;
 import com.bb3.bodybuddybe.matching.enums.GenderEnum;
 import com.bb3.bodybuddybe.user.dto.*;
 import com.bb3.bodybuddybe.user.entity.User;
@@ -17,12 +16,9 @@ import com.bb3.bodybuddybe.user.repository.UserRepository;
 import io.jsonwebtoken.Jwts;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.security.Key;
@@ -34,10 +30,10 @@ import java.util.Date;
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final ImageUploader imageUploader;
     private final LogoutlistRepository logoutlistRepository;
-    private final JwtUtil jwtUtil;
     private final RefreshTokenRepository refreshTokenRepository;
+    private final JwtUtil jwtUtil;
+    private final ImageUploader imageUploader;
 
     @Override
     @Transactional
@@ -57,6 +53,13 @@ public class UserServiceImpl implements UserService {
             throw new CustomException(ErrorCode.UNDER_AGE);
         }
 
+        userRepository.save(user);
+    }
+
+    @Override
+    @Transactional
+    public void socialSignup(SocialSignupRequestDto requestDto, User user) {
+        user.socialSignup(requestDto);
         userRepository.save(user);
     }
 
@@ -88,15 +91,6 @@ public class UserServiceImpl implements UserService {
     public void changePassword(ChangedPasswordRequestDto requestDto, User user){
         String password = requestDto.getPassword();
         user.updatePassword(password);
-        userRepository.save(user);
-    }
-
-    @Override
-    @Transactional
-    public void socialAddProfile(SocialUpdateInform requestDto, User user) {
-        GenderEnum gender = requestDto.getGender();
-        LocalDate birthDate = requestDto.getBirthDate();
-        user.updateSocialProfile(gender,birthDate);
         userRepository.save(user);
     }
 
