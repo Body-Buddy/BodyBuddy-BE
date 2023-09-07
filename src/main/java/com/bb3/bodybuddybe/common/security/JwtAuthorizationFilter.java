@@ -60,7 +60,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
                 String refreshTokenVal = UUID.randomUUID().toString();
                 refreshTokenRepository.delete(refToken);
                 refreshTokenRepository.save(new RefreshToken(refreshTokenVal));
-                tokenValue = jwtUtil.createToken(userDetails.getUsername(), ((UserDetailsImpl) userDetails).getRole())
+                tokenValue = jwtUtil.createAccessToken(userDetails.getUsername(), ((UserDetailsImpl) userDetails).getRole())
                         .substring(7);
                 res.addHeader("RefreshToken", refreshTokenVal);
                 res.addHeader(JwtUtil.AUTHORIZATION_HEADER, tokenValue);
@@ -69,7 +69,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
                 log.error("Token Error");
                 return;
             }
-            Claims info = jwtUtil.getUserInfoFromToken(tokenValue);
+            Claims info = jwtUtil.getClaims(tokenValue);
 
             try {
                 setAuthentication(info.getSubject());

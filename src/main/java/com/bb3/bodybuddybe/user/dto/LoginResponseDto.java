@@ -1,14 +1,11 @@
 package com.bb3.bodybuddybe.user.dto;
 
+import lombok.Builder;
 import lombok.Getter;
 
 @Getter
+@Builder
 public class LoginResponseDto {
     private Long userId;
-    private boolean profileExists;
-
-    public LoginResponseDto(Long userId, boolean profileExists) {
-        this.userId = userId;
-        this.profileExists = profileExists;
-    }
+    private boolean isNewUser;
 }

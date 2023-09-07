@@ -1,17 +1,18 @@
 package com.bb3.bodybuddybe.common.security;
 
-import com.bb3.bodybuddybe.common.dto.ApiResponseDto;
 import com.bb3.bodybuddybe.common.jwt.JwtUtil;
 import com.bb3.bodybuddybe.common.oauth2.repository.RefreshTokenRepository;
 import com.bb3.bodybuddybe.user.dto.LoginRequestDto;
+import com.bb3.bodybuddybe.user.dto.LoginResponseDto;
+import com.bb3.bodybuddybe.user.entity.User;
 import com.bb3.bodybuddybe.user.enums.UserRoleEnum;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -23,19 +24,20 @@ import java.io.IOException;
 @Slf4j(topic = "로그인 및 JWT 생성")
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
     private final JwtUtil jwtUtil;
-    private final RefreshTokenRepository refreshTokenRepository;
+    private final ObjectMapper objectMapper;
 
-    public JwtAuthenticationFilter(JwtUtil jwtUtil, RefreshTokenRepository refreshTokenRepository) {
+    public JwtAuthenticationFilter(JwtUtil jwtUtil, ObjectMapper objectMapper) {
         this.jwtUtil = jwtUtil;
-        this.refreshTokenRepository = refreshTokenRepository;
+        this.objectMapper = objectMapper;
         setFilterProcessesUrl("/api/users/login");
     }
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
         log.info("로그인 시도");
+
         try {
-            LoginRequestDto requestDto = new ObjectMapper().readValue(request.getInputStream(), LoginRequestDto.class);
+            LoginRequestDto requestDto = objectMapper.readValue(request.getInputStream(), LoginRequestDto.class);
 
             return getAuthenticationManager().authenticate(
                     new UsernamePasswordAuthenticationToken(
@@ -52,21 +54,27 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
-        log.info("로그인성공");
-        String email = ((UserDetailsImpl) authResult.getPrincipal()).getUsername();
-        UserRoleEnum role = ((UserDetailsImpl) authResult.getPrincipal()).getUser().getRole();
+        log.info("로그인 성공");
+        User user = ((UserDetailsImpl) authResult.getPrincipal()).getUser();
+        Long userId = user.getId();
+        boolean isNewUser = user.getNickname() != null;
+        String email = user.getEmail();
+        UserRoleEnum role = user.getRole();
 
-        String token = jwtUtil.createToken(email, role);
-        response.addHeader(JwtUtil.AUTHORIZATION_HEADER, token);
-        ApiResponseDto apiResponseDto = new ApiResponseDto();
-        apiResponseDto.setMessage("로그인 성공");
-        apiResponseDto.setStatusCode(HttpStatus.OK.value());
-        response.setStatus(HttpStatus.OK.value());
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
-        String json = new ObjectMapper().writeValueAsString(apiResponseDto);
-        response.getWriter().write(json);
+        LoginResponseDto responseDto =
+                LoginResponseDto.builder()
+                .userId(userId)
+                .isNewUser(isNewUser)
+                .build();
 
+        String accessToken = jwtUtil.createAccessToken(email, role);
+        Cookie refreshToken = jwtUtil.createRefreshTokenCookie();
+
+        response.addHeader(JwtUtil.AUTHORIZATION_HEADER, accessToken);
+        response.addCookie(refreshToken);
+        response.setStatus(HttpServletResponse.SC_OK);
+        response.setContentType("application/json; charset=UTF-8");
+        response.getWriter().write(objectMapper.writeValueAsString(responseDto));
     }
 
     @Override

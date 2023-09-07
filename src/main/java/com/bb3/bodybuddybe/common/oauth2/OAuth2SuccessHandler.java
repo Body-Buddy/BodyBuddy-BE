@@ -1,9 +1,12 @@
 package com.bb3.bodybuddybe.common.oauth2;
 
 import com.bb3.bodybuddybe.common.jwt.JwtUtil;
-import com.bb3.bodybuddybe.common.oauth2.entity.RefreshToken;
 import com.bb3.bodybuddybe.common.oauth2.repository.RefreshTokenRepository;
+import com.bb3.bodybuddybe.user.dto.LoginResponseDto;
+import com.bb3.bodybuddybe.user.entity.User;
 import com.bb3.bodybuddybe.user.enums.UserRoleEnum;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -16,46 +19,34 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
 import java.io.IOException;
-import java.net.URLEncoder;
 import java.util.Map;
-import java.util.UUID;
 
-@RequiredArgsConstructor
+import static com.bb3.bodybuddybe.common.jwt.JwtUtil.AUTHORIZATION_HEADER;
+
 @Slf4j
+@RequiredArgsConstructor
 public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
     private final JwtUtil jwtUtil;
-    private final RefreshTokenRepository refreshTokenRepository;
-
-    @Value("${front.server.url}")
-    private String frontUrl;
+    private final ObjectMapper objectMapper;
 
     @Override
-    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
+    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
         Map<String, Object> attributes = ((OAuth2User) authentication.getPrincipal()).getAttributes();
-        String username = (String) attributes.get("name");
-        if (attributes.containsKey("kakao_account")) {
-            username = (String) ((Map<String, Object>) ((Map<String, Object>)
-                    attributes.get("kakao_account"))
-                    .get("profile"))
-                    .get("nickname");
-        }
-        UserRoleEnum role = UserRoleEnum.USER;
-        attributes.forEach((key, value) -> System.out.println("Key: " + key + ", Value: " + value));
-        System.out.println(username);
-        String refreshTokenVal = UUID.randomUUID().toString();
-        refreshTokenRepository.save(new RefreshToken(refreshTokenVal));
-        String token = jwtUtil.createToken(username, role);
-        token = URLEncoder.encode(token, "utf-8").replaceAll("\\+", "%20");
-        // 쿠키 생성
-        Cookie refreshToken = new Cookie("refreshToken", refreshTokenVal);
-        Cookie accessToken = new Cookie(JwtUtil.AUTHORIZATION_HEADER, token);
-        refreshToken.setPath("/");
-        accessToken.setPath("/"); // 쿠키의 유효 범위 설정 (루트 경로에 모든 요청에 대해 쿠키 전송)
-        // 쿠키를 응답 헤더에 추가
-        response.addCookie(refreshToken);
-        response.addCookie(accessToken);
-        response.sendRedirect(frontUrl + "/oauth2");
+        User user = (User) attributes.get("storedUser");
 
-        log.info("로그인성공");
+        LoginResponseDto responseDto =
+                LoginResponseDto.builder()
+                        .userId(user.getId())
+                        .isNewUser(user.getBirthDate() == null)
+                        .build();
+
+        String accessToken = jwtUtil.createAccessToken(user.getEmail(), user.getRole());
+        Cookie refreshToken = jwtUtil.createRefreshTokenCookie();
+
+        response.addHeader(JwtUtil.AUTHORIZATION_HEADER, accessToken);
+        response.addCookie(refreshToken);
+        response.setStatus(HttpServletResponse.SC_OK);
+        response.setContentType("application/json; charset=UTF-8");
+        response.getWriter().write(objectMapper.writeValueAsString(responseDto));
     }
 }

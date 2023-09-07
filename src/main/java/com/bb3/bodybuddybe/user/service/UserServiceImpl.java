@@ -100,7 +100,6 @@ public class UserServiceImpl implements UserService {
         if (!user.getPassword().equals(passwordEncoder.encode(requestDto.getPassword()))) {
             throw new CustomException(ErrorCode.PASSWORD_NOT_MATCHED);
         }
-
         userRepository.delete(user);
     }
 
