@@ -13,6 +13,7 @@ import com.bb3.bodybuddybe.notification.repository.NotificationRepository;
 import com.bb3.bodybuddybe.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
@@ -30,6 +31,7 @@ public class NotificationServiceImpl implements NotificationService {
     private final EmitterRepositoryImpl emitterRepository;
 
     @Override
+    @Transactional
     public SseEmitter subscribe(User user, String lastEventId) {
         String emitterId = makeTimeIncludeId(user);
         SseEmitter sseEmitter = emitterRepository.saveEmitter(emitterId, new SseEmitter(DEFAULT_TIMEOUT));
@@ -77,6 +79,7 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     //알림 보내기
+    @Async
     public void sendNotification(NotificationRequestDto requestDto, Notification notification) {
         String receiverId = String.valueOf(requestDto.getReceiver().getId());
         String eventId = receiverId + "_" + System.currentTimeMillis();
@@ -117,7 +120,7 @@ public class NotificationServiceImpl implements NotificationService {
 //        String redirectUrl = CLIENT_BASIC_URL + "/posts/" + likePost.getPost().getId();
 
         NotificationRequestDto requestDto = NotificationRequestDto.builder()
-                .notificationType(NotificationType.LIKE)
+                .notificationType(NotificationType.POST_LIKE)
                 .message(message)
                 .receiver(receiver)
                 .build();
