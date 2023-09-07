@@ -100,8 +100,8 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     }
 
     // 인증 객체 생성
-    private Authentication createAuthentication(String username) throws UsernameNotFoundException {
-        UserDetails userDetails = userDetailsService.loadUserByUsername(username);//admin2
+    private Authentication createAuthentication(String email) throws UsernameNotFoundException {
+        UserDetails userDetails = userDetailsService.loadUserByUsername(email);//admin2
         return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
     }
 }
