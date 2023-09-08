@@ -3,8 +3,6 @@ package com.bb3.bodybuddybe.common.config;
 import com.bb3.bodybuddybe.common.jwt.JwtUtil;
 import com.bb3.bodybuddybe.common.oauth2.CustomOAuth2UserService;
 import com.bb3.bodybuddybe.common.oauth2.OAuth2SuccessHandler;
-import com.bb3.bodybuddybe.common.oauth2.repository.LogoutlistRepository;
-import com.bb3.bodybuddybe.common.oauth2.repository.RefreshTokenRepository;
 import com.bb3.bodybuddybe.common.security.JwtAuthenticationFilter;
 import com.bb3.bodybuddybe.common.security.JwtAuthorizationFilter;
 import com.bb3.bodybuddybe.common.security.UserDetailsServiceImpl;
@@ -28,7 +26,6 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import java.util.Arrays;
 import java.util.List;
 
 @Configuration
@@ -36,12 +33,10 @@ import java.util.List;
 @RequiredArgsConstructor
 public class WebSecurityConfig {
     private final JwtUtil jwtUtil;
-    private final UserDetailsServiceImpl userDetailsService;
-    private final AuthenticationConfiguration authenticationConfiguration;
-    private final CustomOAuth2UserService customOAuth2UserService;
     private final ObjectMapper objectMapper;
-    private final RefreshTokenRepository refreshTokenRepository;
-    private final LogoutlistRepository logoutlistRepository;
+    private final UserDetailsServiceImpl userDetailsService;
+    private final CustomOAuth2UserService customOAuth2UserService;
+    private final AuthenticationConfiguration authenticationConfiguration;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -55,14 +50,14 @@ public class WebSecurityConfig {
 
     @Bean
     public JwtAuthenticationFilter jwtAuthenticationFilter() throws Exception {
-        JwtAuthenticationFilter filter = new JwtAuthenticationFilter(jwtUtil, objectMapper, refreshTokenRepository);
+        JwtAuthenticationFilter filter = new JwtAuthenticationFilter(jwtUtil, objectMapper);
         filter.setAuthenticationManager(authenticationManager(authenticationConfiguration));
         return filter;
     }
 
     @Bean
     public JwtAuthorizationFilter jwtAuthorizationFilter() {
-        return new JwtAuthorizationFilter(jwtUtil, userDetailsService, refreshTokenRepository, logoutlistRepository);
+        return new JwtAuthorizationFilter(jwtUtil, objectMapper, userDetailsService);
     }
 
     @Bean

@@ -1,9 +1,10 @@
 package com.bb3.bodybuddybe.common.jwt;
 
-import com.bb3.bodybuddybe.common.oauth2.entity.RefreshToken;
 import com.bb3.bodybuddybe.common.oauth2.repository.RefreshTokenRepository;
 import com.bb3.bodybuddybe.user.enums.UserRoleEnum;
-import io.jsonwebtoken.*;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.Cookie;
@@ -58,7 +59,7 @@ public class JwtUtil {
                         .compact();
     }
 
-    public String resolveToken(HttpServletRequest request) {
+    public String extractTokenFromRequest(HttpServletRequest request) {
         String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(BEARER_PREFIX)) {
             return bearerToken.substring(7);
@@ -66,22 +67,12 @@ public class JwtUtil {
         return null;
     }
 
-    public boolean validateToken(String accessToken) throws ExpiredJwtException{
-        try {
-            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(accessToken);
-            return true;
-        } catch (SecurityException | MalformedJwtException | SignatureException e) {
-            log.error("Invalid JWT signature, 유효하지 않는 JWT 서명 입니다.");
-        } catch (UnsupportedJwtException e) {
-            log.error("Unsupported JWT token, 지원되지 않는 JWT 토큰 입니다.");
-        } catch (IllegalArgumentException e) {
-            log.error("JWT claims is empty, 잘못된 JWT 토큰 입니다.");
-        }
-        return false;
-    }
-
     public Claims getClaims(String token) {
-        return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
+        return Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
     }
 
     public Cookie createRefreshTokenCookie() {
@@ -90,5 +81,9 @@ public class JwtUtil {
         refreshTokenCookie.setPath("/");
         refreshTokenCookie.setHttpOnly(true);
         return refreshTokenCookie;
+    }
+
+    public boolean isTokenBlacklisted(String token) {
+        return refreshTokenRepository.findById(token).isPresent();
     }
 }
