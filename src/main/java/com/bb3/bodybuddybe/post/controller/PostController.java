@@ -8,6 +8,8 @@ import com.bb3.bodybuddybe.post.dto.PostResponseDto;
 import com.bb3.bodybuddybe.post.dto.PostUpdateRequestDto;
 import com.bb3.bodybuddybe.post.enums.CategoryEnum;
 import com.bb3.bodybuddybe.post.service.PostServiceImpl;
+
+import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -17,22 +19,32 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
 
 import java.util.List;
+
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api")
 public class PostController {
 
+
     private final PostServiceImpl postService;
 
     @PostMapping("/posts")
-    public ResponseEntity<ApiResponseDto> createPost(@RequestBody PostCreateRequestDto requestDto,
+    public ResponseEntity<ApiResponseDto> createPost(@RequestPart(value = "title") String title,
+                                                     @RequestPart(value = "content") String content,
+                                                     @RequestPart(value = "category") CategoryEnum category,
+                                                     @RequestPart(value = "gymId") Long gymId,
+                                                     @Nullable @RequestPart(value = "files") List<MultipartFile> files,
                                                      @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        System.out.println(userDetails.getUsername());
-        postService.createPost(requestDto, userDetails.getUser());
+
+        PostCreateRequestDto requestDto = new PostCreateRequestDto(title, content, category, gymId);
+        postService.createPost(requestDto, userDetails.getUser(), files);
         return ResponseEntity.ok(new ApiResponseDto("게시글이 작성되었습니다.", HttpStatus.CREATED.value()));
+
     }
 
     @GetMapping("/posts/{postId}")
