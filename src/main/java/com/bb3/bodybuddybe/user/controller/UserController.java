@@ -54,7 +54,7 @@ public class UserController {
         return ResponseEntity.ok(new ApiResponseDto("비밀번호 변경 완료", HttpStatus.OK.value()));
     }
 
-
+//탈퇴 휴먼 /
     @PostMapping("/email-verification/request")
     public ResponseEntity<ApiResponseDto> sendVerificationCode(@RequestBody @Valid EmailRequestDto requestDto) {
         emailService.sendVerificationCode(requestDto);
