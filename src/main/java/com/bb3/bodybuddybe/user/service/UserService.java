@@ -16,6 +16,8 @@ public interface UserService {
     @Transactional
     void socialSignup(SocialSignupRequestDto requestDto, User user);
 
+    UserResponseDto getUser(User user);
+
     void reissueToken(ReissueRequestDto requestDto, HttpServletResponse response);
 
     void logout(LogoutRequestDto requestDto, HttpServletRequest request);

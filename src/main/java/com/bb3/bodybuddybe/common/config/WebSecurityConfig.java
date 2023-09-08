@@ -62,7 +62,7 @@ public class WebSecurityConfig {
 
     @Bean
     public AuthenticationSuccessHandler authenticationSuccessHandler() {
-        return new OAuth2SuccessHandler(jwtUtil, objectMapper);
+        return new OAuth2SuccessHandler(jwtUtil);
     }
 
     @Bean

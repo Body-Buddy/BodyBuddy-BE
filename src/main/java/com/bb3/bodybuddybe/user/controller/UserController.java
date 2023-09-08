@@ -23,18 +23,24 @@ public class UserController {
     private final UserServiceImpl userService;
     private final EmailServiceImpl emailService;
 
-    @PostMapping("/users/signup")
+    @PostMapping("/auth/signup")
     public ResponseEntity<ApiResponseDto> signup(@Valid @RequestBody SignupRequestDto requestDto) {
 
         userService.signup(requestDto);
         return ResponseEntity.ok(new ApiResponseDto("회원가입 성공", HttpStatus.OK.value()));
     }
 
-    @PostMapping("/users/social-signup")
+    @PostMapping("/auth/social-signup")
     public ResponseEntity<ApiResponseDto> socialSignup(@Valid @RequestBody SocialSignupRequestDto requestDto,
                                                        @AuthenticationPrincipal UserDetailsImpl userDetails) {
         userService.socialSignup(requestDto, userDetails.getUser());
         return ResponseEntity.ok(new ApiResponseDto("소셜로그인 회원가입 완료 성공", HttpStatus.OK.value()));
+    }
+
+    @GetMapping("/auth/user")
+    public ResponseEntity<UserResponseDto> getUser(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        UserResponseDto userResponseDto = userService.getUser(userDetails.getUser());
+        return ResponseEntity.ok(userResponseDto);
     }
 
     @PostMapping("/auth/reissue")
@@ -44,7 +50,7 @@ public class UserController {
         return ResponseEntity.ok(new ApiResponseDto("토큰 재발급 성공", HttpStatus.OK.value()));
     }
 
-    @PostMapping("/logout")
+    @PostMapping("/auth/logout")
     public ResponseEntity<ApiResponseDto> logout(@Valid @RequestBody LogoutRequestDto requestDto,
                                                  HttpServletRequest request) {
         userService.logout(requestDto, request);

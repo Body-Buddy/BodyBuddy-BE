@@ -64,7 +64,7 @@ public class JwtUtil {
 
     public void createAndSetTokens(User user, HttpServletResponse response) {
         String accessToken = createAccessToken(user.getEmail(), user.getRole());
-        String refreshToken = URLEncoder.encode(createRefreshToken(), StandardCharsets.UTF_8).replaceAll("\\+", "%20");
+        String refreshToken = URLEncoder.encode(createRefreshToken(), StandardCharsets.UTF_8);
 
         response.addHeader(AUTHORIZATION_HEADER, accessToken);
         response.addCookie(createRefreshTokenCookie(refreshToken));

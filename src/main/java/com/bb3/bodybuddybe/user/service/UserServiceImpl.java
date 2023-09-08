@@ -8,7 +8,6 @@ import com.bb3.bodybuddybe.common.oauth2.entity.BlacklistedToken;
 import com.bb3.bodybuddybe.common.oauth2.entity.RefreshToken;
 import com.bb3.bodybuddybe.common.oauth2.repository.BlacklistedTokenRepository;
 import com.bb3.bodybuddybe.common.oauth2.repository.RefreshTokenRepository;
-import com.bb3.bodybuddybe.matching.enums.GenderEnum;
 import com.bb3.bodybuddybe.user.dto.*;
 import com.bb3.bodybuddybe.user.entity.User;
 import com.bb3.bodybuddybe.user.enums.UserRoleEnum;
@@ -20,8 +19,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.time.LocalDate;
 
 @Service
 @RequiredArgsConstructor
@@ -68,6 +65,11 @@ public class UserServiceImpl implements UserService {
     public void socialSignup(SocialSignupRequestDto requestDto, User user) {
         user.socialSignup(requestDto);
         userRepository.save(user);
+    }
+
+    @Override
+    public UserResponseDto getUser(User user) {
+        return new UserResponseDto(user);
     }
 
     @Override
