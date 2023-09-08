@@ -3,6 +3,7 @@ package com.bb3.bodybuddybe.common.jwt;
 import com.bb3.bodybuddybe.common.oauth2.entity.RefreshToken;
 import com.bb3.bodybuddybe.common.oauth2.repository.BlacklistedTokenRepository;
 import com.bb3.bodybuddybe.common.oauth2.repository.RefreshTokenRepository;
+import com.bb3.bodybuddybe.user.entity.User;
 import com.bb3.bodybuddybe.user.enums.UserRoleEnum;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -11,6 +12,7 @@ import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +20,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Base64;
 import java.util.Date;
@@ -58,6 +62,16 @@ public class JwtUtil {
         return null;
     }
 
+    public void createAndSetTokens(User user, HttpServletResponse response) {
+        String accessToken = createAccessToken(user.getEmail(), user.getRole());
+        String refreshToken = URLEncoder.encode(createRefreshToken(), StandardCharsets.UTF_8).replaceAll("\\+", "%20");
+
+        response.addHeader(AUTHORIZATION_HEADER, accessToken);
+        response.addCookie(createRefreshTokenCookie(refreshToken));
+
+        refreshTokenRepository.save(new RefreshToken(refreshToken, user.getId()));
+    }
+
     public String createAccessToken(String username, UserRoleEnum role) {
         Date now = new Date();
 
@@ -71,19 +85,16 @@ public class JwtUtil {
                         .compact();
     }
 
-    public String createAndSaveRefreshToken(Long userId) {
+    public String createRefreshToken() {
         Date now = new Date();
 
-        String refreshToken = BEARER_PREFIX +
+        return BEARER_PREFIX +
                 Jwts.builder()
                         .setClaims(Jwts.claims())
                         .setExpiration(new Date(now.getTime() + REFRESH_TOKEN_TIME))
                         .setIssuedAt(now)
                         .signWith(key, signatureAlgorithm)
                         .compact();
-
-        refreshTokenRepository.save(new RefreshToken(refreshToken, userId));
-        return refreshToken;
     }
 
     public Cookie createRefreshTokenCookie(String refreshToken) {

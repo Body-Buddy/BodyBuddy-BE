@@ -4,7 +4,6 @@ import com.bb3.bodybuddybe.common.jwt.JwtUtil;
 import com.bb3.bodybuddybe.user.dto.LoginResponseDto;
 import com.bb3.bodybuddybe.user.entity.User;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -33,12 +32,8 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
                         .isNewUser(user.getBirthDate() == null)
                         .build();
 
-        String accessToken = jwtUtil.createAccessToken(user.getEmail(), user.getRole());
-        String refreshToken = jwtUtil.createAndSaveRefreshToken(user.getId());
-        Cookie refreshTokenCookie = jwtUtil.createRefreshTokenCookie(refreshToken);
+        jwtUtil.createAndSetTokens(user, response);
 
-        response.addHeader(JwtUtil.AUTHORIZATION_HEADER, accessToken);
-        response.addCookie(refreshTokenCookie);
         response.setStatus(HttpServletResponse.SC_OK);
         response.setContentType("application/json; charset=UTF-8");
         response.getWriter().write(objectMapper.writeValueAsString(responseDto));

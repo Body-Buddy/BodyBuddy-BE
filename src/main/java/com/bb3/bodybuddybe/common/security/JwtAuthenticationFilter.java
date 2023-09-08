@@ -1,15 +1,12 @@
 package com.bb3.bodybuddybe.common.security;
 
 import com.bb3.bodybuddybe.common.jwt.JwtUtil;
-import com.bb3.bodybuddybe.common.oauth2.repository.RefreshTokenRepository;
 import com.bb3.bodybuddybe.user.dto.LoginRequestDto;
 import com.bb3.bodybuddybe.user.dto.LoginResponseDto;
 import com.bb3.bodybuddybe.user.entity.User;
-import com.bb3.bodybuddybe.user.enums.UserRoleEnum;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -63,11 +60,8 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                 .isNewUser(user.getNickname() != null)
                 .build();
 
-        String accessToken = jwtUtil.createAccessToken(user.getEmail(), user.getRole());
-        String refreshToken = jwtUtil.createAndSaveRefreshToken(user.getId());
+        jwtUtil.createAndSetTokens(user, response);
 
-        response.addHeader(JwtUtil.AUTHORIZATION_HEADER, accessToken);
-        response.addCookie(jwtUtil.createRefreshTokenCookie(refreshToken));
         response.setStatus(HttpServletResponse.SC_OK);
         response.setContentType("application/json; charset=UTF-8");
         response.getWriter().write(objectMapper.writeValueAsString(responseDto));

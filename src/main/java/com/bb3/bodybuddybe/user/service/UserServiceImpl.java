@@ -27,31 +27,40 @@ import java.time.LocalDate;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
     private final BlacklistedTokenRepository blacklistedTokenRepository;
     private final RefreshTokenRepository refreshTokenRepository;
+    private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
     private final ImageUploader imageUploader;
 
     @Override
     @Transactional
     public void signup(SignupRequestDto requestDto) {
-        String email = requestDto.getEmail();
-        String password = passwordEncoder.encode(requestDto.getPassword());
-        GenderEnum gender = requestDto.getGender();
-        LocalDate birthDate = requestDto.getBirthDate();
+        verifyEmailIsUnique(requestDto.getEmail());
 
+        User user = User.basicSignupBuilder()
+                .email(requestDto.getEmail())
+                .password(passwordEncoder.encode(requestDto.getPassword()))
+                .gender(requestDto.getGender())
+                .birthDate(requestDto.getBirthDate())
+                .role(UserRoleEnum.USER)
+                .build();
+
+        verifyAge(user.getAge());
+
+        userRepository.save(user);
+    }
+
+    private void verifyEmailIsUnique(String email) {
         if (userRepository.findByEmail(email).isPresent()) {
             throw new CustomException(ErrorCode.DUPLICATED_EMAIL);
         }
+    }
 
-        User user = new User(email, password, gender, birthDate, UserRoleEnum.USER);
-
-        if (user.getAge() < 14) {
+    private void verifyAge(int age) {
+        if (age < 14) {
             throw new CustomException(ErrorCode.UNDER_AGE);
         }
-
-        userRepository.save(user);
     }
 
     @Override
@@ -63,20 +72,17 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void reissueToken(ReissueRequestDto requestDto, HttpServletResponse response) {
-        String refreshToken = requestDto.getRefreshToken();
-        RefreshToken refreshTokenEntity = refreshTokenRepository.findById(refreshToken)
-                .orElseThrow(() -> new CustomException(ErrorCode.REFRESH_TOKEN_NOT_FOUND));
-
+        RefreshToken refreshTokenEntity = getRefreshTokenEntity(requestDto.getRefreshToken());
         User user = findUserById(refreshTokenEntity.getUserId());
 
-        String newAccessToken = jwtUtil.createAccessToken(user.getEmail(), user.getRole());
-        String newRefreshToken = jwtUtil.createAndSaveRefreshToken(user.getId());
-
-        response.addHeader(JwtUtil.AUTHORIZATION_HEADER, newAccessToken);
-        response.addCookie(jwtUtil.createRefreshTokenCookie(newRefreshToken));
+        jwtUtil.createAndSetTokens(user, response);
 
         refreshTokenRepository.delete(refreshTokenEntity);
-        refreshTokenRepository.save(new RefreshToken(newRefreshToken, user.getId()));
+    }
+
+    private RefreshToken getRefreshTokenEntity(String refreshToken) {
+        return refreshTokenRepository.findById(refreshToken)
+                .orElseThrow(() -> new CustomException(ErrorCode.REFRESH_TOKEN_NOT_FOUND));
     }
 
     @Override
@@ -87,9 +93,7 @@ public class UserServiceImpl implements UserService {
         long expirationTime = jwtUtil.getRemainingTime(accessToken);
         blacklistedTokenRepository.save(new BlacklistedToken(accessToken, expirationTime / 1000));
 
-        RefreshToken refreshTokenEntity = refreshTokenRepository.findById(refreshToken)
-                .orElseThrow(() -> new CustomException(ErrorCode.REFRESH_TOKEN_NOT_FOUND));
-
+        RefreshToken refreshTokenEntity = getRefreshTokenEntity(refreshToken);
         refreshTokenRepository.delete(refreshTokenEntity);
     }
 

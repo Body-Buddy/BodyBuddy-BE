@@ -74,10 +74,7 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Message> messageList = new ArrayList<>();
 
-    public void setGroupChatMemberList(List<UserChat> groupChatMemberList) {
-        this.groupChatMemberList = groupChatMemberList;
-    }
-
+    @Builder(builderMethodName = "basicSignupBuilder")
     public User(String email, String password, GenderEnum gender, LocalDate birthDate, UserRoleEnum role) {
         this.email = email;
         this.password = password;
@@ -87,7 +84,7 @@ public class User {
         this.status = UserStatusEnum.ACTIVE;
     }
 
-    @Builder
+    @Builder(builderMethodName = "socialSignupBuilder")
     public User(String email, String password, String nickname, String imageUrl, UserRoleEnum role) {
         this.email = email;
         this.password = password;
@@ -140,7 +137,7 @@ public class User {
         int age = currentDate.getYear() - birthDate.getYear();
 
         if (currentDate.isBefore(birthDate.withYear(currentDate.getYear()))) {
-            age--;  // 올해의 생일이 지났는지 확인
+            age--;
         }
 
         return age;

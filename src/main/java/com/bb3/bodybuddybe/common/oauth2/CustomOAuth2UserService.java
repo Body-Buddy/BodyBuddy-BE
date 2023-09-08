@@ -33,7 +33,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
 
         User user = saveOrUpdate(attributes);
 
-        Map<String, Object> combinedAttributes = new HashMap<>(oAuth2User.getAttributes());
+        Map<String, Object> combinedAttributes = new HashMap<>(attributes.getAttributes());
         combinedAttributes.put("storedUser", user);
 
         return new DefaultOAuth2User(
