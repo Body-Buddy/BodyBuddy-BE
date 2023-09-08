@@ -43,6 +43,7 @@ public enum ErrorCode {
     FAILED_TO_UPLOAD_FILE(HttpStatus.INTERNAL_SERVER_ERROR, "U007", "S3 파일 업로드에 실패했습니다."),
     INVALID_S3_URL(HttpStatus.INTERNAL_SERVER_ERROR, "U008", "유효하지 않은 S3 URL 입니다."),
     FAILED_TO_DELETE_FILE(HttpStatus.INTERNAL_SERVER_ERROR, "U009", "S3 파일 삭제에 실패했습니다."),
+    NOT_SAME_LOGIN_USER(HttpStatus.BAD_REQUEST, "U010", "로그인 사용자와 다른 userId값 으로 된 메세징 요청 입니다."),
     ;
 
     private final HttpStatus httpStatus;

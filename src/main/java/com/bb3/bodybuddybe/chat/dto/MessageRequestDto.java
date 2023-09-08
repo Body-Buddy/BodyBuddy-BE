@@ -1,8 +1,8 @@
 package com.bb3.bodybuddybe.chat.dto;
 
 import com.bb3.bodybuddybe.chat.entity.Message;
-import com.bb3.bodybuddybe.chat.entity.MessageType;
 import com.bb3.bodybuddybe.user.entity.User;
+import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -12,35 +12,38 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class MessageRequestDto {
 
-    private MessageType type;
     private Long chatId;
-    private Long senderUserId;
+    private Long senderId;
     private String content;
 
     @Builder
-    public MessageRequestDto(MessageType type, Long chatId, Long senderUserId, String content) {
-        this.type = type;
+    public MessageRequestDto(Long chatId, Long senderId, String content) {
         this.chatId = chatId;
-        this.senderUserId = senderUserId;
+        this.senderId = senderId;
         this.content = content;
     }
 
     public MessageRequestDto(Message message) {
-        this.type = message.getType();
         this.chatId = message.getChat().getId();
-        this.senderUserId = message.getUser().getId();
+        this.senderId = message.getUser().getId();
         this.content = message.getContent();
     }
 
-    public void changeEnterMessage(String enterNickname) {
+    public String changeEnterMessage(String enterNickname) {
         this.content = enterNickname + "님이 입장했습니다.";
+        return content;
+    }
+    public String changeExitMessage(String enterNickname) {
+        this.content = enterNickname + "님이 퇴장했습니다.";
+        return content;
     }
 
-    public void changeAlreadyEntered() {
-        this.content = "이미 입장하셨습니다.";
-    }
-
-    public void changeLeaveMessage(User user) {
-        this.content = user.getNickname() + "님이 나갔습니다.";
+    public MessageResponseDto changeToResponseDto(User user) {
+        return MessageResponseDto.builder()
+            .chatId(this.chatId)
+            .senderNickname(user.getNickname())
+            .content(this.content)
+            .messageDate(LocalDateTime.now())
+            .build();
     }
 }
