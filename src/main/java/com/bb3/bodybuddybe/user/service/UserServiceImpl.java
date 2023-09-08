@@ -64,6 +64,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public void socialSignup(SocialSignupRequestDto requestDto, User user) {
         user.socialSignup(requestDto);
+        user.markedAsFinishedSignup();
         userRepository.save(user);
     }
 

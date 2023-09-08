@@ -75,6 +75,9 @@ public class User {
     private List<Message> messageList = new ArrayList<>();
 
     @Column
+    private Boolean hasFinishedSocialSignup = false;
+
+    @Column
     private Boolean hasRegisteredGym = false;
 
     @Column
@@ -162,5 +165,9 @@ public class User {
 
     public void markedAsSetMatchingCriteria() {
         this.hasSetMatchingCriteria = true;
+    }
+
+    public void markedAsFinishedSignup() {
+        this.hasFinishedSocialSignup = true;
     }
 }

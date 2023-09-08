@@ -26,12 +26,24 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
         Map<String, Object> attributes = ((OAuth2User) authentication.getPrincipal()).getAttributes();
         User user = (User) attributes.get("storedUser");
-        boolean isNewUser = user.getBirthDate() == null;
 
         jwtUtil.handleTokenResponseForSocialLogin(user, response);
 
-        String redirectUrl = isNewUser ? frontUrl + "/signup/social" : frontUrl + "/friends";
+        String redirectPath = getRedirectPath(user);
 
-        response.sendRedirect(redirectUrl);
+        response.sendRedirect(frontUrl + redirectPath);
+    }
+
+    private String getRedirectPath(User user) {
+        if (!user.getHasFinishedSocialSignup()) {
+            return "/signup/social";
+        } else if (!user.getHasRegisteredGym()) {
+            return "/gyms/setup";
+        } else if (!user.getHasSetProfile()) {
+            return "/profile/setup";
+        } else if (!user.getHasSetMatchingCriteria()) {
+            return "/matching/setup";
+        }
+        return "/friends";
     }
 }

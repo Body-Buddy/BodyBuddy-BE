@@ -2,7 +2,7 @@ package com.bb3.bodybuddybe.common.security;
 
 import com.bb3.bodybuddybe.common.jwt.JwtUtil;
 import com.bb3.bodybuddybe.user.dto.LoginRequestDto;
-import com.bb3.bodybuddybe.user.dto.LoginResponseDto;
+import com.bb3.bodybuddybe.user.dto.UserResponseDto;
 import com.bb3.bodybuddybe.user.entity.User;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
@@ -54,17 +54,11 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         log.info("로그인 성공");
         User user = ((UserDetailsImpl) authResult.getPrincipal()).getUser();
 
-        LoginResponseDto responseDto =
-                LoginResponseDto.builder()
-                .userId(user.getId())
-                .isNewUser(user.getNickname() != null)
-                .build();
-
         jwtUtil.handleTokenResponse(user, response);
 
         response.setStatus(HttpServletResponse.SC_OK);
         response.setContentType("application/json; charset=UTF-8");
-        response.getWriter().write(objectMapper.writeValueAsString(responseDto));
+        response.getWriter().write(objectMapper.writeValueAsString(new UserResponseDto(user)));
     }
 
     @Override
