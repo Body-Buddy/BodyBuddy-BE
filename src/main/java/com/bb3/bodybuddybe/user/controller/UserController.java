@@ -6,6 +6,7 @@ import com.bb3.bodybuddybe.user.dto.*;
 import com.bb3.bodybuddybe.user.service.EmailServiceImpl;
 import com.bb3.bodybuddybe.user.service.UserServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -36,10 +37,18 @@ public class UserController {
         return ResponseEntity.ok(new ApiResponseDto("소셜로그인 회원가입 완료 성공", HttpStatus.OK.value()));
     }
 
-    @GetMapping("/logout") // @Post 변경 예정
-    public ResponseEntity logout(@AuthenticationPrincipal UserDetailsImpl userDetails, HttpServletRequest request) {
-        userService.logout(userDetails.getUser(), request);
-        return ResponseEntity.ok().body("로그아웃 완료");
+    @PostMapping("/auth/reissue")
+    public ResponseEntity<ApiResponseDto> reissueToken(@Valid @RequestBody ReissueRequestDto requestDto,
+                                                       HttpServletResponse response) {
+        userService.reissueToken(requestDto, response);
+        return ResponseEntity.ok(new ApiResponseDto("토큰 재발급 성공", HttpStatus.OK.value()));
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<ApiResponseDto> logout(@Valid @RequestBody LogoutRequestDto requestDto,
+                                                 HttpServletRequest request) {
+        userService.logout(requestDto, request);
+        return ResponseEntity.ok(new ApiResponseDto("로그아웃 성공", HttpStatus.OK.value()));
     }
 
     @PostMapping("/email-verification/request")

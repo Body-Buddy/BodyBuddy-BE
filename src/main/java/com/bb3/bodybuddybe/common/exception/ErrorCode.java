@@ -44,6 +44,7 @@ public enum ErrorCode {
     EXPIRED_TOKEN(HttpStatus.UNAUTHORIZED, "AU001", "만료된 토큰입니다."),
     INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "AU002", "유효하지 않은 토큰입니다."),
     BLACKLISTED_TOKEN(HttpStatus.UNAUTHORIZED, "AU003", "블랙리스트에 등록된 토큰입니다."),
+    REFRESH_TOKEN_NOT_FOUND(HttpStatus.BAD_REQUEST, "AU004", "존재하지 않는 리프레시 토큰입니다."),
 
     // media
     FILE_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "M001", "한 게시글에는 동일한 이미지를 여러 개 올릴 수 없습니다."),

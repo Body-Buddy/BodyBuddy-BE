@@ -4,33 +4,31 @@ import com.bb3.bodybuddybe.common.exception.CustomException;
 import com.bb3.bodybuddybe.common.exception.ErrorCode;
 import com.bb3.bodybuddybe.common.image.ImageUploader;
 import com.bb3.bodybuddybe.common.jwt.JwtUtil;
-import com.bb3.bodybuddybe.common.oauth2.entity.LogoutList;
+import com.bb3.bodybuddybe.common.oauth2.entity.BlacklistedToken;
 import com.bb3.bodybuddybe.common.oauth2.entity.RefreshToken;
-import com.bb3.bodybuddybe.common.oauth2.repository.LogoutlistRepository;
+import com.bb3.bodybuddybe.common.oauth2.repository.BlacklistedTokenRepository;
 import com.bb3.bodybuddybe.common.oauth2.repository.RefreshTokenRepository;
 import com.bb3.bodybuddybe.matching.enums.GenderEnum;
 import com.bb3.bodybuddybe.user.dto.*;
 import com.bb3.bodybuddybe.user.entity.User;
 import com.bb3.bodybuddybe.user.enums.UserRoleEnum;
 import com.bb3.bodybuddybe.user.repository.UserRepository;
-import io.jsonwebtoken.Jwts;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.security.Key;
 import java.time.LocalDate;
-import java.util.Date;
 
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final LogoutlistRepository logoutlistRepository;
+    private final BlacklistedTokenRepository blacklistedTokenRepository;
     private final RefreshTokenRepository refreshTokenRepository;
     private final JwtUtil jwtUtil;
     private final ImageUploader imageUploader;
@@ -63,27 +61,36 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
     }
 
-    public void logout(User user, HttpServletRequest request) {
-        String refreshTokenVal = request.getHeader("RefreshToken").substring(7);
-        String accessTokenVal = jwtUtil.getJwtFromHeader(request);
+    @Override
+    public void reissueToken(ReissueRequestDto requestDto, HttpServletResponse response) {
+        String refreshToken = requestDto.getRefreshToken();
+        RefreshToken refreshTokenEntity = refreshTokenRepository.findById(refreshToken)
+                .orElseThrow(() -> new CustomException(ErrorCode.REFRESH_TOKEN_NOT_FOUND));
 
-        try {
-            Key key = jwtUtil.getKey();
-            Date expiration = Jwts.parserBuilder()
-                    .setSigningKey(key)
-                    .build()
-                    .parseClaimsJws(accessTokenVal)
-                    .getBody()
-                    .getExpiration();
-            long expireTime = expiration.getTime() - System.currentTimeMillis();
-            logoutlistRepository.save(new LogoutList(accessTokenVal, expireTime / 1000));// MILLS를 1000으로 나눠서 초로 바꿔줌
-            RefreshToken refreshToken = refreshTokenRepository.findById(refreshTokenVal)
-                    .orElseThrow(() -> new IllegalArgumentException("리프레시 토큰이 없습니다."));
-            refreshTokenRepository.delete(refreshToken);
-            System.out.println(expiration.toString());
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
+        User user = findUserById(refreshTokenEntity.getUserId());
+
+        String newAccessToken = jwtUtil.createAccessToken(user.getEmail(), user.getRole());
+        String newRefreshToken = jwtUtil.createAndSaveRefreshToken(user.getId());
+
+        response.addHeader(JwtUtil.AUTHORIZATION_HEADER, newAccessToken);
+        response.addCookie(jwtUtil.createRefreshTokenCookie(newRefreshToken));
+
+        refreshTokenRepository.delete(refreshTokenEntity);
+        refreshTokenRepository.save(new RefreshToken(newRefreshToken, user.getId()));
+    }
+
+    @Override
+    public void logout(LogoutRequestDto requestDto, HttpServletRequest request) {
+        String accessToken = jwtUtil.extractTokenFromRequest(request);
+        String refreshToken = requestDto.getRefreshToken();
+
+        long expirationTime = jwtUtil.getRemainingTime(accessToken);
+        blacklistedTokenRepository.save(new BlacklistedToken(accessToken, expirationTime / 1000));
+
+        RefreshToken refreshTokenEntity = refreshTokenRepository.findById(refreshToken)
+                .orElseThrow(() -> new CustomException(ErrorCode.REFRESH_TOKEN_NOT_FOUND));
+
+        refreshTokenRepository.delete(refreshTokenEntity);
     }
 
     @Override
@@ -135,17 +142,14 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional(readOnly = true)
     public ProfileResponseDto getProfile(Long userId) {
-
-        User user = findById(userId);
+        User user = findUserById(userId);
         return new ProfileResponseDto(user);
     }
 
-    private User findById(Long id) {
+    private User findUserById(Long id) {
         return userRepository.findById(id)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
     }
-
-
 }
 
 

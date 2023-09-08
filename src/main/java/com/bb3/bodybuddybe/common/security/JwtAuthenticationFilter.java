@@ -56,22 +56,18 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
         log.info("로그인 성공");
         User user = ((UserDetailsImpl) authResult.getPrincipal()).getUser();
-        Long userId = user.getId();
-        boolean isNewUser = user.getNickname() != null;
-        String email = user.getEmail();
-        UserRoleEnum role = user.getRole();
 
         LoginResponseDto responseDto =
                 LoginResponseDto.builder()
-                .userId(userId)
-                .isNewUser(isNewUser)
+                .userId(user.getId())
+                .isNewUser(user.getNickname() != null)
                 .build();
 
-        String accessToken = jwtUtil.createAccessToken(email, role);
-        Cookie refreshToken = jwtUtil.createRefreshTokenCookie();
+        String accessToken = jwtUtil.createAccessToken(user.getEmail(), user.getRole());
+        String refreshToken = jwtUtil.createAndSaveRefreshToken(user.getId());
 
         response.addHeader(JwtUtil.AUTHORIZATION_HEADER, accessToken);
-        response.addCookie(refreshToken);
+        response.addCookie(jwtUtil.createRefreshTokenCookie(refreshToken));
         response.setStatus(HttpServletResponse.SC_OK);
         response.setContentType("application/json; charset=UTF-8");
         response.getWriter().write(objectMapper.writeValueAsString(responseDto));

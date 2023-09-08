@@ -1,5 +1,7 @@
 package com.bb3.bodybuddybe.common.jwt;
 
+import com.bb3.bodybuddybe.common.oauth2.entity.RefreshToken;
+import com.bb3.bodybuddybe.common.oauth2.repository.BlacklistedTokenRepository;
 import com.bb3.bodybuddybe.common.oauth2.repository.RefreshTokenRepository;
 import com.bb3.bodybuddybe.user.enums.UserRoleEnum;
 import io.jsonwebtoken.Claims;
@@ -28,8 +30,8 @@ public class JwtUtil {
     public static final String AUTHORIZATION_HEADER = "Authorization";
     public static final String AUTHORIZATION_KEY = "auth";
     public static final String BEARER_PREFIX = "Bearer ";
-    private static final long ACCESS_TOKEN_TIME = 60 * 60 * 1000L * 24 * 7; // 7일
-    private static final long REFRESH_TOKEN_TIME = 60 * 60 * 1000L * 24 * 7; // 7일
+    private static final long ACCESS_TOKEN_TIME = 60 * 60 * 1000L * 3; // 3시간
+    private static final long REFRESH_TOKEN_TIME = 60 * 60 * 1000L * 24 * 3; // 3일
 
     @Value("${jwt.secretKey}")
     private String secretKey;
@@ -38,25 +40,14 @@ public class JwtUtil {
 
     private final RefreshTokenRepository refreshTokenRepository;
 
+    private final BlacklistedTokenRepository blacklistedTokenRepository;
+
     private final SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
 
     @PostConstruct
     public void init() {
         byte[] bytes = Base64.getDecoder().decode(secretKey);
         key = Keys.hmacShaKeyFor(bytes);
-    }
-
-    public String createAccessToken(String username, UserRoleEnum role) {
-        Date date = new Date();
-
-        return BEARER_PREFIX +
-                Jwts.builder()
-                        .setSubject(username)
-                        .claim(AUTHORIZATION_KEY, role)
-                        .setExpiration(new Date(date.getTime() + ACCESS_TOKEN_TIME))
-                        .setIssuedAt(date)
-                        .signWith(key, signatureAlgorithm)
-                        .compact();
     }
 
     public String extractTokenFromRequest(HttpServletRequest request) {
@@ -67,23 +58,57 @@ public class JwtUtil {
         return null;
     }
 
+    public String createAccessToken(String username, UserRoleEnum role) {
+        Date now = new Date();
+
+        return BEARER_PREFIX +
+                Jwts.builder()
+                        .setSubject(username)
+                        .claim(AUTHORIZATION_KEY, role)
+                        .setExpiration(new Date(now.getTime() + ACCESS_TOKEN_TIME))
+                        .setIssuedAt(now)
+                        .signWith(key, signatureAlgorithm)
+                        .compact();
+    }
+
+    public String createAndSaveRefreshToken(Long userId) {
+        Date now = new Date();
+
+        String refreshToken = BEARER_PREFIX +
+                Jwts.builder()
+                        .setClaims(Jwts.claims())
+                        .setExpiration(new Date(now.getTime() + REFRESH_TOKEN_TIME))
+                        .setIssuedAt(now)
+                        .signWith(key, signatureAlgorithm)
+                        .compact();
+
+        refreshTokenRepository.save(new RefreshToken(refreshToken, userId));
+        return refreshToken;
+    }
+
+    public Cookie createRefreshTokenCookie(String refreshToken) {
+        Cookie refreshTokenCookie = new Cookie("refreshToken", refreshToken);
+        refreshTokenCookie.setPath("/");
+        refreshTokenCookie.setHttpOnly(true);
+        refreshTokenCookie.setMaxAge((int) REFRESH_TOKEN_TIME / 1000);
+        return refreshTokenCookie;
+    }
+
+    public boolean isTokenBlacklisted(String token) {
+        return blacklistedTokenRepository.existsById(token);
+    }
+
+    public long getRemainingTime(String token) {
+        Claims claims = getClaims(token);
+        Date expiration = claims.getExpiration();
+        return expiration.getTime() - System.currentTimeMillis();
+    }
+
     public Claims getClaims(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(key)
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
-    }
-
-    public Cookie createRefreshTokenCookie() {
-        String refreshToken = null;
-        Cookie refreshTokenCookie = new Cookie("refreshToken", refreshToken);
-        refreshTokenCookie.setPath("/");
-        refreshTokenCookie.setHttpOnly(true);
-        return refreshTokenCookie;
-    }
-
-    public boolean isTokenBlacklisted(String token) {
-        return refreshTokenRepository.findById(token).isPresent();
     }
 }

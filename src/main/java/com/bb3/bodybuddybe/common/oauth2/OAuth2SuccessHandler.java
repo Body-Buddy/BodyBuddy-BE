@@ -1,27 +1,20 @@
 package com.bb3.bodybuddybe.common.oauth2;
 
 import com.bb3.bodybuddybe.common.jwt.JwtUtil;
-import com.bb3.bodybuddybe.common.oauth2.repository.RefreshTokenRepository;
 import com.bb3.bodybuddybe.user.dto.LoginResponseDto;
 import com.bb3.bodybuddybe.user.entity.User;
-import com.bb3.bodybuddybe.user.enums.UserRoleEnum;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
 import java.io.IOException;
 import java.util.Map;
-
-import static com.bb3.bodybuddybe.common.jwt.JwtUtil.AUTHORIZATION_HEADER;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -41,10 +34,11 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
                         .build();
 
         String accessToken = jwtUtil.createAccessToken(user.getEmail(), user.getRole());
-        Cookie refreshToken = jwtUtil.createRefreshTokenCookie();
+        String refreshToken = jwtUtil.createAndSaveRefreshToken(user.getId());
+        Cookie refreshTokenCookie = jwtUtil.createRefreshTokenCookie(refreshToken);
 
         response.addHeader(JwtUtil.AUTHORIZATION_HEADER, accessToken);
-        response.addCookie(refreshToken);
+        response.addCookie(refreshTokenCookie);
         response.setStatus(HttpServletResponse.SC_OK);
         response.setContentType("application/json; charset=UTF-8");
         response.getWriter().write(objectMapper.writeValueAsString(responseDto));
