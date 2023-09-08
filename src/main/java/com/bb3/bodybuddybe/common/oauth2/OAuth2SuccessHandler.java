@@ -2,7 +2,6 @@ package com.bb3.bodybuddybe.common.oauth2;
 
 import com.bb3.bodybuddybe.common.jwt.JwtUtil;
 import com.bb3.bodybuddybe.user.entity.User;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -29,12 +28,10 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
         User user = (User) attributes.get("storedUser");
         boolean isNewUser = user.getBirthDate() == null;
 
-        jwtUtil.createAndSetTokens(user, response);
+        jwtUtil.handleTokenResponseForSocialLogin(user, response);
 
-        if(isNewUser) {
-            response.sendRedirect(frontUrl + "/signup/social");
-        } else {
-            response.sendRedirect(frontUrl + "/friends");
-        }
+        String redirectUrl = isNewUser ? frontUrl + "/signup/social" : frontUrl + "/friends";
+
+        response.sendRedirect(redirectUrl);
     }
 }

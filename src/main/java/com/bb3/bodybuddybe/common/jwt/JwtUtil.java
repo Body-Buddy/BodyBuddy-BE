@@ -62,12 +62,22 @@ public class JwtUtil {
         return null;
     }
 
-    public void createAndSetTokens(User user, HttpServletResponse response) {
+    public void handleTokenResponse(User user, HttpServletResponse response) {
         String accessToken = createAccessToken(user.getEmail(), user.getRole());
         String refreshToken = URLEncoder.encode(createRefreshToken(), StandardCharsets.UTF_8);
 
         response.addHeader(AUTHORIZATION_HEADER, accessToken);
-        response.addCookie(createRefreshTokenCookie(refreshToken));
+        setRefreshTokenInCookie(refreshToken, response);
+
+        refreshTokenRepository.save(new RefreshToken(refreshToken, user.getId()));
+    }
+
+    public void handleTokenResponseForSocialLogin(User user, HttpServletResponse response) {
+        String accessToken = URLEncoder.encode(createAccessToken(user.getEmail(), user.getRole()), StandardCharsets.UTF_8);
+        String refreshToken = URLEncoder.encode(createRefreshToken(), StandardCharsets.UTF_8);
+
+        setAccessTokenInCookie(accessToken, response);
+        setRefreshTokenInCookie(refreshToken, response);
 
         refreshTokenRepository.save(new RefreshToken(refreshToken, user.getId()));
     }
@@ -75,34 +85,39 @@ public class JwtUtil {
     public String createAccessToken(String username, UserRoleEnum role) {
         Date now = new Date();
 
-        return BEARER_PREFIX +
-                Jwts.builder()
-                        .setSubject(username)
-                        .claim(AUTHORIZATION_KEY, role)
-                        .setExpiration(new Date(now.getTime() + ACCESS_TOKEN_TIME))
-                        .setIssuedAt(now)
-                        .signWith(key, signatureAlgorithm)
-                        .compact();
+        return Jwts.builder()
+                .setSubject(username)
+                .claim(AUTHORIZATION_KEY, role)
+                .setExpiration(new Date(now.getTime() + ACCESS_TOKEN_TIME))
+                .setIssuedAt(now)
+                .signWith(key, signatureAlgorithm)
+                .compact();
     }
 
     public String createRefreshToken() {
         Date now = new Date();
 
-        return BEARER_PREFIX +
-                Jwts.builder()
-                        .setClaims(Jwts.claims())
-                        .setExpiration(new Date(now.getTime() + REFRESH_TOKEN_TIME))
-                        .setIssuedAt(now)
-                        .signWith(key, signatureAlgorithm)
-                        .compact();
+        return Jwts.builder()
+                .setClaims(Jwts.claims())
+                .setExpiration(new Date(now.getTime() + REFRESH_TOKEN_TIME))
+                .setIssuedAt(now)
+                .signWith(key, signatureAlgorithm)
+                .compact();
     }
 
-    public Cookie createRefreshTokenCookie(String refreshToken) {
-        Cookie refreshTokenCookie = new Cookie("refreshToken", refreshToken);
-        refreshTokenCookie.setPath("/");
-        refreshTokenCookie.setHttpOnly(true);
-        refreshTokenCookie.setMaxAge((int) REFRESH_TOKEN_TIME / 1000);
-        return refreshTokenCookie;
+    public void setAccessTokenInCookie(String accessToken, HttpServletResponse response) {
+        Cookie cookie = new Cookie("accessToken", accessToken);
+        cookie.setPath("/");
+        cookie.setMaxAge((int) ACCESS_TOKEN_TIME / 1000);
+        response.addCookie(cookie);
+    }
+
+    public void setRefreshTokenInCookie(String refreshToken, HttpServletResponse response) {
+        Cookie cookie = new Cookie("refreshToken", refreshToken);
+        cookie.setPath("/");
+        cookie.setHttpOnly(true);
+        cookie.setMaxAge((int) REFRESH_TOKEN_TIME / 1000);
+        response.addCookie(cookie);
     }
 
     public boolean isTokenBlacklisted(String token) {

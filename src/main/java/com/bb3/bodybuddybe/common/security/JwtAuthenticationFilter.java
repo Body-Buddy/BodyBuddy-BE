@@ -60,7 +60,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                 .isNewUser(user.getNickname() != null)
                 .build();
 
-        jwtUtil.createAndSetTokens(user, response);
+        jwtUtil.handleTokenResponse(user, response);
 
         response.setStatus(HttpServletResponse.SC_OK);
         response.setContentType("application/json; charset=UTF-8");

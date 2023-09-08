@@ -77,7 +77,7 @@ public class UserServiceImpl implements UserService {
         RefreshToken refreshTokenEntity = getRefreshTokenEntity(requestDto.getRefreshToken());
         User user = findUserById(refreshTokenEntity.getUserId());
 
-        jwtUtil.createAndSetTokens(user, response);
+        jwtUtil.handleTokenResponse(user, response);
 
         refreshTokenRepository.delete(refreshTokenEntity);
     }
