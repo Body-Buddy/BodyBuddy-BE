@@ -38,7 +38,10 @@ public interface UserService {
     void deleteProfileImage(User user);
 
     @Transactional
-    void updateProfile(ProfileUpdateRequestDto requestDto, User user);
+    void createProfile(ProfileRequestDto requestDto, User user);
+
+    @Transactional
+    void updateProfile(ProfileRequestDto requestDto, User user);
 
     @Transactional(readOnly = true)
     ProfileResponseDto getProfile(Long userId);

@@ -8,6 +8,8 @@ import com.bb3.bodybuddybe.gym.entity.UserGym;
 import com.bb3.bodybuddybe.gym.repository.GymRepository;
 import com.bb3.bodybuddybe.gym.repository.UserGymRepository;
 import com.bb3.bodybuddybe.user.entity.User;
+import com.bb3.bodybuddybe.user.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,6 +20,7 @@ import java.util.List;
 import static com.bb3.bodybuddybe.gym.dto.KakaoApiResponseDto.Document;
 
 @Service
+@RequiredArgsConstructor
 public class GymServiceImpl implements GymService {
 
     private static final String KAKAO_API_PATH = "/v2/local/search/keyword.json";
@@ -25,17 +28,12 @@ public class GymServiceImpl implements GymService {
     private static final String SPORTS_CATEGORY = "스포츠,레저";
 
     private final WebClient webClient;
+    private final UserRepository userRepository;
     private final GymRepository gymRepository;
     private final UserGymRepository userGymRepository;
 
     @Value("${kakao.api.key}")
     private String restApiKey;
-
-    public GymServiceImpl(GymRepository gymRepository, UserGymRepository userGymRepository, WebClient.Builder webClientBuilder) {
-        this.gymRepository = gymRepository;
-        this.userGymRepository = userGymRepository;
-        this.webClient = webClientBuilder.baseUrl("https://dapi.kakao.com").build();
-    }
 
     @Override
     public List<PlaceDto> searchGyms(String query, LocationDto location) {
@@ -79,7 +77,8 @@ public class GymServiceImpl implements GymService {
         if (userGymRepository.existsByUserAndGym(user, gym)) {
             throw new CustomException(ErrorCode.DUPLICATED_MY_GYM);
         }
-
+        user.markedAsRegisteredGym();
+        userRepository.save(user);
         userGymRepository.save(new UserGym(user, gym));
     }
 

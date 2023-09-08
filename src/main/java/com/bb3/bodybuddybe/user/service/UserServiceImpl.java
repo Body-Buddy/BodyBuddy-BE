@@ -140,8 +140,16 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public void updateProfile(ProfileUpdateRequestDto requestDto, User user) {
-        user.updateProfile(requestDto);
+    public void createProfile(ProfileRequestDto requestDto, User user) {
+        user.setProfile(requestDto);
+        user.markedAsSetProfile();
+        userRepository.save(user);
+    }
+
+    @Override
+    @Transactional
+    public void updateProfile(ProfileRequestDto requestDto, User user) {
+        user.setProfile(requestDto);
         userRepository.save(user);
     }
 

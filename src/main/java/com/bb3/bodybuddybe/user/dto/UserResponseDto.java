@@ -6,14 +6,16 @@ import lombok.Getter;
 @Getter
 public class UserResponseDto {
     private Long id;
-    private String email;
     private String nickname;
-    private String imageUrl;
+    private boolean hasRegisteredGym;
+    private boolean hasSetProfile;
+    private boolean hasSetMatchingCriteria;
 
     public UserResponseDto(User user) {
         this.id = user.getId();
-        this.email = user.getEmail();
         this.nickname = user.getNickname();
-        this.imageUrl = user.getImageUrl();
+        this.hasRegisteredGym = user.getHasRegisteredGym();
+        this.hasSetProfile = user.getHasSetProfile();
+        this.hasSetMatchingCriteria = user.getHasSetMatchingCriteria();
     }
 }

@@ -103,8 +103,15 @@ public class UserController {
         return ResponseEntity.ok(new ApiResponseDto("프로필 이미지 삭제 성공", HttpStatus.OK.value()));
     }
 
+    @PostMapping("/users/{userId}/profile")
+    public ResponseEntity<ApiResponseDto> createProfile(@RequestBody @Valid ProfileRequestDto requestDto,
+                                                        @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        userService.createProfile(requestDto, userDetails.getUser());
+        return ResponseEntity.ok(new ApiResponseDto("프로필 작성 성공", HttpStatus.CREATED.value()));
+    }
+
     @PutMapping("/users/{userId}/profile")
-    public ResponseEntity<ApiResponseDto> updateProfile(@RequestBody @Valid ProfileUpdateRequestDto requestDto,
+    public ResponseEntity<ApiResponseDto> updateProfile(@RequestBody @Valid ProfileRequestDto requestDto,
                                                         @AuthenticationPrincipal UserDetailsImpl userDetails) {
         userService.updateProfile(requestDto, userDetails.getUser());
         return ResponseEntity.ok(new ApiResponseDto("프로필 수정 성공", HttpStatus.OK.value()));

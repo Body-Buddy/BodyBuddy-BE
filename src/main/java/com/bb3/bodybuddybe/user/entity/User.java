@@ -8,7 +8,7 @@ import com.bb3.bodybuddybe.gym.entity.UserGym;
 import com.bb3.bodybuddybe.matching.entity.MatchingCriteria;
 import com.bb3.bodybuddybe.matching.enums.AgeRangeEnum;
 import com.bb3.bodybuddybe.matching.enums.GenderEnum;
-import com.bb3.bodybuddybe.user.dto.ProfileUpdateRequestDto;
+import com.bb3.bodybuddybe.user.dto.ProfileRequestDto;
 import com.bb3.bodybuddybe.user.dto.SocialSignupRequestDto;
 import com.bb3.bodybuddybe.user.enums.UserRoleEnum;
 import com.bb3.bodybuddybe.user.enums.UserStatusEnum;
@@ -74,6 +74,15 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Message> messageList = new ArrayList<>();
 
+    @Column
+    private Boolean hasRegisteredGym = false;
+
+    @Column
+    private Boolean hasSetProfile = false;
+
+    @Column
+    private Boolean hasSetMatchingCriteria = false;
+
     @Builder(builderMethodName = "basicSignupBuilder")
     public User(String email, String password, GenderEnum gender, LocalDate birthDate, UserRoleEnum role) {
         this.email = email;
@@ -105,7 +114,7 @@ public class User {
         this.imageUrl = imageUrl;
     }
 
-    public void updateProfile(ProfileUpdateRequestDto requestDto) {
+    public void setProfile(ProfileRequestDto requestDto) {
         this.nickname = requestDto.getNickname();
         this.introduction = requestDto.getIntroduction();
     }
@@ -141,5 +150,17 @@ public class User {
         }
 
         return age;
+    }
+
+    public void markedAsRegisteredGym() {
+        this.hasRegisteredGym = true;
+    }
+
+    public void markedAsSetProfile() {
+        this.hasSetProfile = true;
+    }
+
+    public void markedAsSetMatchingCriteria() {
+        this.hasSetMatchingCriteria = true;
     }
 }
