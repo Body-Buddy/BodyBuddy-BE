@@ -75,29 +75,42 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void reissueToken(ReissueRequestDto requestDto, HttpServletResponse response) {
-        RefreshToken refreshTokenEntity = getRefreshTokenEntity(requestDto.getRefreshToken());
+        String refreshToken = requestDto.getRefreshToken();
+        validateToken(refreshToken);
+
+        RefreshToken refreshTokenEntity = findRefreshTokenEntity(refreshToken);
         User user = findUserById(refreshTokenEntity.getUserId());
 
         jwtUtil.handleTokenResponse(user, response);
-
         refreshTokenRepository.delete(refreshTokenEntity);
-    }
-
-    private RefreshToken getRefreshTokenEntity(String refreshToken) {
-        return refreshTokenRepository.findById(refreshToken)
-                .orElseThrow(() -> new CustomException(ErrorCode.REFRESH_TOKEN_NOT_FOUND));
     }
 
     @Override
     public void logout(LogoutRequestDto requestDto, HttpServletRequest request) {
-        String accessToken = jwtUtil.extractTokenFromRequest(request);
         String refreshToken = requestDto.getRefreshToken();
+        validateToken(refreshToken);
 
-        long expirationTime = jwtUtil.getRemainingTime(accessToken);
-        blacklistedTokenRepository.save(new BlacklistedToken(accessToken, expirationTime / 1000));
-
-        RefreshToken refreshTokenEntity = getRefreshTokenEntity(refreshToken);
+        RefreshToken refreshTokenEntity = findRefreshTokenEntity(refreshToken);
         refreshTokenRepository.delete(refreshTokenEntity);
+
+        String accessToken = jwtUtil.extractTokenFromRequest(request);
+        blacklistToken(accessToken);
+    }
+
+    private void validateToken(String token) {
+        if (!jwtUtil.isValidToken(token)) {
+            throw new CustomException(ErrorCode.INVALID_TOKEN);
+        }
+    }
+
+    private RefreshToken findRefreshTokenEntity(String refreshToken) {
+        return refreshTokenRepository.findById(refreshToken)
+                .orElseThrow(() -> new CustomException(ErrorCode.REFRESH_TOKEN_NOT_FOUND));
+    }
+
+    private void blacklistToken(String token) {
+        long expirationTime = jwtUtil.getRemainingTime(token);
+        blacklistedTokenRepository.save(new BlacklistedToken(token, expirationTime / 1000));
     }
 
     @Override

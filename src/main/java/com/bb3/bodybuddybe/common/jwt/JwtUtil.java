@@ -115,9 +115,17 @@ public class JwtUtil {
     public void setRefreshTokenInCookie(String refreshToken, HttpServletResponse response) {
         Cookie cookie = new Cookie("refreshToken", refreshToken);
         cookie.setPath("/");
-        cookie.setHttpOnly(true);
         cookie.setMaxAge((int) REFRESH_TOKEN_TIME / 1000);
         response.addCookie(cookie);
+    }
+
+    public boolean isValidToken(String token) {
+        try {
+            getClaims(token);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     public boolean isTokenBlacklisted(String token) {
