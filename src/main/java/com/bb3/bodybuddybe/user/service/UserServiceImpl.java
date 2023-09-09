@@ -4,6 +4,7 @@ import com.bb3.bodybuddybe.common.exception.CustomException;
 import com.bb3.bodybuddybe.common.exception.ErrorCode;
 import com.bb3.bodybuddybe.common.image.ImageUploader;
 import com.bb3.bodybuddybe.common.jwt.JwtUtil;
+import com.bb3.bodybuddybe.common.jwt.TokenResponseHandler;
 import com.bb3.bodybuddybe.common.oauth2.entity.BlacklistedToken;
 import com.bb3.bodybuddybe.common.oauth2.entity.RefreshToken;
 import com.bb3.bodybuddybe.common.oauth2.repository.BlacklistedTokenRepository;
@@ -29,6 +30,7 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
     private final ImageUploader imageUploader;
+    private final TokenResponseHandler tokenResponseHandler;
 
     @Override
     @Transactional
@@ -81,7 +83,7 @@ public class UserServiceImpl implements UserService {
         RefreshToken refreshTokenEntity = findRefreshTokenEntity(refreshToken);
         User user = findUserById(refreshTokenEntity.getUserId());
 
-        jwtUtil.handleTokenResponse(user, response);
+        tokenResponseHandler.addTokensToResponse(user, response);
         refreshTokenRepository.delete(refreshTokenEntity);
     }
 

@@ -1,6 +1,7 @@
 package com.bb3.bodybuddybe.common.config;
 
 import com.bb3.bodybuddybe.common.jwt.JwtUtil;
+import com.bb3.bodybuddybe.common.jwt.TokenResponseHandler;
 import com.bb3.bodybuddybe.common.oauth2.CustomOAuth2UserService;
 import com.bb3.bodybuddybe.common.oauth2.OAuth2SuccessHandler;
 import com.bb3.bodybuddybe.common.security.JwtAuthenticationFilter;
@@ -36,6 +37,7 @@ public class WebSecurityConfig {
     private final ObjectMapper objectMapper;
     private final UserDetailsServiceImpl userDetailsService;
     private final CustomOAuth2UserService customOAuth2UserService;
+    private final TokenResponseHandler tokenResponseHandler;
     private final AuthenticationConfiguration authenticationConfiguration;
 
     @Bean
@@ -50,7 +52,7 @@ public class WebSecurityConfig {
 
     @Bean
     public JwtAuthenticationFilter jwtAuthenticationFilter() throws Exception {
-        JwtAuthenticationFilter filter = new JwtAuthenticationFilter(jwtUtil, objectMapper);
+        JwtAuthenticationFilter filter = new JwtAuthenticationFilter(objectMapper, tokenResponseHandler);
         filter.setAuthenticationManager(authenticationManager(authenticationConfiguration));
         return filter;
     }
@@ -62,7 +64,7 @@ public class WebSecurityConfig {
 
     @Bean
     public AuthenticationSuccessHandler authenticationSuccessHandler() {
-        return new OAuth2SuccessHandler(jwtUtil);
+        return new OAuth2SuccessHandler(tokenResponseHandler);
     }
 
     @Bean

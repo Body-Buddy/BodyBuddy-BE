@@ -1,6 +1,6 @@
 package com.bb3.bodybuddybe.common.security;
 
-import com.bb3.bodybuddybe.common.jwt.JwtUtil;
+import com.bb3.bodybuddybe.common.jwt.TokenResponseHandler;
 import com.bb3.bodybuddybe.user.dto.LoginRequestDto;
 import com.bb3.bodybuddybe.user.dto.UserResponseDto;
 import com.bb3.bodybuddybe.user.entity.User;
@@ -20,12 +20,12 @@ import java.io.IOException;
 
 @Slf4j(topic = "로그인 및 JWT 생성")
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
-    private final JwtUtil jwtUtil;
     private final ObjectMapper objectMapper;
+    private final TokenResponseHandler tokenResponseHandler;
 
-    public JwtAuthenticationFilter(JwtUtil jwtUtil, ObjectMapper objectMapper) {
-        this.jwtUtil = jwtUtil;
+    public JwtAuthenticationFilter(ObjectMapper objectMapper, TokenResponseHandler tokenResponseHandler) {
         this.objectMapper = objectMapper;
+        this.tokenResponseHandler = tokenResponseHandler;
         setFilterProcessesUrl("/api/auth/login");
     }
 
@@ -54,7 +54,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         log.info("로그인 성공");
         User user = ((UserDetailsImpl) authResult.getPrincipal()).getUser();
 
-        jwtUtil.handleTokenResponse(user, response);
+        tokenResponseHandler.addTokensToResponse(user, response);
 
         response.setStatus(HttpServletResponse.SC_OK);
         response.setContentType("application/json; charset=UTF-8");

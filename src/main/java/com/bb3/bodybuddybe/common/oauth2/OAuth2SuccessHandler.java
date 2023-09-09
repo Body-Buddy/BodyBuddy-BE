@@ -1,6 +1,6 @@
 package com.bb3.bodybuddybe.common.oauth2;
 
-import com.bb3.bodybuddybe.common.jwt.JwtUtil;
+import com.bb3.bodybuddybe.common.jwt.TokenResponseHandler;
 import com.bb3.bodybuddybe.user.entity.User;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -17,7 +17,7 @@ import java.util.Map;
 @Slf4j
 @RequiredArgsConstructor
 public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
-    private final JwtUtil jwtUtil;
+    private final TokenResponseHandler tokenResponseHandler;
 
     @Value("${front.server.url}")
     private String frontUrl;
@@ -27,7 +27,7 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
         Map<String, Object> attributes = ((OAuth2User) authentication.getPrincipal()).getAttributes();
         User user = (User) attributes.get("storedUser");
 
-        jwtUtil.handleTokenResponseForSocialLogin(user, response);
+        tokenResponseHandler.addTokensToResponseForSocialLogin(user, response);
 
         String redirectPath = getRedirectPath(user);
 
