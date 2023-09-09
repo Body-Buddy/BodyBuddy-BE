@@ -35,8 +35,6 @@ public enum ErrorCode {
     OWNER_CAN_NOT_LEAVE(HttpStatus.BAD_REQUEST, "C009", "채팅방 생성자는 방을 떠날 수 없습니다. 방 해체를 원하실 경우 채팅방 삭제를 해주세요."),
     MESSAGE_NOT_FOUND(HttpStatus.BAD_REQUEST, "C010", "메세지가 존재하지 않습니다."),
 
-
-
     // user
     USER_NOT_FOUND(HttpStatus.BAD_REQUEST, "U001", "존재하지 않는 사용자 입니다."),
     DUPLICATED_EMAIL(HttpStatus.BAD_REQUEST, "U002", "이미 가입된 이메일입니다."),
@@ -46,8 +44,11 @@ public enum ErrorCode {
     EMAIL_SENDING_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "U006", "이메일 전송에 실패했습니다."),
     FAILED_TO_UPLOAD_FILE(HttpStatus.INTERNAL_SERVER_ERROR, "U007", "S3 파일 업로드에 실패했습니다."),
     INVALID_S3_URL(HttpStatus.INTERNAL_SERVER_ERROR, "U008", "유효하지 않은 S3 URL 입니다."),
-    FAILED_TO_DELETE_FILE(HttpStatus.INTERNAL_SERVER_ERROR, "U009", "S3 파일 삭제에 실패했습니다.");
+    FAILED_TO_DELETE_FILE(HttpStatus.INTERNAL_SERVER_ERROR, "U009", "S3 파일 삭제에 실패했습니다."),
 
+    // image
+    FILE_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "I001", "한 게시글에는 동일한 이미지를 여러 개 올릴 수 없습니다."),
+    ;
 
     private final HttpStatus httpStatus;
     private final String code;
