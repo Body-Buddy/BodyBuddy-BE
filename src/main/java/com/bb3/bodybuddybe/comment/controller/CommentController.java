@@ -26,7 +26,7 @@ public class CommentController {
     }
 
     @PutMapping("/comments/{commentId}")
-    public ResponseEntity<?> updateComment(@PathVariable Long commentId, @Valid @RequestBody CommentUpdateRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public ResponseEntity<ApiResponseDto> updateComment(@PathVariable Long commentId, @Valid @RequestBody CommentUpdateRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         commentService.updateComment(commentId, requestDto, userDetails.getUser());
         return ResponseEntity.ok(new ApiResponseDto("댓글 수정 성공", HttpStatus.OK.value()));
     }

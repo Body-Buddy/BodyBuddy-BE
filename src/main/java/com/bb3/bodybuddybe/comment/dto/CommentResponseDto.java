@@ -16,7 +16,7 @@ public class CommentResponseDto {
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
     private ProfileResponseDto author;
-    private List<CommentResponseDto> childComments;
+    private List<CommentResponseDto> children;
 
     public CommentResponseDto(Comment comment) {
         this.id = comment.getId();
@@ -24,7 +24,7 @@ public class CommentResponseDto {
         this.createdAt = comment.getCreatedAt();
         this.modifiedAt = comment.getModifiedAt();
         this.author = new ProfileResponseDto(comment.getAuthor());
-        this.childComments = comment.getChild()
+        this.children = comment.getChildren()
                 .stream()
                 .map(CommentResponseDto::new)
                 .sorted(Comparator.comparing(CommentResponseDto::getCreatedAt).reversed())
