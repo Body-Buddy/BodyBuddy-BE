@@ -3,6 +3,7 @@ package com.bb3.bodybuddybe.post.entity;
 import com.bb3.bodybuddybe.comment.entity.Comment;
 import com.bb3.bodybuddybe.common.timestamped.TimeStamped;
 import com.bb3.bodybuddybe.gym.entity.Gym;
+import com.bb3.bodybuddybe.like.entity.PostLike;
 import com.bb3.bodybuddybe.post.dto.PostUpdateRequestDto;
 import com.bb3.bodybuddybe.post.enums.CategoryEnum;
 import com.bb3.bodybuddybe.user.entity.User;
@@ -36,8 +37,8 @@ public class Post extends TimeStamped {
     private CategoryEnum category;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private User user;
+    @JoinColumn(name = "author_id")
+    private User author;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "gym_id")
@@ -46,12 +47,15 @@ public class Post extends TimeStamped {
     @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Comment> comments = new ArrayList<>();
 
+    @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<PostLike> likes = new ArrayList<>();
+
     @Builder
-    public Post(String title, String content, CategoryEnum category, User user, Gym gym) {
+    public Post(String title, String content, CategoryEnum category, User author, Gym gym) {
         this.title = title;
         this.content = content;
         this.category = category;
-        this.user = user;
+        this.author = author;
         this.gym = gym;
     }
 
@@ -59,5 +63,13 @@ public class Post extends TimeStamped {
         this.title = requestDto.getTitle();
         this.content = requestDto.getContent();
         this.category = requestDto.getCategory();
+    }
+
+    public Integer getLikeCount() {
+        return this.likes.size();
+    }
+
+    public Integer getCommentCount() {
+        return this.comments.size();
     }
 }
