@@ -13,8 +13,16 @@ public enum ErrorCode {
 
     // post
     NOT_POST_WRITER(HttpStatus.BAD_REQUEST,"P001" ,"게시글 생성자만 수정할 수 있습니다." ),
-    NOT_FOUND_POST(HttpStatus.BAD_REQUEST,"P002","게시글이 존재하지 않습니다."),
-    NOT_FOUND_GYM(HttpStatus.BAD_REQUEST,"P003","헬스장이 존재하지 않습니다."),
+    POST_NOT_FOUND(HttpStatus.BAD_REQUEST,"P002","게시글이 존재하지 않습니다."),
+
+    // comment
+    COMMENT_NOT_FOUND(HttpStatus.BAD_REQUEST, "C001", "댓글이 존재하지 않습니다."),
+
+    // like
+    ALREADY_LIKED_POST(HttpStatus.BAD_REQUEST, "L001", "사용자가 이미 좋아요를 누른 게시물입니다."),
+    POST_LIKE_NOT_FOUND(HttpStatus.BAD_REQUEST, "L002", "게시물 좋아요 정보를 찾을 수 없습니다."),
+    ALREADY_LIKED_COMMENT(HttpStatus.BAD_REQUEST, "L001", "사용자가 이미 좋아요를 누른 댓글입니다."),
+    COMMENT_LIKE_NOT_FOUND(HttpStatus.BAD_REQUEST, "L002", "댓글 좋아요 정보를 찾을 수 없습니다."),
 
     // notification
     SSE_CONNECTION_FAILED(HttpStatus.BAD_REQUEST, "N001", "SSE 연결에 실패했습니다."),

@@ -4,15 +4,14 @@ package com.bb3.bodybuddybe.user.entity;
 import com.bb3.bodybuddybe.chat.entity.Message;
 import com.bb3.bodybuddybe.chat.entity.UserChat;
 import com.bb3.bodybuddybe.gym.entity.UserGym;
+import com.bb3.bodybuddybe.like.entity.CommentLike;
+import com.bb3.bodybuddybe.like.entity.PostLike;
 import com.bb3.bodybuddybe.matching.entity.MatchingCriteria;
 import com.bb3.bodybuddybe.matching.enums.AgeRangeEnum;
 import com.bb3.bodybuddybe.matching.enums.GenderEnum;
-import com.bb3.bodybuddybe.user.dto.ChangedPasswordRequestDto;
 import com.bb3.bodybuddybe.user.dto.ProfileUpdateRequestDto;
-import com.bb3.bodybuddybe.user.dto.SocialUpdateInform;
 import com.bb3.bodybuddybe.user.enums.UserRoleEnum;
 import com.bb3.bodybuddybe.user.enums.UserStatusEnum;
-import com.bb3.bodybuddybe.user.service.Role;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -76,7 +75,11 @@ public class User {
     @Enumerated(value = EnumType.STRING)
     private UserStatusEnum status;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<PostLike> postLikes = new ArrayList<>();
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<CommentLike> commentLikes = new ArrayList<>();
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private MatchingCriteria matchingCriteria;
