@@ -114,7 +114,7 @@ public class NotificationServiceImpl implements NotificationService {
     public void notifyToUsersThatTheyHaveReceivedLike(PostLike postLike) {
         User receiver = postLike.getPost().getAuthor(); // 글쓴이
         String message =
-                postLike.getUser().getUsername() + "님이 \""
+                postLike.getUser().getNickname() + "님이 \""
                         + postLike.getPost().getTitle() + "\" 게시글에 대해 좋아요를 눌렀습니다.";
 
 //        String redirectUrl = CLIENT_BASIC_URL + "/posts/" + likePost.getPost().getId();
