@@ -29,21 +29,6 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
         tokenResponseHandler.addTokensToResponseForSocialLogin(user, response);
 
-        String redirectPath = getRedirectPath(user);
-
-        response.sendRedirect(frontUrl + redirectPath);
-    }
-
-    private String getRedirectPath(User user) {
-        if (!user.getHasFinishedSocialSignup()) {
-            return "/signup/social";
-        } else if (!user.getHasRegisteredGym()) {
-            return "/gyms/setup";
-        } else if (!user.getHasSetProfile()) {
-            return "/profile/setup";
-        } else if (!user.getHasSetMatchingCriteria()) {
-            return "/matching/setup";
-        }
-        return "/friends";
+        response.sendRedirect(frontUrl + "/oauth2/redirect");
     }
 }

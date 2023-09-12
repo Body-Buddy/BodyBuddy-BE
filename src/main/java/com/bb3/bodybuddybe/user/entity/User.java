@@ -75,7 +75,7 @@ public class User {
     private List<Message> messageList = new ArrayList<>();
 
     @Column
-    private Boolean hasFinishedSocialSignup = false;
+    private Boolean needSocialSignup;
 
     @Column
     private Boolean hasRegisteredGym = false;
@@ -93,6 +93,7 @@ public class User {
         this.gender = gender;
         this.birthDate = birthDate;
         this.role = role;
+        this.needSocialSignup = false;
         this.status = UserStatusEnum.ACTIVE;
     }
 
@@ -103,6 +104,7 @@ public class User {
         this.nickname = nickname;
         this.imageUrl = imageUrl;
         this.role = role;
+        this.needSocialSignup = true;
         this.status = UserStatusEnum.ACTIVE;
     }
 
@@ -168,6 +170,6 @@ public class User {
     }
 
     public void markedAsFinishedSignup() {
-        this.hasFinishedSocialSignup = true;
+        this.needSocialSignup = false;
     }
 }

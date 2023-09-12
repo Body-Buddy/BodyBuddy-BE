@@ -7,7 +7,8 @@ import lombok.Getter;
 public class UserResponseDto {
     private Long id;
     private String nickname;
-    private String imageUrl;
+    private String profileImage;
+    private boolean needSocialSignup;
     private boolean hasRegisteredGym;
     private boolean hasSetProfile;
     private boolean hasSetMatchingCriteria;
@@ -15,7 +16,8 @@ public class UserResponseDto {
     public UserResponseDto(User user) {
         this.id = user.getId();
         this.nickname = user.getNickname();
-        this.imageUrl = user.getImageUrl();
+        this.profileImage = user.getImageUrl();
+        this.needSocialSignup = user.getNeedSocialSignup();
         this.hasRegisteredGym = user.getHasRegisteredGym();
         this.hasSetProfile = user.getHasSetProfile();
         this.hasSetMatchingCriteria = user.getHasSetMatchingCriteria();
