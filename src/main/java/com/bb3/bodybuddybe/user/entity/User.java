@@ -39,10 +39,10 @@ public class User {
     private Long id;
 
 
-    @Column(nullable = false, unique = true)
+    @Column
     private String username;
 
-    @Column(nullable = false, unique = true)
+    @Column
     private String nickname;
 
 
