@@ -1,50 +1,41 @@
 package com.bb3.bodybuddybe.user.entity;
 
-
 import com.bb3.bodybuddybe.chat.entity.Message;
 import com.bb3.bodybuddybe.chat.entity.UserChat;
+import com.bb3.bodybuddybe.common.exception.CustomException;
+import com.bb3.bodybuddybe.common.exception.ErrorCode;
+import com.bb3.bodybuddybe.common.oauth2.dto.OAuthAttributes;
 import com.bb3.bodybuddybe.gym.entity.UserGym;
 import com.bb3.bodybuddybe.matching.entity.MatchingCriteria;
 import com.bb3.bodybuddybe.matching.enums.AgeRangeEnum;
 import com.bb3.bodybuddybe.matching.enums.GenderEnum;
-import com.bb3.bodybuddybe.user.dto.ChangedPasswordRequestDto;
-import com.bb3.bodybuddybe.user.dto.ProfileUpdateRequestDto;
-import com.bb3.bodybuddybe.user.dto.SocialUpdateInform;
+import com.bb3.bodybuddybe.user.dto.ProfileRequestDto;
+import com.bb3.bodybuddybe.user.dto.SignupRequestDto;
+import com.bb3.bodybuddybe.user.dto.SocialSignupRequestDto;
 import com.bb3.bodybuddybe.user.enums.UserRoleEnum;
 import com.bb3.bodybuddybe.user.enums.UserStatusEnum;
-import com.bb3.bodybuddybe.user.service.Role;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-
+import java.util.UUID;
 
 @Entity
 @Getter
-@Builder
 @Table(name = "users")
-@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class User {
-    private static final int AGE_20 = 20;
-    private static final int AGE_30 = 30;
-    private static final int AGE_40 = 40;
-    private static final int AGE_50 = 50;
-    private static final int AGE_60 = 60;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-
-    @Column(nullable = false, unique = true)
-    private String username;
-
-    @Column(nullable = false, unique = true)
+    @Column
     private String nickname;
-
 
     @Column(nullable = false)
     private String password;
@@ -53,12 +44,11 @@ public class User {
     private String email;
 
     @Column
-    @Enumerated
+    @Enumerated(value = EnumType.STRING)
     private GenderEnum gender;
 
     @Column
     private LocalDate birthDate;
-
 
     @Column
     private String imageUrl;
@@ -70,13 +60,9 @@ public class User {
     @Enumerated(value = EnumType.STRING)
     private UserRoleEnum role;
 
-
-
     @Column
     @Enumerated(value = EnumType.STRING)
     private UserStatusEnum status;
-
-
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private MatchingCriteria matchingCriteria;
@@ -90,58 +76,73 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Message> messageList = new ArrayList<>();
 
-    public void setGroupChatMemberList(List<UserChat> groupChatMemberList) {
-        this.groupChatMemberList = groupChatMemberList;
-    }
+    @Column
+    private Boolean needSocialSignup = true;
 
-    public User(String email, String password, GenderEnum gender, LocalDate birthDate, UserRoleEnum role) {
-        this.email = email;
-        this.password = password;
-        this.gender = gender;
-        this.birthDate = birthDate;
-        this.role = role;
+    @Column
+    private Boolean hasRegisteredGym = false;
+
+    @Column
+    private Boolean hasSetProfile = false;
+
+    @Column
+    private Boolean hasSetMatchingCriteria = false;
+
+    public User(SignupRequestDto requestDto) {
+        this.email = requestDto.getEmail();
+        this.password = requestDto.getPassword();
+        this.gender = requestDto.getGender();
+        this.birthDate = requestDto.getBirthDate();
+        this.needSocialSignup = false;
+        this.role = UserRoleEnum.USER;
         this.status = UserStatusEnum.ACTIVE;
     }
 
-    public void authorizeUser() {
+    public User(OAuthAttributes attributes) {
+        this.email = attributes.getEmail();
+        this.password = UUID.randomUUID().toString();
+        this.nickname = attributes.getName();
+        this.imageUrl = attributes.getPicture();
+        this.needSocialSignup = true;
         this.role = UserRoleEnum.USER;
+        this.status = UserStatusEnum.ACTIVE;
     }
 
-    public void updatePassword(String updatePassword) {
-        this.password = updatePassword;
+    public void updatePassword(String newPassword) {
+        if (this.password.equals(newPassword)) {
+            throw new CustomException(ErrorCode.SAME_PASSWORD);
+        }
+        this.password = newPassword;
     }
-
-
 
     public void updateImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
     }
 
-    public void updateProfile(ProfileUpdateRequestDto requestDto) {
+    public void setProfile(ProfileRequestDto requestDto) {
         this.nickname = requestDto.getNickname();
         this.introduction = requestDto.getIntroduction();
     }
+
     public User update(String nickname, String profileImageUrl) {
         this.nickname = nickname;
         this.imageUrl = profileImageUrl;
         return this;
     }
 
-    public User updateSocialProfile(GenderEnum gender, LocalDate birthDate) {
-        this.gender = gender;
-        this.birthDate = birthDate;
-        return this;
+    public void socialSignup(SocialSignupRequestDto requestDto) {
+        this.gender = requestDto.getGender();
+        this.birthDate = requestDto.getBirthDate();
     }
 
     public AgeRangeEnum getAgeRange() {
         int age = getAge();
 
-        if (age < AGE_20) return AgeRangeEnum.S10s;
-        if (age < AGE_30) return AgeRangeEnum.S20s;
-        if (age < AGE_40) return AgeRangeEnum.S30s;
-        if (age < AGE_50) return AgeRangeEnum.S40s;
-        if (age < AGE_60) return AgeRangeEnum.S50s;
-
+        if (age < 20) return AgeRangeEnum.S10s;
+        if (age < 30) return AgeRangeEnum.S20s;
+        if (age < 40) return AgeRangeEnum.S30s;
+        if (age < 50) return AgeRangeEnum.S40s;
+        if (age < 60) return AgeRangeEnum.S50s;
         return AgeRangeEnum.S60plus;
     }
 
@@ -150,11 +151,25 @@ public class User {
         int age = currentDate.getYear() - birthDate.getYear();
 
         if (currentDate.isBefore(birthDate.withYear(currentDate.getYear()))) {
-            age--;  // 올해의 생일이 지났는지 확인
+            age--;
         }
 
         return age;
     }
 
+    public void markedAsRegisteredGym() {
+        this.hasRegisteredGym = true;
+    }
 
+    public void markedAsSetProfile() {
+        this.hasSetProfile = true;
+    }
+
+    public void markedAsSetMatchingCriteria() {
+        this.hasSetMatchingCriteria = true;
+    }
+
+    public void markedAsFinishedSignup() {
+        this.needSocialSignup = false;
+    }
 }

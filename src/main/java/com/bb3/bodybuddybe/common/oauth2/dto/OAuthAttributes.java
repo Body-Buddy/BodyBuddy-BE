@@ -1,14 +1,12 @@
 package com.bb3.bodybuddybe.common.oauth2.dto;
 
-import com.bb3.bodybuddybe.user.entity.User;
-import com.bb3.bodybuddybe.user.enums.UserRoleEnum;
 import lombok.Builder;
 import lombok.Getter;
 
 import java.util.Map;
-import java.util.UUID;
 
 @Getter
+@Builder
 public class OAuthAttributes {
     private Map<String, Object> attributes;
     private String nameAttributeKey;
@@ -16,30 +14,22 @@ public class OAuthAttributes {
     private String email;
     private String picture;
 
-    @Builder
-    public OAuthAttributes(Map<String, Object> attributes, String nameAttributeKey,
-                           String name, String email, String picture) {
-        this.attributes = attributes;
-        this.nameAttributeKey = nameAttributeKey;
-        this.name = name;
-        this.email = email;
-        this.picture = picture;
-    }
-
-    public static OAuthAttributes of(String registrationId, String userNameAttributeName,
-                                     Map<String, Object> attributes) {
-        System.out.println(registrationId + "     " + userNameAttributeName);
-        attributes.forEach((key, value) -> System.out.println("Key: " + key + ", Value: " + value));
-        if ("naver".equals(registrationId)) {
-            return ofNaver("id", attributes);
-        } else if ("kakao".equals(registrationId)) {
-            return ofKakao("id", attributes);
+    public static OAuthAttributes of(String registrationId, String userNameAttributeName, Map<String, Object> attributes) {
+        switch (registrationId) {
+            case "naver" -> {
+                return ofNaver("id", attributes);
+            }
+            case "kakao" -> {
+                return ofKakao("id", attributes);
+            }
+            default -> {
+                return ofGoogle(userNameAttributeName, attributes);
+            }
         }
-        return ofGoogle(userNameAttributeName, attributes);
     }
 
     private static OAuthAttributes ofKakao(String userNameAttributeName, Map<String, Object> attributes) {
-        Map<String, Object> response = ((Map<String, Object>) attributes.get("kakao_account"));
+        Map<String, Object> response = (Map<String, Object>) attributes.get("kakao_account");
         Map<String, Object> profile = (Map<String, Object>) response.get("profile");
 
         return OAuthAttributes.builder()
@@ -63,23 +53,13 @@ public class OAuthAttributes {
 
     private static OAuthAttributes ofNaver(String userNameAttributeName, Map<String, Object> attributes) {
         Map<String, Object> response = (Map<String, Object>) attributes.get("response");
+
         return OAuthAttributes.builder()
                 .name((String) response.get("name"))
                 .email((String) response.get("email"))
                 .picture((String) response.get("profile_image"))
                 .attributes(response)
                 .nameAttributeKey(userNameAttributeName)
-                .build();
-    }
-
-    public User toEntity() {
-        return User.builder()
-                .username(name)
-                .email(email)
-                .password(UUID.randomUUID().toString())
-                .imageUrl(picture)
-                .nickname(name)
-                .role(UserRoleEnum.USER)
                 .build();
     }
 }
