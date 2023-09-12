@@ -1,12 +1,9 @@
 package com.bb3.bodybuddybe.common.oauth2.dto;
 
-import com.bb3.bodybuddybe.user.entity.User;
-import com.bb3.bodybuddybe.user.enums.UserRoleEnum;
 import lombok.Builder;
 import lombok.Getter;
 
 import java.util.Map;
-import java.util.UUID;
 
 @Getter
 @Builder
@@ -63,16 +60,6 @@ public class OAuthAttributes {
                 .picture((String) response.get("profile_image"))
                 .attributes(response)
                 .nameAttributeKey(userNameAttributeName)
-                .build();
-    }
-
-    public User toEntity() {
-        return User.socialSignupBuilder()
-                .email(email)
-                .password(UUID.randomUUID().toString())
-                .nickname(name)
-                .imageUrl(picture)
-                .role(UserRoleEnum.USER)
                 .build();
     }
 }

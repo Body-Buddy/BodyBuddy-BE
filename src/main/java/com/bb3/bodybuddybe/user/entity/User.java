@@ -4,23 +4,25 @@ import com.bb3.bodybuddybe.chat.entity.Message;
 import com.bb3.bodybuddybe.chat.entity.UserChat;
 import com.bb3.bodybuddybe.common.exception.CustomException;
 import com.bb3.bodybuddybe.common.exception.ErrorCode;
+import com.bb3.bodybuddybe.common.oauth2.dto.OAuthAttributes;
 import com.bb3.bodybuddybe.gym.entity.UserGym;
 import com.bb3.bodybuddybe.matching.entity.MatchingCriteria;
 import com.bb3.bodybuddybe.matching.enums.AgeRangeEnum;
 import com.bb3.bodybuddybe.matching.enums.GenderEnum;
 import com.bb3.bodybuddybe.user.dto.ProfileRequestDto;
+import com.bb3.bodybuddybe.user.dto.SignupRequestDto;
 import com.bb3.bodybuddybe.user.dto.SocialSignupRequestDto;
 import com.bb3.bodybuddybe.user.enums.UserRoleEnum;
 import com.bb3.bodybuddybe.user.enums.UserStatusEnum;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Getter
@@ -75,7 +77,7 @@ public class User {
     private List<Message> messageList = new ArrayList<>();
 
     @Column
-    private Boolean needSocialSignup;
+    private Boolean needSocialSignup = true;
 
     @Column
     private Boolean hasRegisteredGym = false;
@@ -86,30 +88,28 @@ public class User {
     @Column
     private Boolean hasSetMatchingCriteria = false;
 
-    @Builder(builderMethodName = "basicSignupBuilder")
-    public User(String email, String password, GenderEnum gender, LocalDate birthDate, UserRoleEnum role) {
-        this.email = email;
-        this.password = password;
-        this.gender = gender;
-        this.birthDate = birthDate;
-        this.role = role;
+    public User(SignupRequestDto requestDto) {
+        this.email = requestDto.getEmail();
+        this.password = requestDto.getPassword();
+        this.gender = requestDto.getGender();
+        this.birthDate = requestDto.getBirthDate();
         this.needSocialSignup = false;
+        this.role = UserRoleEnum.USER;
         this.status = UserStatusEnum.ACTIVE;
     }
 
-    @Builder(builderMethodName = "socialSignupBuilder")
-    public User(String email, String password, String nickname, String imageUrl, UserRoleEnum role) {
-        this.email = email;
-        this.password = password;
-        this.nickname = nickname;
-        this.imageUrl = imageUrl;
-        this.role = role;
+    public User(OAuthAttributes attributes) {
+        this.email = attributes.getEmail();
+        this.password = UUID.randomUUID().toString();
+        this.nickname = attributes.getName();
+        this.imageUrl = attributes.getPicture();
         this.needSocialSignup = true;
+        this.role = UserRoleEnum.USER;
         this.status = UserStatusEnum.ACTIVE;
     }
 
     public void updatePassword(String newPassword) {
-        if(this.password.equals(newPassword)) {
+        if (this.password.equals(newPassword)) {
             throw new CustomException(ErrorCode.SAME_PASSWORD);
         }
         this.password = newPassword;

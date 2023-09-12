@@ -36,17 +36,8 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public void signup(SignupRequestDto requestDto) {
         verifyEmailIsUnique(requestDto.getEmail());
-
-        User user = User.basicSignupBuilder()
-                .email(requestDto.getEmail())
-                .password(passwordEncoder.encode(requestDto.getPassword()))
-                .gender(requestDto.getGender())
-                .birthDate(requestDto.getBirthDate())
-                .role(UserRoleEnum.USER)
-                .build();
-
+        User user = new User(requestDto);
         verifyAge(user.getAge());
-
         userRepository.save(user);
     }
 
