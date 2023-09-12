@@ -16,6 +16,10 @@ public enum ErrorCode {
     NOT_FOUND_POST(HttpStatus.BAD_REQUEST,"P002","게시글이 존재하지 않습니다."),
     NOT_FOUND_GYM(HttpStatus.BAD_REQUEST,"P003","헬스장이 존재하지 않습니다."),
 
+    // notification
+    SSE_CONNECTION_FAILED(HttpStatus.BAD_REQUEST, "N001", "SSE 연결에 실패했습니다."),
+    NOTIFICATION_NOT_FOUND(HttpStatus.BAD_REQUEST, "N002" ,"알림이 존재하지 않습니다." ),
+
     // matching
     MATCHING_CRITERIA_NOT_FOUND(HttpStatus.BAD_REQUEST, "M001", "사용자의 매칭 기준이 존재하지 않습니다."),
 
