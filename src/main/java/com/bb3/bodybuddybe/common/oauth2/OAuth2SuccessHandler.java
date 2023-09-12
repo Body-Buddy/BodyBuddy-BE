@@ -1,11 +1,7 @@
 package com.bb3.bodybuddybe.common.oauth2;
 
-import com.bb3.bodybuddybe.common.jwt.JwtUtil;
-import com.bb3.bodybuddybe.common.oauth2.entity.RefreshToken;
-import com.bb3.bodybuddybe.common.oauth2.repository.RefreshTokenRepository;
-import com.bb3.bodybuddybe.user.enums.UserRoleEnum;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.Cookie;
+import com.bb3.bodybuddybe.common.jwt.TokenResponseHandler;
+import com.bb3.bodybuddybe.user.entity.User;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -16,46 +12,23 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
 import java.io.IOException;
-import java.net.URLEncoder;
 import java.util.Map;
-import java.util.UUID;
 
-@RequiredArgsConstructor
 @Slf4j
+@RequiredArgsConstructor
 public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
-    private final JwtUtil jwtUtil;
-    private final RefreshTokenRepository refreshTokenRepository;
+    private final TokenResponseHandler tokenResponseHandler;
 
     @Value("${front.server.url}")
     private String frontUrl;
 
     @Override
-    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
+    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
         Map<String, Object> attributes = ((OAuth2User) authentication.getPrincipal()).getAttributes();
-        String username = (String) attributes.get("name");
-        if (attributes.containsKey("kakao_account")) {
-            username = (String) ((Map<String, Object>) ((Map<String, Object>)
-                    attributes.get("kakao_account"))
-                    .get("profile"))
-                    .get("nickname");
-        }
-        UserRoleEnum role = UserRoleEnum.USER;
-        attributes.forEach((key, value) -> System.out.println("Key: " + key + ", Value: " + value));
-        System.out.println(username);
-        String refreshTokenVal = UUID.randomUUID().toString();
-        refreshTokenRepository.save(new RefreshToken(refreshTokenVal));
-        String token = jwtUtil.createToken(username, role);
-        token = URLEncoder.encode(token, "utf-8").replaceAll("\\+", "%20");
-        // 쿠키 생성
-        Cookie refreshToken = new Cookie("refreshToken", refreshTokenVal);
-        Cookie accessToken = new Cookie(JwtUtil.AUTHORIZATION_HEADER, token);
-        refreshToken.setPath("/");
-        accessToken.setPath("/"); // 쿠키의 유효 범위 설정 (루트 경로에 모든 요청에 대해 쿠키 전송)
-        // 쿠키를 응답 헤더에 추가
-        response.addCookie(refreshToken);
-        response.addCookie(accessToken);
-        response.sendRedirect(frontUrl + "/oauth2");
+        User user = (User) attributes.get("storedUser");
 
-        log.info("로그인성공");
+        tokenResponseHandler.addTokensToResponseForSocialLogin(user, response);
+
+        response.sendRedirect(frontUrl + "/oauth2/redirect");
     }
 }

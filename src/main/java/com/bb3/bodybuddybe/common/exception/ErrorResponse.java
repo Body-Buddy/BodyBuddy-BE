@@ -13,6 +13,13 @@ public class ErrorResponse {
     private String errorCode;
     private String errorMessage;
 
+    public static ErrorResponse of(ErrorCode errorCode) {
+        return ErrorResponse.builder()
+                .errorCode(errorCode.getCode())
+                .errorMessage(errorCode.getMessage())
+                .build();
+    }
+
     public static ErrorResponse of(String errorCode, String errorMessage) {
         return ErrorResponse.builder()
                 .errorCode(errorCode)
