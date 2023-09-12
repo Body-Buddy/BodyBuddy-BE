@@ -2,7 +2,7 @@ package com.bb3.bodybuddybe.post.dto;
 
 import com.bb3.bodybuddybe.post.entity.Post;
 import com.bb3.bodybuddybe.post.enums.CategoryEnum;
-import com.bb3.bodybuddybe.user.dto.ProfileResponseDto;
+import com.bb3.bodybuddybe.user.dto.AuthorResponseDto;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
@@ -14,8 +14,7 @@ public class PostSummaryResponseDto {
     private String content;
     private CategoryEnum category;
     private LocalDateTime createdAt;
-    private LocalDateTime modifiedAt;
-    private ProfileResponseDto author;
+    private AuthorResponseDto author;
     private Integer likeCount;
     private Integer commentCount;
 
@@ -25,8 +24,7 @@ public class PostSummaryResponseDto {
         this.content = post.getContent();
         this.category = post.getCategory();
         this.createdAt = post.getCreatedAt();
-        this.modifiedAt = post.getModifiedAt();
-        this.author = new ProfileResponseDto(post.getAuthor());
+        this.author = new AuthorResponseDto(post.getAuthor());
         this.likeCount = post.getLikeCount();
         this.commentCount = post.getCommentCount();
     }

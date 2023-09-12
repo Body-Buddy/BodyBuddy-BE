@@ -26,12 +26,6 @@ public class PostCreateRequestDto {
     private Long gymId;
 
     private List<MultipartFile> images;
-    private List<MultipartFile> videos;
 
-    public PostCreateRequestDto(String title, String content, CategoryEnum category, Long gymId) {
-        this.title = title;
-        this.content = content;
-        this.category = category;
-        this.gymId = gymId;
-    }
+    private List<MultipartFile> videos;
 }
