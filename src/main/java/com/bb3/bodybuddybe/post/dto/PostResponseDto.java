@@ -12,13 +12,17 @@ import java.time.LocalDateTime;
 public class PostResponseDto {
     private String title;
     private String content;
+
     private CategoryEnum category;
     private LocalDateTime createdAt;
+
 
     public PostResponseDto(Post post) {
         this.title = post.getTitle();
         this.content = post.getContent();
+
         this.category = post.getCategory();
         this.createdAt = post.getCreatedAt();
+
     }
 }
