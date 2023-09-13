@@ -1,22 +1,17 @@
 package com.bb3.bodybuddybe.comment.service;
 
-import com.bb3.bodybuddybe.comment.dto.CommentRequestDto;
-import com.bb3.bodybuddybe.comment.dto.CommentResponseDto;
+import com.bb3.bodybuddybe.comment.dto.CommentCreateRequestDto;
 import com.bb3.bodybuddybe.comment.dto.CommentUpdateRequestDto;
-import com.bb3.bodybuddybe.common.security.UserDetailsImpl;
+import com.bb3.bodybuddybe.user.entity.User;
 import org.springframework.transaction.annotation.Transactional;
 
 public interface CommentService {
-
+    @Transactional
+    void createComment(CommentCreateRequestDto requestDto, User user);
 
     @Transactional
-    CommentResponseDto save(UserDetailsImpl userDetails, CommentRequestDto requestDto);
+    void updateComment(Long commentId, CommentUpdateRequestDto requestDto, User user);
 
     @Transactional
-    CommentResponseDto update(Long id, UserDetailsImpl userDetails, CommentUpdateRequestDto requestDto);
-
-    @Transactional
-    void delete(Long id, UserDetailsImpl userDetails);
-
-
-    }
+    void deleteComment(Long commentId, User user);
+}
