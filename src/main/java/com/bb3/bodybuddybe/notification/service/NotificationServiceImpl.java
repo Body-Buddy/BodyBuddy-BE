@@ -2,7 +2,7 @@ package com.bb3.bodybuddybe.notification.service;
 
 import com.bb3.bodybuddybe.common.exception.CustomException;
 import com.bb3.bodybuddybe.common.exception.ErrorCode;
-import com.bb3.bodybuddybe.like.entity.LikePost;
+import com.bb3.bodybuddybe.like.entity.PostLike;
 import com.bb3.bodybuddybe.notification.dto.NotificationListResponseDto;
 import com.bb3.bodybuddybe.notification.dto.NotificationRequestDto;
 import com.bb3.bodybuddybe.notification.dto.NotificationResponseDto;
@@ -111,11 +111,11 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     @Transactional
-    public void notifyToUsersThatTheyHaveReceivedLike(LikePost likePost) {
-        User receiver = likePost.getPost().getUser(); // 글쓴이
+    public void notifyToUsersThatTheyHaveReceivedLike(PostLike postLike) {
+        User receiver = postLike.getPost().getAuthor(); // 글쓴이
         String message =
-                likePost.getUser().getUsername() + "님이 \""
-                        + likePost.getPost().getTitle() + "\" 게시글에 대해 좋아요를 눌렀습니다.";
+                postLike.getUser().getNickname() + "님이 \""
+                        + postLike.getPost().getTitle() + "\" 게시글에 대해 좋아요를 눌렀습니다.";
 
 //        String redirectUrl = CLIENT_BASIC_URL + "/posts/" + likePost.getPost().getId();
 

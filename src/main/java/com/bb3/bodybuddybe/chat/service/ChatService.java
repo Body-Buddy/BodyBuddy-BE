@@ -2,11 +2,8 @@ package com.bb3.bodybuddybe.chat.service;
 
 import com.bb3.bodybuddybe.chat.dto.ChatRequestDto;
 import com.bb3.bodybuddybe.chat.dto.ChatResponseDto;
-import com.bb3.bodybuddybe.chat.dto.MessageRequestDto;
-import com.bb3.bodybuddybe.chat.dto.MessageResponseDto;
 import com.bb3.bodybuddybe.chat.entity.Chat;
 import com.bb3.bodybuddybe.chat.entity.ChatType;
-import com.bb3.bodybuddybe.chat.entity.Message;
 import com.bb3.bodybuddybe.chat.entity.UserChat;
 import com.bb3.bodybuddybe.chat.repository.ChatRepository;
 import com.bb3.bodybuddybe.chat.repository.MessageRepository;
@@ -18,18 +15,14 @@ import com.bb3.bodybuddybe.gym.repository.GymRepository;
 import com.bb3.bodybuddybe.gym.repository.UserGymRepository;
 import com.bb3.bodybuddybe.user.entity.User;
 import com.bb3.bodybuddybe.user.repository.UserRepository;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.io.IOException;
-import java.time.LocalDateTime;
+
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.socket.TextMessage;
-import org.springframework.web.socket.WebSocketSession;
 
 @Service
 @Slf4j
@@ -264,13 +257,13 @@ public class ChatService {
 
     private void validateDuplicatedUserChat(User user, Chat chat) {
         if (userChatRepository.existsByChatAndUser(chat, user)) {
-            throw new CustomException(ErrorCode.DUPLICATED_USERCHAT);
+            throw new CustomException(ErrorCode.DUPLICATED_USER_CHAT);
         }
     }
 
     public void validateJoinedChat(User user, Chat chat) {
         if (!userChatRepository.existsByChatAndUser(chat, user)) {
-            throw new CustomException(ErrorCode.USERCHAT_NOT_FOUND);
+            throw new CustomException(ErrorCode.USER_CHAT_NOT_FOUND);
         }
     }
 
@@ -288,7 +281,7 @@ public class ChatService {
 
     private UserChat findUserChat(User user, Long chatId) {
         return userChatRepository.findByUserAndChatId(user, chatId)
-            .orElseThrow(() -> new CustomException(ErrorCode.USERCHAT_NOT_FOUND));
+            .orElseThrow(() -> new CustomException(ErrorCode.USER_CHAT_NOT_FOUND));
     }
 
 //    private String convertMessageToJson(MessageResponseDto message) {
