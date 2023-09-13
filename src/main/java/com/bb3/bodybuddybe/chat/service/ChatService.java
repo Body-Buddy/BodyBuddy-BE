@@ -257,13 +257,13 @@ public class ChatService {
 
     private void validateDuplicatedUserChat(User user, Chat chat) {
         if (userChatRepository.existsByChatAndUser(chat, user)) {
-            throw new CustomException(ErrorCode.DUPLICATED_USERCHAT);
+            throw new CustomException(ErrorCode.DUPLICATED_USER_CHAT);
         }
     }
 
     public void validateJoinedChat(User user, Chat chat) {
         if (!userChatRepository.existsByChatAndUser(chat, user)) {
-            throw new CustomException(ErrorCode.USERCHAT_NOT_FOUND);
+            throw new CustomException(ErrorCode.USER_CHAT_NOT_FOUND);
         }
     }
 
@@ -281,7 +281,7 @@ public class ChatService {
 
     private UserChat findUserChat(User user, Long chatId) {
         return userChatRepository.findByUserAndChatId(user, chatId)
-            .orElseThrow(() -> new CustomException(ErrorCode.USERCHAT_NOT_FOUND));
+            .orElseThrow(() -> new CustomException(ErrorCode.USER_CHAT_NOT_FOUND));
     }
 
 //    private String convertMessageToJson(MessageResponseDto message) {

@@ -5,12 +5,8 @@ import com.bb3.bodybuddybe.common.exception.ErrorCode;
 import com.bb3.bodybuddybe.common.image.ImageUploader;
 import com.bb3.bodybuddybe.gym.entity.Gym;
 import com.bb3.bodybuddybe.gym.repository.GymRepository;
-import com.bb3.bodybuddybe.image.entity.Image;
 import com.bb3.bodybuddybe.image.repository.ImageRepository;
-import com.bb3.bodybuddybe.post.dto.CategoryResponseDto;
-import com.bb3.bodybuddybe.post.dto.PostCreateRequestDto;
-import com.bb3.bodybuddybe.post.dto.PostResponseDto;
-import com.bb3.bodybuddybe.post.dto.PostUpdateRequestDto;
+import com.bb3.bodybuddybe.post.dto.*;
 import com.bb3.bodybuddybe.post.entity.Post;
 import com.bb3.bodybuddybe.post.enums.CategoryEnum;
 import com.bb3.bodybuddybe.post.repository.PostRepository;
@@ -20,11 +16,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -36,33 +30,35 @@ public class PostServiceImpl implements PostService {
 
     @Override
     @Transactional
-    public void createPost(PostCreateRequestDto requestDto, User user, List<MultipartFile> files) {
+    public void createPost(PostCreateRequestDto requestDto, User user) {
         Gym gym = findGym(requestDto.getGymId());
 
         Post post = Post.builder()
                 .title(requestDto.getTitle())
                 .content(requestDto.getContent())
                 .category(requestDto.getCategory())
-                .user(user)
+                .author(user)
                 .gym(gym)
                 .build();
 
         postRepository.save(post);
-        if (files != null) {
-            for (MultipartFile file : files) {
-                String fileUrl = imageUploader.upload(file);
-                if (imageRepository.existsByImageUrlAndId(fileUrl, post.getId())) {
-                    throw new CustomException(ErrorCode.FILE_ALREADY_EXISTS);
-                }
-                imageRepository.save(Image.builder().imageUrl(fileUrl).post(post).build());
-            }
-        }
+
+//        List<MultipartFile> files = new ArrayList<>();
+//        files.addAll(requestDto.getImages());
+//        files.addAll(requestDto.getVideos());
+//
+//        if (!files.isEmpty()) {
+//            for (MultipartFile file : files) {
+//                String s3Url = imageUploader.upload(file);
+//                imageRepository.save(new Image(s3Url, post));
+//            }
+//        }
     }
 
     @Override
     @Transactional(readOnly = true)
-    public PostResponseDto getPostById(Long postId) {
-        return new PostResponseDto(findPost(postId));
+    public PostDetailResponseDto getPostById(Long postId) {
+        return new PostDetailResponseDto(findPost(postId));
     }
 
     @Override
@@ -74,23 +70,23 @@ public class PostServiceImpl implements PostService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<PostResponseDto> getPostsByCategory(CategoryEnum category, Pageable pageable) {
+    public Page<PostSummaryResponseDto> getPostsByCategory(CategoryEnum category, Pageable pageable) {
         return postRepository.findAllByCategory(category, pageable)
-                .map(PostResponseDto::new);
+                .map(PostSummaryResponseDto::new);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Page<PostResponseDto> getPostsByGymId(Long gymId, Pageable pageable) {
+    public Page<PostSummaryResponseDto> getPostsByGymId(Long gymId, Pageable pageable) {
         return postRepository.findAllByGym(findGym(gymId), pageable)
-                .map(PostResponseDto::new);
+                .map(PostSummaryResponseDto::new);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Page<PostResponseDto> searchPosts(String keyword, Pageable pageable) {
+    public Page<PostSummaryResponseDto> searchPosts(String keyword, Pageable pageable) {
         return postRepository.findByTitleContainingOrContentContaining(keyword, keyword, pageable)
-                .map(PostResponseDto::new);
+                .map(PostSummaryResponseDto::new);
     }
 
     @Override
@@ -111,19 +107,19 @@ public class PostServiceImpl implements PostService {
 
     private Post findPost(Long id) {
         return postRepository.findById(id).orElseThrow(() ->
-                new CustomException(ErrorCode.NOT_FOUND_POST)
+                new CustomException(ErrorCode.POST_NOT_FOUND)
         );
     }
 
     private Gym findGym(Long id) {
         return gymRepository.findById(id).orElseThrow(() ->
-                new CustomException(ErrorCode.NOT_FOUND_GYM)
+                new CustomException(ErrorCode.GYM_NOT_FOUND)
         );
     }
 
     private void validatePostOwner(Post post, User user) {
-        if (!post.getUser().getId().equals(user.getId())) {
-            throw new CustomException(ErrorCode.NOT_POST_WRITER);
+        if (!post.getAuthor().getId().equals(user.getId())) {
+            throw new CustomException(ErrorCode.NOT_POST_AUTHOR);
         }
     }
 }

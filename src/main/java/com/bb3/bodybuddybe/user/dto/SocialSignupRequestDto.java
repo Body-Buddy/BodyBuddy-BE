@@ -8,8 +8,10 @@ import lombok.Setter;
 
 import java.time.LocalDate;
 
-@Getter @Setter
-public class SocialUpdateInform {
+@Getter
+@Setter
+public class SocialSignupRequestDto {
+
     @NotNull(message = "성별을 선택해주세요.")
     private GenderEnum gender;
 

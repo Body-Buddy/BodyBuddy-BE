@@ -1,88 +1,80 @@
 package com.bb3.bodybuddybe.comment.service;
 
-import com.bb3.bodybuddybe.comment.dto.CommentRequestDto;
+import com.bb3.bodybuddybe.comment.dto.CommentCreateRequestDto;
 import com.bb3.bodybuddybe.comment.dto.CommentResponseDto;
 import com.bb3.bodybuddybe.comment.dto.CommentUpdateRequestDto;
 import com.bb3.bodybuddybe.comment.entity.Comment;
 import com.bb3.bodybuddybe.comment.repository.CommentRepository;
-import com.bb3.bodybuddybe.common.security.UserDetailsImpl;
+import com.bb3.bodybuddybe.common.exception.CustomException;
+import com.bb3.bodybuddybe.common.exception.ErrorCode;
 import com.bb3.bodybuddybe.post.entity.Post;
 import com.bb3.bodybuddybe.post.repository.PostRepository;
-import com.bb3.bodybuddybe.user.enums.UserRoleEnum;
+import com.bb3.bodybuddybe.user.entity.User;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Locale;
 
 @Service
 @RequiredArgsConstructor
 public class CommentServiceImpl implements CommentService {
     private final PostRepository postRepository;
     private final CommentRepository commentRepository;
-    private final MessageSource messageSource;
 
     @Override
     @Transactional
-    public CommentResponseDto save(UserDetailsImpl userDetails, CommentRequestDto requestDto) {
-        Post post = postRepository.findById(requestDto.getPostId())
-                .orElseThrow(() -> new IllegalArgumentException(
-                        messageSource.getMessage(
-                                "not.found.post",
-                                null,
-                                "존재하지 않는 게시글입니다.",
-                                Locale.getDefault()
-                        )
-                ));
-        Comment comment;
-        if (requestDto.getParentId() == 0) {
-            comment = new Comment(requestDto.getContent(), post, userDetails.getUser());
-        } else {
-            //parentId > 1
-            Comment parentComment = commentRepository.findById(requestDto.getParentId()).orElseThrow(
-                    () -> new IllegalArgumentException("해당 댓글이 존재하지 않습니다.")
-            );
-            if (parentComment.getPost().getId() != requestDto.getPostId())
-                throw new IllegalArgumentException("같은 게시글의 댓글이 아닙니다.");
-            comment = new Comment(requestDto.getContent(), post, userDetails.getUser());
+    public void createComment(CommentCreateRequestDto requestDto, User user) {
+        Post post = findPost(requestDto.getPostId());
+        Comment comment = Comment.builder()
+                .content(requestDto.getContent())
+                .post(post)
+                .author(user)
+                .build();
 
+        if (requestDto.getParentId() != 0) {
+            Comment parentComment = validateParentComment(requestDto);
             comment.addParent(parentComment);
         }
+
         commentRepository.save(comment);
-        return new CommentResponseDto(comment, userDetails.getUsername());
+    }
+
+    private Comment validateParentComment(CommentCreateRequestDto requestDto) {
+        Comment parentComment = findComment(requestDto.getParentId());
+        if (!parentComment.getPost().getId().equals(requestDto.getPostId())) {
+            throw new CustomException(ErrorCode.WRONG_PARENT_COMMENT);
+        }
+        return parentComment;
     }
 
     @Override
     @Transactional
-    public CommentResponseDto update(Long id, UserDetailsImpl userDetails, CommentUpdateRequestDto requestDto) {
-        Comment comment = commentRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("해당 댓글이 존재하지 않습니다."));
-        if (userDetails.getUser().getId().equals(comment.getUser().getId()) || userDetails.getRole().equals(UserRoleEnum.ADMIN.toString())) {
-            comment.update(requestDto);
-        } else throw new IllegalArgumentException(
-                messageSource.getMessage(
-                        "not.authenticated",
-                        null,
-                        "수정/삭제 권한이 없습니다.",
-                        Locale.getDefault()
-                )
-        );
-        return new CommentResponseDto(comment, userDetails.getUsername());
+    public void updateComment(Long commentId, CommentUpdateRequestDto requestDto, User user) {
+        Comment comment = findComment(commentId);
+        validateUserOwnership(comment, user);
+        comment.update(requestDto);
     }
 
     @Override
     @Transactional
-    public void delete(Long id, UserDetailsImpl userDetails) {
-        Comment comment = commentRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("해당 댓글이 존재하지 않습니다."));
-        if (userDetails.getUser().getId().equals(comment.getUser().getId()) || userDetails.getRole().equals(UserRoleEnum.ADMIN.toString())) {
-            commentRepository.delete(comment);
-        } else throw new IllegalArgumentException(
-                messageSource.getMessage(
-                        "not.authenticated",
-                        null,
-                        "수정/삭제 권한이 없습니다.",
-                        Locale.getDefault()
-                )
-        );
+    public void deleteComment(Long commentId, User user) {
+        Comment comment = findComment(commentId);
+        validateUserOwnership(comment, user);
+        commentRepository.delete(comment);
+    }
+
+    private void validateUserOwnership(Comment comment, User user) {
+        if (!user.getId().equals(comment.getAuthor().getId())) {
+            throw new CustomException(ErrorCode.NOT_COMMENT_AUTHOR);
+        }
+    }
+
+    private Post findPost(Long postId) {
+        return postRepository.findById(postId)
+                .orElseThrow(() -> new CustomException(ErrorCode.POST_NOT_FOUND));
+    }
+
+    private Comment findComment(Long commentId) {
+        return commentRepository.findById(commentId)
+                .orElseThrow(() -> new CustomException(ErrorCode.COMMENT_NOT_FOUND));
     }
 }

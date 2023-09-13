@@ -28,10 +28,10 @@ public class GymController {
         List<PlaceDto> gyms = gymService.searchGyms(query, location);
         return ResponseEntity.ok(gyms);
     }
-  
+
     @PostMapping("/users/{userId}/gyms")
     public ResponseEntity<ApiResponseDto> addToMyGyms(@RequestBody GymRequestDto requestDto,
-                                                     @AuthenticationPrincipal UserDetailsImpl userDetails) {
+                                                      @AuthenticationPrincipal UserDetailsImpl userDetails) {
         gymService.addToMyGyms(requestDto, userDetails.getUser());
         return ResponseEntity.ok(new ApiResponseDto("나의 헬스장 등록 성공", HttpStatus.OK.value()));
     }
