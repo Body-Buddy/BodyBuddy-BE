@@ -40,6 +40,7 @@ public class PostController {
                                                      @RequestPart(value = "gymId") Long gymId,
                                                      @Nullable @RequestPart(value = "files") List<MultipartFile> files,
                                                      @AuthenticationPrincipal UserDetailsImpl userDetails) {
+
         PostCreateRequestDto requestDto = new PostCreateRequestDto(title, content, category, gymId);
         postService.createPost(requestDto, userDetails.getUser(), files);
         return ResponseEntity.ok(new ApiResponseDto("게시글이 작성되었습니다.", HttpStatus.CREATED.value()));

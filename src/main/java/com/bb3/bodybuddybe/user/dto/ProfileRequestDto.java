@@ -7,7 +7,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class ProfileUpdateRequestDto {
+public class ProfileRequestDto {
 
     @NotBlank(message = "닉네임을 입력해주세요.")
     private String nickname;

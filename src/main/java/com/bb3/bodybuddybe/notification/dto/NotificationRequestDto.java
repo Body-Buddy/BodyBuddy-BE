@@ -12,6 +12,7 @@ import lombok.*;
 public class NotificationRequestDto {
 
     private String content;
+
     private User receiver;
     private NotificationType notificationType;
 

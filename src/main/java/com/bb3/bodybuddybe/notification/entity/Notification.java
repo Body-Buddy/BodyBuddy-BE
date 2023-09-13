@@ -29,7 +29,7 @@ public class Notification extends TimeStamped {
     @Column(nullable = false)
     private Boolean isRead;
 
-    public void read()   {
+    public void read() {
         this.isRead = true;
     }
 
