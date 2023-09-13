@@ -11,13 +11,13 @@ import lombok.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class NotificationRequestDto {
 
-    private String message;
+    private String content;
     private User receiver;
     private NotificationType notificationType;
 
     public Notification toEntity(NotificationType notificationType, User receiver) {
         return Notification.builder()
-                .message(this.message)
+                .content(this.content)
                 .receiver(receiver)
                 .notificationType(notificationType)
                 .isRead(false)

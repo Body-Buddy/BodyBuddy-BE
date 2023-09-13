@@ -24,12 +24,12 @@ public class Notification extends TimeStamped {
     @JoinColumn(name = "receiver_id")
     private User receiver;
 
-    private String message;
+    private String content;
 
     @Column(nullable = false)
     private Boolean isRead;
 
-    public void read() {
+    public void read()   {
         this.isRead = true;
     }
 
