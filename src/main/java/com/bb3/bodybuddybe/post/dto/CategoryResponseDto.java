@@ -5,11 +5,11 @@ import lombok.Getter;
 
 @Getter
 public class CategoryResponseDto {
-    private String category;
+    private String name;
     private String description;
 
     public CategoryResponseDto(CategoryEnum category) {
-        this.category = category.name();
+        this.name = category.name();
         this.description = category.getDescription();
     }
 }

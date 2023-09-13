@@ -12,6 +12,7 @@ import com.bb3.bodybuddybe.matching.enums.GoalEnum;
 import com.bb3.bodybuddybe.matching.repository.MatchingCriteriaRepository;
 import com.bb3.bodybuddybe.user.dto.ProfileResponseDto;
 import com.bb3.bodybuddybe.user.entity.User;
+import com.bb3.bodybuddybe.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +25,7 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class MatchingServiceImpl implements MatchingService {
 
+    private final UserRepository userRepository;
     private final UserGymRepository userGymRepository;
     private final MatchingCriteriaRepository matchingCriteriaRepository;
 
@@ -32,6 +34,8 @@ public class MatchingServiceImpl implements MatchingService {
     public void createMatchingCriteria(CriteriaCreateRequestDto requestDto, User user) {
         MatchingCriteria matchingCriteria = new MatchingCriteria(user, requestDto);
         matchingCriteriaRepository.save(matchingCriteria);
+        user.markedAsSetMatchingCriteria();
+        userRepository.save(user);
     }
 
     @Override

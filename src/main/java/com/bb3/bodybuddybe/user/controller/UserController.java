@@ -1,13 +1,12 @@
 package com.bb3.bodybuddybe.user.controller;
 
-
 import com.bb3.bodybuddybe.common.dto.ApiResponseDto;
-import com.bb3.bodybuddybe.common.oauth2.repository.LogoutlistRepository;
 import com.bb3.bodybuddybe.common.security.UserDetailsImpl;
 import com.bb3.bodybuddybe.user.dto.*;
 import com.bb3.bodybuddybe.user.service.EmailServiceImpl;
 import com.bb3.bodybuddybe.user.service.UserServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -24,37 +23,40 @@ public class UserController {
     private final UserServiceImpl userService;
     private final EmailServiceImpl emailService;
 
-
-    @PostMapping("/users/signup")
+    @PostMapping("/auth/signup")
     public ResponseEntity<ApiResponseDto> signup(@Valid @RequestBody SignupRequestDto requestDto) {
 
         userService.signup(requestDto);
         return ResponseEntity.ok(new ApiResponseDto("회원가입 성공", HttpStatus.OK.value()));
     }
 
-    @GetMapping("/logout") // @Post 변경 예정
-    public ResponseEntity logout(@AuthenticationPrincipal UserDetailsImpl userDetails, HttpServletRequest request){
-        userService.logout(userDetails.getUser(), request);
-        return ResponseEntity.ok().body("로그아웃 완료");
+    @PostMapping("/auth/social-signup")
+    public ResponseEntity<ApiResponseDto> socialSignup(@Valid @RequestBody SocialSignupRequestDto requestDto,
+                                                       @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        userService.socialSignup(requestDto, userDetails.getUser());
+        return ResponseEntity.ok(new ApiResponseDto("소셜로그인 회원가입 완료 성공", HttpStatus.OK.value()));
     }
 
-
-
-    @PostMapping("/users/social-profile")
-    public ResponseEntity<ApiResponseDto> socialAddProfile(@Valid @RequestBody SocialUpdateInform requestDto,
-                                                           @AuthenticationPrincipal UserDetailsImpl userDetails ) {
-        userService.socialAddProfile(requestDto,userDetails.getUser());
-        return ResponseEntity.ok(new ApiResponseDto("소셜로그인 사용자 프로필 추가 작성 성공", HttpStatus.OK.value()));
+    @GetMapping("/auth/user")
+    public ResponseEntity<UserResponseDto> getUser(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        UserResponseDto userResponseDto = userService.getUser(userDetails.getUser());
+        return ResponseEntity.ok(userResponseDto);
     }
 
-    @PostMapping("/users/change-password")
-    public ResponseEntity<ApiResponseDto> changePassword(@Valid @RequestBody ChangedPasswordRequestDto requestDto,
-                                                           @AuthenticationPrincipal UserDetailsImpl userDetails ) {
-        userService.changePassword(requestDto,userDetails.getUser());
-        return ResponseEntity.ok(new ApiResponseDto("비밀번호 변경 완료", HttpStatus.OK.value()));
+    @PostMapping("/auth/reissue")
+    public ResponseEntity<ApiResponseDto> reissueToken(@Valid @RequestBody ReissueRequestDto requestDto,
+                                                       HttpServletResponse response) {
+        userService.reissueToken(requestDto, response);
+        return ResponseEntity.ok(new ApiResponseDto("토큰 재발급 성공", HttpStatus.OK.value()));
     }
 
-//탈퇴 휴먼 /
+    @PostMapping("/auth/logout")
+    public ResponseEntity<ApiResponseDto> logout(@Valid @RequestBody LogoutRequestDto requestDto,
+                                                 HttpServletRequest request) {
+        userService.logout(requestDto, request);
+        return ResponseEntity.ok(new ApiResponseDto("로그아웃 성공", HttpStatus.OK.value()));
+    }
+
     @PostMapping("/email-verification/request")
     public ResponseEntity<ApiResponseDto> sendVerificationCode(@RequestBody @Valid EmailRequestDto requestDto) {
         emailService.sendVerificationCode(requestDto);
@@ -70,9 +72,16 @@ public class UserController {
 
     @DeleteMapping("/users/{userId}")
     public ResponseEntity<ApiResponseDto> deleteUser(@RequestBody @Valid UserDeleteRequestDto requestDto,
-                                                           @AuthenticationPrincipal UserDetailsImpl userDetails) {
+                                                     @AuthenticationPrincipal UserDetailsImpl userDetails) {
         userService.deleteUser(requestDto, userDetails.getUser());
         return ResponseEntity.ok(new ApiResponseDto("회원 탈퇴 성공", HttpStatus.OK.value()));
+    }
+
+    @PutMapping("/users/{userId}/password")
+    public ResponseEntity<ApiResponseDto> changePassword(@Valid @RequestBody PasswordChangeRequestDto requestDto,
+                                                         @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        userService.changePassword(requestDto, userDetails.getUser());
+        return ResponseEntity.ok(new ApiResponseDto("비밀번호 변경 성공", HttpStatus.OK.value()));
     }
 
     @PutMapping("/users/{userId}/image")
@@ -94,8 +103,15 @@ public class UserController {
         return ResponseEntity.ok(new ApiResponseDto("프로필 이미지 삭제 성공", HttpStatus.OK.value()));
     }
 
+    @PostMapping("/users/{userId}/profile")
+    public ResponseEntity<ApiResponseDto> createProfile(@RequestBody @Valid ProfileRequestDto requestDto,
+                                                        @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        userService.createProfile(requestDto, userDetails.getUser());
+        return ResponseEntity.ok(new ApiResponseDto("프로필 작성 성공", HttpStatus.CREATED.value()));
+    }
+
     @PutMapping("/users/{userId}/profile")
-    public ResponseEntity<ApiResponseDto> updateProfile(@RequestBody @Valid ProfileUpdateRequestDto requestDto,
+    public ResponseEntity<ApiResponseDto> updateProfile(@RequestBody @Valid ProfileRequestDto requestDto,
                                                         @AuthenticationPrincipal UserDetailsImpl userDetails) {
         userService.updateProfile(requestDto, userDetails.getUser());
         return ResponseEntity.ok(new ApiResponseDto("프로필 수정 성공", HttpStatus.OK.value()));
