@@ -8,6 +8,7 @@ import com.bb3.bodybuddybe.gym.entity.UserGym;
 import com.bb3.bodybuddybe.gym.repository.GymRepository;
 import com.bb3.bodybuddybe.gym.repository.UserGymRepository;
 import com.bb3.bodybuddybe.user.entity.User;
+import com.bb3.bodybuddybe.user.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -42,6 +43,9 @@ class GymServiceImplTest {
     GymRepository gymRepository;
 
     @Mock
+    UserRepository userRepository;
+
+    @Mock
     UserGymRepository userGymRepository;
 
     @Mock
@@ -60,7 +64,7 @@ class GymServiceImplTest {
         when(webClientBuilder.baseUrl(anyString())).thenReturn(webClientBuilder);
         when(webClientBuilder.build()).thenReturn(webClient);
 
-        gymService = new GymServiceImpl(gymRepository, userGymRepository, webClientBuilder);
+        gymService = new GymServiceImpl(webClientBuilder.build(),userRepository,gymRepository,userGymRepository );
     }
 
     @Test
