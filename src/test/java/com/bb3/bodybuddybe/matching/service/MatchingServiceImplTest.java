@@ -196,10 +196,10 @@ class MatchingServiceImplTest {
         // then
         verify(userGymRepository).findAllByGymId(gymId);
         assertEquals(3, matchingUsers.size());
-        assertTrue(matchingUsers.stream().noneMatch(userProfile -> userProfile.getUserId().equals(user.getId())));
-        assertEquals(other2.getId(), matchingUsers.get(0).getUserId()); // score: 31
-        assertEquals(other1.getId(), matchingUsers.get(1).getUserId()); // score: 30
-        assertEquals(other3.getId(), matchingUsers.get(2).getUserId()); // score: 18
+        assertTrue(matchingUsers.stream().noneMatch(userProfile -> userProfile.getId().equals(user.getId())));
+        assertEquals(other2.getId(), matchingUsers.get(0).getId()); // score: 31
+        assertEquals(other1.getId(), matchingUsers.get(1).getId()); // score: 30
+        assertEquals(other3.getId(), matchingUsers.get(2).getId()); // score: 18
     }
 
     @Test
