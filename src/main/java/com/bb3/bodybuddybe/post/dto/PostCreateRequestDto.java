@@ -19,7 +19,7 @@ public class PostCreateRequestDto {
     @NotBlank(message = "내용을 입력해주세요.")
     private String content;
 
-    @NotBlank(message = "카테고리를 입력해주세요.")
+    @NotNull(message = "카테고리를 입력해주세요.")
     private CategoryEnum category;
 
     @NotNull(message = "헬스장 id를 입력해주세요.")
