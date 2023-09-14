@@ -103,7 +103,7 @@
 <img src="https://img.shields.io/badge/Spring_Security-6DB33F?style=flat&logo=springsecurity&logoColor=white"/>
 <img src="https://img.shields.io/badge/Spring_Data_JPA-6DB33F?style=flat">
 <img src="https://img.shields.io/badge/WebSocket-CD9834?style=flat"/>
-<img src="https://img.shields.io/badge/STOMP-E6E6E6?style=flat&logo=&logoColor=white"/>
+<img src="https://img.shields.io/badge/STOMP-E6E6E6?style=flat&logo=&logoColor=white"/><br>
 <img src="https://img.shields.io/badge/JWT-A9225C?style=flat">
 <img src="https://img.shields.io/badge/Gradle-02303A?style=flat&logo=gradle&logoColor=white"/>
 <img src="https://img.shields.io/badge/Hibernate-59666C?style=flat&logo=Hibernate&logoColor=white"/>
