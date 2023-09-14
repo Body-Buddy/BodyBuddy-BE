@@ -74,6 +74,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
     private Authentication createAuthentication(String email) throws UsernameNotFoundException {
         UserDetails userDetails = userDetailsService.loadUserByUsername(email);
+      
         return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
     }
 }

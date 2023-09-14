@@ -6,6 +6,7 @@ import com.bb3.bodybuddybe.comment.dto.CommentUpdateRequestDto;
 import com.bb3.bodybuddybe.comment.entity.Comment;
 import com.bb3.bodybuddybe.comment.repository.CommentRepository;
 import com.bb3.bodybuddybe.common.security.UserDetailsImpl;
+import com.bb3.bodybuddybe.notification.service.NotificationService;
 import com.bb3.bodybuddybe.post.entity.Post;
 import com.bb3.bodybuddybe.post.repository.PostRepository;
 import com.bb3.bodybuddybe.user.enums.UserRoleEnum;
@@ -22,6 +23,7 @@ public class CommentServiceImpl implements CommentService {
     private final PostRepository postRepository;
     private final CommentRepository commentRepository;
     private final MessageSource messageSource;
+    private final NotificationService notificationService;
 
     @Override
     @Transactional
@@ -50,6 +52,9 @@ public class CommentServiceImpl implements CommentService {
             comment.addParent(parentComment);
         }
         commentRepository.save(comment);
+
+        notificationService.notifyToUsersThatTheyHaveReceivedComment(comment);
+
         return new CommentResponseDto(comment, userDetails.getUsername());
     }
 

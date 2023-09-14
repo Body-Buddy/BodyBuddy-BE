@@ -1,5 +1,8 @@
 package com.bb3.bodybuddybe.notification.service;
 
+import com.bb3.bodybuddybe.chat.entity.Chat;
+import com.bb3.bodybuddybe.chat.entity.UserChat;
+import com.bb3.bodybuddybe.comment.entity.Comment;
 import com.bb3.bodybuddybe.like.entity.LikePost;
 import com.bb3.bodybuddybe.notification.dto.NotificationListResponseDto;
 import com.bb3.bodybuddybe.notification.dto.NotificationRequestDto;
@@ -9,6 +12,7 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 public interface NotificationService {
     void notifyToUsersThatTheyHaveReceivedLike(LikePost likePost);
+    void notifyToUsersThatTheyHaveReceivedComment(Comment comment);
     SseEmitter subscribe(User user, String lastEventId);
     void send(NotificationRequestDto request);
     void sendToClient(SseEmitter emitter, String emitterId, String eventId, Object data);

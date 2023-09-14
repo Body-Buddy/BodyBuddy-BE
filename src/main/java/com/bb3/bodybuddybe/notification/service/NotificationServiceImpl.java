@@ -1,5 +1,8 @@
 package com.bb3.bodybuddybe.notification.service;
 
+import com.bb3.bodybuddybe.chat.entity.Chat;
+import com.bb3.bodybuddybe.chat.entity.UserChat;
+import com.bb3.bodybuddybe.comment.entity.Comment;
 import com.bb3.bodybuddybe.common.exception.CustomException;
 import com.bb3.bodybuddybe.common.exception.ErrorCode;
 import com.bb3.bodybuddybe.like.entity.LikePost;
@@ -30,6 +33,13 @@ public class NotificationServiceImpl implements NotificationService {
     private final NotificationRepository notificationRepository;
     private final EmitterRepositoryImpl emitterRepository;
 
+    /**
+     * SSE 연결
+     *
+     * @param user
+     * @param lastEventId
+     * @return SseEmitter
+     */
     @Override
     @Transactional
     public SseEmitter subscribe(User user, String lastEventId) {
@@ -73,12 +83,40 @@ public class NotificationServiceImpl implements NotificationService {
         }
     }
 
+    /**
+     * 알림 발송
+     *
+     * @param requestDto
+     */
     @Override
     public void send(NotificationRequestDto requestDto) {
         sendNotification(requestDto, saveNotification(requestDto));
     }
 
-    //알림 보내기
+    /**
+     * 알림 저장
+     *
+     * @param requestDto
+     * @return
+     */
+    @Transactional
+    public Notification saveNotification(NotificationRequestDto requestDto) {
+        Notification notification = Notification.builder()
+                .receiver(requestDto.getReceiver())
+                .notificationType(requestDto.getNotificationType())
+                .content(requestDto.getContent())
+                .isRead(false)
+                .build();
+        notificationRepository.save(notification);
+        return notification;
+    }
+
+    /**
+     * 알림 발송
+     *
+     * @param requestDto
+     * @param notification
+     */
     @Async
     public void sendNotification(NotificationRequestDto requestDto, Notification notification) {
         String receiverId = String.valueOf(requestDto.getReceiver().getId());
@@ -97,23 +135,16 @@ public class NotificationServiceImpl implements NotificationService {
         );
     }
 
-    @Transactional
-    public Notification saveNotification(NotificationRequestDto requestDto) {
-        Notification notification = Notification.builder()
-                .receiver(requestDto.getReceiver())
-                .notificationType(requestDto.getNotificationType())
-                .message(requestDto.getMessage())
-                .isRead(false)
-                .build();
-        notificationRepository.save(notification);
-        return notification;
-    }
-
+    /**
+     * 좋아요 알림
+     *
+     * @param likePost
+     */
     @Override
     @Transactional
     public void notifyToUsersThatTheyHaveReceivedLike(LikePost likePost) {
         User receiver = likePost.getPost().getUser(); // 글쓴이
-        String message =
+        String content =
                 likePost.getUser().getUsername() + "님이 \""
                         + likePost.getPost().getTitle() + "\" 게시글에 대해 좋아요를 눌렀습니다.";
 
@@ -121,11 +152,35 @@ public class NotificationServiceImpl implements NotificationService {
 
         NotificationRequestDto requestDto = NotificationRequestDto.builder()
                 .notificationType(NotificationType.POST_LIKE)
-                .message(message)
+                .content(content)
                 .receiver(receiver)
                 .build();
 
         send(requestDto);
+    }
+
+    /**
+     * 댓글 알림
+     *
+     * @param comment
+     */
+    @Override
+    @Transactional
+    public void notifyToUsersThatTheyHaveReceivedComment(Comment comment) {
+        User receiver = comment.getPost().getUser(); // 글쓴이
+        String content =
+                comment.getUser().getUsername() + "님이 \""
+                        + comment.getPost().getTitle() + "\" 게시글에 댓글을 남겼습니다.";
+
+//        String redirectUrl = CLIENT_BASIC_URL + "/posts/" + comment.getPost().getId();
+
+          NotificationRequestDto requestDto = NotificationRequestDto.builder()
+                  .notificationType(NotificationType.POST_COMMENT)
+                  .content(content)
+                  .receiver(receiver)
+                  .build();
+
+          send(requestDto);
     }
 
     /**
