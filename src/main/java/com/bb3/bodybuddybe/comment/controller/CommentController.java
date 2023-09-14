@@ -1,9 +1,11 @@
 package com.bb3.bodybuddybe.comment.controller;
 
-import com.bb3.bodybuddybe.comment.dto.CommentRequestDto;
+import com.bb3.bodybuddybe.comment.dto.CommentCreateRequestDto;
 import com.bb3.bodybuddybe.comment.dto.CommentUpdateRequestDto;
 import com.bb3.bodybuddybe.comment.service.CommentServiceImpl;
+import com.bb3.bodybuddybe.common.dto.ApiResponseDto;
 import com.bb3.bodybuddybe.common.security.UserDetailsImpl;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,20 +19,21 @@ public class CommentController {
 
     private final CommentServiceImpl commentService;
 
-    @PostMapping("/comment")
-    public ResponseEntity<?> save(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody CommentRequestDto requestDto){
-        return ResponseEntity.ok(commentService.save(userDetails, requestDto));
-
+    @PostMapping("/comments")
+    public ResponseEntity<ApiResponseDto> createComment(@Valid @RequestBody CommentCreateRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        commentService.createComment(requestDto, userDetails.getUser());
+        return ResponseEntity.ok(new ApiResponseDto("댓글 생성 성공", HttpStatus.CREATED.value()));
     }
 
-    @PutMapping("/comment/{id}")
-    public ResponseEntity<?> update(@PathVariable Long id, @AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody CommentUpdateRequestDto requestDto){
-        return ResponseEntity.ok(commentService.update(id, userDetails, requestDto));
+    @PutMapping("/comments/{commentId}")
+    public ResponseEntity<ApiResponseDto> updateComment(@PathVariable Long commentId, @Valid @RequestBody CommentUpdateRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        commentService.updateComment(commentId, requestDto, userDetails.getUser());
+        return ResponseEntity.ok(new ApiResponseDto("댓글 수정 성공", HttpStatus.OK.value()));
     }
 
-    @DeleteMapping("/comment/{id}")
-    public ResponseEntity<String> delete(@PathVariable Long id, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        commentService.delete(id, userDetails);
-        return ResponseEntity.status(HttpStatus.OK).body("댓글 삭제 성공");
+    @DeleteMapping("/comments/{commentId}")
+    public ResponseEntity<ApiResponseDto> delete(@PathVariable Long commentId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        commentService.deleteComment(commentId, userDetails.getUser());
+        return ResponseEntity.ok(new ApiResponseDto("댓글 삭제 성공", HttpStatus.OK.value()));
     }
 }

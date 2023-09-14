@@ -13,6 +13,7 @@ import com.bb3.bodybuddybe.matching.enums.*;
 import com.bb3.bodybuddybe.matching.repository.MatchingCriteriaRepository;
 import com.bb3.bodybuddybe.user.dto.ProfileResponseDto;
 import com.bb3.bodybuddybe.user.entity.User;
+import com.bb3.bodybuddybe.user.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -31,6 +32,9 @@ import static org.mockito.Mockito.*;
 class MatchingServiceImplTest {
     @InjectMocks
     MatchingServiceImpl matchingService;
+
+    @Mock
+    UserRepository userRepository;
 
     @Mock
     UserGymRepository userGymRepository;
@@ -196,10 +200,10 @@ class MatchingServiceImplTest {
         // then
         verify(userGymRepository).findAllByGymId(gymId);
         assertEquals(3, matchingUsers.size());
-        assertTrue(matchingUsers.stream().noneMatch(userProfile -> userProfile.getUserId().equals(user.getId())));
-        assertEquals(other2.getId(), matchingUsers.get(0).getUserId()); // score: 31
-        assertEquals(other1.getId(), matchingUsers.get(1).getUserId()); // score: 30
-        assertEquals(other3.getId(), matchingUsers.get(2).getUserId()); // score: 18
+        assertTrue(matchingUsers.stream().noneMatch(userProfile -> userProfile.getId().equals(user.getId())));
+        assertEquals(other2.getId(), matchingUsers.get(0).getId()); // score: 31
+        assertEquals(other1.getId(), matchingUsers.get(1).getId()); // score: 30
+        assertEquals(other3.getId(), matchingUsers.get(2).getId()); // score: 18
     }
 
     @Test
