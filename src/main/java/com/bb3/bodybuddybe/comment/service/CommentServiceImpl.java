@@ -1,12 +1,12 @@
 package com.bb3.bodybuddybe.comment.service;
 
 import com.bb3.bodybuddybe.comment.dto.CommentCreateRequestDto;
-import com.bb3.bodybuddybe.comment.dto.CommentResponseDto;
 import com.bb3.bodybuddybe.comment.dto.CommentUpdateRequestDto;
 import com.bb3.bodybuddybe.comment.entity.Comment;
 import com.bb3.bodybuddybe.comment.repository.CommentRepository;
 import com.bb3.bodybuddybe.common.exception.CustomException;
 import com.bb3.bodybuddybe.common.exception.ErrorCode;
+import com.bb3.bodybuddybe.notification.service.NotificationService;
 import com.bb3.bodybuddybe.post.entity.Post;
 import com.bb3.bodybuddybe.post.repository.PostRepository;
 import com.bb3.bodybuddybe.user.entity.User;
@@ -19,7 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class CommentServiceImpl implements CommentService {
     private final PostRepository postRepository;
     private final CommentRepository commentRepository;
-
+    private final NotificationService notificationService;
     @Override
     @Transactional
     public void createComment(CommentCreateRequestDto requestDto, User user) {
@@ -36,6 +36,7 @@ public class CommentServiceImpl implements CommentService {
         }
 
         commentRepository.save(comment);
+        notificationService.notifyToUsersThatTheyHaveReceivedComment(comment);
     }
 
     private Comment validateParentComment(CommentCreateRequestDto requestDto) {
