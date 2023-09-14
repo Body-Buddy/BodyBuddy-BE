@@ -2,11 +2,14 @@ package com.bb3.bodybuddybe.post.controller;
 
 import com.bb3.bodybuddybe.common.dto.ApiResponseDto;
 import com.bb3.bodybuddybe.common.security.UserDetailsImpl;
-import com.bb3.bodybuddybe.post.dto.*;
+import com.bb3.bodybuddybe.post.dto.CategoryResponseDto;
+import com.bb3.bodybuddybe.post.dto.PostCreateRequestDto;
+import com.bb3.bodybuddybe.post.dto.PostResponseDto;
+import com.bb3.bodybuddybe.post.dto.PostUpdateRequestDto;
 import com.bb3.bodybuddybe.post.enums.CategoryEnum;
 import com.bb3.bodybuddybe.post.service.PostServiceImpl;
 
-import jakarta.validation.Valid;
+import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,6 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 
 import java.util.List;
@@ -26,20 +30,27 @@ import java.util.List;
 @RequestMapping("/api")
 public class PostController {
 
+
     private final PostServiceImpl postService;
 
     @PostMapping("/posts")
-    public ResponseEntity<ApiResponseDto> createPost(@Valid @RequestBody PostCreateRequestDto requestDto,
+    public ResponseEntity<ApiResponseDto> createPost(@RequestPart(value = "title") String title,
+                                                     @RequestPart(value = "content") String content,
+                                                     @RequestPart(value = "category") CategoryEnum category,
+                                                     @RequestPart(value = "gymId") Long gymId,
+                                                     @Nullable @RequestPart(value = "files") List<MultipartFile> files,
                                                      @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        postService.createPost(requestDto, userDetails.getUser());
+
+        PostCreateRequestDto requestDto = new PostCreateRequestDto(title, content, category, gymId);
+        postService.createPost(requestDto, userDetails.getUser(), files);
         return ResponseEntity.ok(new ApiResponseDto("게시글이 작성되었습니다.", HttpStatus.CREATED.value()));
 
     }
 
     @GetMapping("/posts/{postId}")
-    public ResponseEntity<PostDetailResponseDto> getPost(@PathVariable Long postId) {
-        PostDetailResponseDto post = postService.getPostById(postId);
-        return ResponseEntity.ok(post);
+    public ResponseEntity<PostResponseDto> getPost(@PathVariable Long postId) {
+        PostResponseDto postResponseDto = postService.getPostById(postId);
+        return ResponseEntity.ok(postResponseDto);
     }
 
     @GetMapping("/categories")
@@ -49,23 +60,23 @@ public class PostController {
 
 
     @GetMapping("/posts")
-    public ResponseEntity<Page<PostSummaryResponseDto>> getPostsByCategory(@RequestParam CategoryEnum category,
-                                                                           @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
-        Page<PostSummaryResponseDto> posts = postService.getPostsByCategory(category, pageable);
+    public ResponseEntity<Page<PostResponseDto>> getPostsByCategory(@RequestParam CategoryEnum category,
+            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
+        Page<PostResponseDto> posts = postService.getPostsByCategory(category, pageable);
         return ResponseEntity.ok(posts);
     }
 
     @GetMapping("/gyms/{gymId}/posts")
-    public ResponseEntity<Page<PostSummaryResponseDto>> getPostsByGymId(@PathVariable Long gymId,
-                                                                        @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
-        Page<PostSummaryResponseDto> posts = postService.getPostsByGymId(gymId, pageable);
+    public ResponseEntity<Page<PostResponseDto>> getPostsByGymId(@PathVariable Long gymId,
+            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
+        Page<PostResponseDto> posts = postService.getPostsByGymId(gymId, pageable);
         return ResponseEntity.ok(posts);
     }
 
     @GetMapping("/posts/search")
-    public ResponseEntity<Page<PostSummaryResponseDto>> searchPosts(@RequestParam String keyword,
-                                                                    @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
-        Page<PostSummaryResponseDto> posts = postService.searchPosts(keyword, pageable);
+    public ResponseEntity<Page<PostResponseDto>> searchPosts(@RequestParam String keyword,
+            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
+        Page<PostResponseDto> posts = postService.searchPosts(keyword, pageable);
         return ResponseEntity.ok(posts);
     }
 
