@@ -1,11 +1,9 @@
 package com.bb3.bodybuddybe.notification.service;
 
-import com.bb3.bodybuddybe.chat.entity.Chat;
-import com.bb3.bodybuddybe.chat.entity.UserChat;
 import com.bb3.bodybuddybe.comment.entity.Comment;
 import com.bb3.bodybuddybe.common.exception.CustomException;
 import com.bb3.bodybuddybe.common.exception.ErrorCode;
-import com.bb3.bodybuddybe.like.entity.LikePost;
+import com.bb3.bodybuddybe.like.entity.PostLike;
 import com.bb3.bodybuddybe.notification.dto.NotificationListResponseDto;
 import com.bb3.bodybuddybe.notification.dto.NotificationRequestDto;
 import com.bb3.bodybuddybe.notification.dto.NotificationResponseDto;
@@ -134,7 +132,6 @@ public class NotificationServiceImpl implements NotificationService {
                 }
         );
     }
-
     /**
      * 좋아요 알림
      *
@@ -142,11 +139,11 @@ public class NotificationServiceImpl implements NotificationService {
      */
     @Override
     @Transactional
-    public void notifyToUsersThatTheyHaveReceivedLike(LikePost likePost) {
-        User receiver = likePost.getPost().getUser(); // 글쓴이
+    public void notifyToUsersThatTheyHaveReceivedLike(PostLike postLike) {
+        User receiver = postLike.getPost().getAuthor(); // 글쓴이
         String content =
-                likePost.getUser().getUsername() + "님이 \""
-                        + likePost.getPost().getTitle() + "\" 게시글에 대해 좋아요를 눌렀습니다.";
+                postLike.getUser().getNickname() + "님이 \""
+                        + postLike.getPost().getTitle() + "\" 게시글에 대해 좋아요를 눌렀습니다.";
 
 //        String redirectUrl = CLIENT_BASIC_URL + "/posts/" + likePost.getPost().getId();
 
@@ -167,20 +164,20 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     @Transactional
     public void notifyToUsersThatTheyHaveReceivedComment(Comment comment) {
-        User receiver = comment.getPost().getUser(); // 글쓴이
+        User receiver = comment.getPost().getAuthor(); // 글쓴이
         String content =
-                comment.getUser().getUsername() + "님이 \""
+                comment.getAuthor().getNickname() + "님이 \""
                         + comment.getPost().getTitle() + "\" 게시글에 댓글을 남겼습니다.";
 
 //        String redirectUrl = CLIENT_BASIC_URL + "/posts/" + comment.getPost().getId();
 
-          NotificationRequestDto requestDto = NotificationRequestDto.builder()
-                  .notificationType(NotificationType.POST_COMMENT)
-                  .content(content)
-                  .receiver(receiver)
-                  .build();
+        NotificationRequestDto requestDto = NotificationRequestDto.builder()
+                .notificationType(NotificationType.POST_COMMENT)
+                .content(content)
+                .receiver(receiver)
+                .build();
 
-          send(requestDto);
+        send(requestDto);
     }
 
     /**
