@@ -1,33 +1,33 @@
-# 1. what is *BoddyBuddy* ?
-### 🥲운동을 시작하며 기구 사용법이나 운동 순서에 대한 고민으로 막막했던 적 있지 않으신가요?
-### 😍혼자 운동하는 초보자 분들에게 같은 헬스장 회원들과 '운동 친구'를 매칭해주는 앱,
+## 1. what is *BoddyBuddy* ?
+🥲운동을 시작하며 기구 사용법이나 운동 순서에 대한 고민으로 막막했던 적 있지 않으신가요?<br>
+😍혼자 운동하는 초보자 분들에게 같은 헬스장 회원들과 '운동 친구'를 매칭해주는 앱,
 
 ## 💪🏻 ***바디버디*** 를 소개합니다 !
 
 ---
-# 2. 팀 소개
+## 2. 팀 소개
 |                      👑리더                      |                     🧚‍♀️부리더                      |                          👨‍💻팀원                          |                         👨‍💻팀원                          |                        👨‍💻팀원                        |
 |:----------------------------------------------:|:-----------------------------------------------------:|:----------------------------------------------------:|:---------------------------------------------------:|:------------------------------------------------:|
 |                      김은비                       |                          심지연                          |                         정민재                          |                         박경환                         |                        이성수                       |
 | [Github](https://github.com/eunb1)<br>[Blog]() | [Github](https://github.com/SIMJIYEON93)<br>[Blog]( ) | [Github](https://github.com/hohominjae)<br>[Blog]( ) | [Github](https://github.com/endrmseha)<br>[Blog]( ) | [Github](https://github.com/lss6181)<br>[Blog](https://velog.io/@lss6181) |
 <br>
 <details>
-<summary> <img src="https://img.shields.io/badge/Git Convention-F05032?style=flat&logo=git&logoColor=white"/></summary>
+<summary>🤙 git 컨벤션</summary>
 
-- ### `main` 브랜치에서 직접 `commit` 또는 `push` 하지 않습니다.
-- ### `Pull Request`는 2명 이상의 `Approve` 가 있을 때 머지 가능합니다.
-- ### ❗️`PR`을 작성하기 전 본인이 작성한 코드가 올바르게 작동하는지 반드시 확인해주세요 ❗️
-- ### git `branch` 네이밍 규칙
-  - #### `main` 브랜치 
+- `main` 브랜치에서 직접 `commit` 또는 `push` 하지 않습니다.
+- `Pull Request`는 2명 이상의 `Approve` 가 있을 때 머지 가능합니다.
+- ❗️`PR`을 작성하기 전 본인이 작성한 코드가 올바르게 작동하는지 반드시 확인해주세요 ❗️
+- git `branch` 네이밍 규칙
+  - `main` 브랜치 
     - 사용자에게 배포 가능한 상태만을 관리합니다.
-  - #### `develop` 브랜치 (Default 브랜치) 
+  - `develop` 브랜치 (Default 브랜치) 
     - 기능 개발을 위한 브랜치들을 병합하기 위해 사용합니다. 
     - 모든 기능이 추가되고 버그가 수정되어 배포 가능한 안정적인 상태라면 `develop` 브랜치를 `main` 브랜치에 병합합니다.
-  - #### `feature` 브랜치
+  - `feature` 브랜치
     - 새로운 기능 개발 및 버그 수정이 필요할 때마다 develop 브랜치로부터 분기합니다. 개발이 완료되면 develop 브랜치에 병합하여 다른 사람들과 공유합니다.
     - `feature/{이슈 번호}-{기능 요약}` 형식으로 브랜치 이름을 작성합니다.
     - 기능요약 부분을 작성할때 띄어쓰기는 `-`를 이용하여 작성합니다. 예시) `feature/3-user-login`
-- ### Commit Message 규칙
+- Commit Message 규칙
   - `태그: 제목`의 형태이며, `:`뒤에만 `space`가 있음에 유의합니다.
     ```jsx
     feat: 새로운 기능 추가
@@ -43,10 +43,10 @@
 </details>
 
 <details>
-<summary> <img src="https://img.shields.io/badge/Coding Convention-C71D23?style=flat&logo=&logoColor=white"/></summary>
+<summary>🤙 코딩 컨벤션</summary>
 
-- ### [네이버 캠퍼스 핵데이 Java 코딩 컨벤션](https://naver.github.io/hackday-conventions-java/)을 준수합니다.
-- ### 가독성을 높이기 위해 `코드 포맷팅`은 습관처럼 해주세요!
+- [네이버 캠퍼스 핵데이 Java 코딩 컨벤션](https://naver.github.io/hackday-conventions-java/)을 준수합니다.
+- 가독성을 높이기 위해 `코드 포맷팅`은 습관처럼 해주세요!
   - `Intellij` 단축키로 자동 정렬이 가능합니다.
   - 윈도우 `Ctrl+Alt+L` / 맥 `Cmd+Alt+L`
   - `Tab size : 2`, `Indent : 4`로 설정합니다.
@@ -54,52 +54,53 @@
 
 ---
 
-# 3. 주요 기능
+## 3. 주요 기능
 
-## 🏋️‍♀ *나의 헬스장 등록*
-- ### 사용자는 자신의 헬스장을 등록하여 같은 헬스장의 회원들과 소통할 수 있습니다.
+### 🏋️‍♀ *나의 헬스장 등록*
+- 사용자는 자신의 헬스장을 등록하여 같은 헬스장의 회원들과 소통할 수 있습니다.
 
-## 👥 *운동 친구 매칭*
-- ### 🔎 *친구 찾기* : 사용자 `프로필`을 바탕으로 최적의 운동 친구를 `제안`합니다.
-- ### 💬 *1:1 채팅* : 매칭된 회원과 `개별 대화`가 가능합니다.
-- ### ❌ *친구 차단* : 원치 않는 사용자와의 연락을 `차단`합니다.
+### 👥 *운동 친구 매칭*
+- 🔎 *친구 찾기* : 사용자 `프로필`을 바탕으로 최적의 운동 친구를 `제안`합니다.
+- 💬 *1:1 채팅* : 매칭된 회원과 `개별 대화`가 가능합니다.
+- ❌ *친구 차단* : 원치 않는 사용자와의 연락을 `차단`합니다.
 
-## 📢 *실시간 알림 기능*
-- ### 새로운 채팅 및 중요 알림을 사용자에게 즉시 전달합니다.
+### 📢 *실시간 알림 기능*
+- 새로운 채팅 및 중요 알림을 사용자에게 즉시 전달합니다.
 
-## 📝 *커뮤니티 게시판*
-- ### `💡운동 Tip`, `📰식단 정보`, `💪동기 부여`, `🦾기구 추천` 등의 다양한 주제로 <br><br>`게시글`과 `댓글`을 작성하고 공유할 수 있습니다.
+### 📝 *커뮤니티 게시판*
+- `💡운동 Tip`, `📰식단 정보`, `💪동기 부여`, `🦾기구 추천` 등의 다양한 주제로 `게시글`과 `댓글`을 작성하고 공유할 수 있습니다.
+
 ---
 
-# 4. 기술 스택
-## Frontend
-
-- **Framework**: <img src="https://img.shields.io/badge/Vue.js-4FC08D?style=flat&logo=vue.js&logoColor=white"> +
+## 4. 기술 스택
+### 🫳Frontend
+<div>
+Framework: <img src="https://img.shields.io/badge/Vue.js-4FC08D?style=flat&logo=vue.js&logoColor=white"> +
   <img src="https://img.shields.io/badge/HTML-E34F26?style=flat&logo=html5&logoColor=white">
   <br><br>
-- **UI Toolkit**: <img src="https://img.shields.io/badge/Tailwind CSS-06B6D4?style=flat&logo=tailwindcss&logoColor=white"> +
+UI Toolkit: <img src="https://img.shields.io/badge/Tailwind CSS-06B6D4?style=flat&logo=tailwindcss&logoColor=white"> +
   <img src="https://img.shields.io/badge/CSS-1572B6?style=flat&logo=css3&logoColor=white">
   <br><br>
-- **Build & Dev Environment**: <img src="https://img.shields.io/badge/Vite-646CFF?style=flat&logo=vite&logoColor=white">
+Build & Dev Environment: <img src="https://img.shields.io/badge/Vite-646CFF?style=flat&logo=vite&logoColor=white">
   <br><br>
-- **Deployment**: <img src="https://img.shields.io/badge/Vercel-000000?style=flat&logo=vercel&logoColor=white">
+Deployment: <img src="https://img.shields.io/badge/Vercel-000000?style=flat&logo=vercel&logoColor=white">
+</div>
 
-
-## Backend
-
-- **Framework**: <img src="https://img.shields.io/badge/Spring_Boot 3.1.2-6DB33F?style=flat&logo=springboot&logoColor=white"/>
+### 🫴Backend
+<div>
+Framework: <img src="https://img.shields.io/badge/Spring_Boot 3.1.2-6DB33F?style=flat&logo=springboot&logoColor=white"/>
   <br><br>
-- **Programming Language**: <img src="https://img.shields.io/badge/Java 17-007396?style=flat"/>
+Programming Language: <img src="https://img.shields.io/badge/Java 17-007396?style=flat"/>
   <br><br>
-- **Database**: <img src="https://img.shields.io/badge/MySQL-4479A1?style=flat&logo=mysql&logoColor=white"/>
+Database: <img src="https://img.shields.io/badge/MySQL-4479A1?style=flat&logo=mysql&logoColor=white"/>
 <img src="https://img.shields.io/badge/Redis-DC382D?style=flat&logo=redis&logoColor=white"/>
 <img src="https://img.shields.io/badge/AWS RDS-527FFF?style=flat&logo=amazonrds&logoColor=white"/>
   <br><br>
-- **CI/CD**: <img src="https://img.shields.io/badge/GitHub Actions-2088FF?style=flat&logo=githubactions&logoColor=white"/>
-  <img src="https://img.shields.io/badge/Amazon_EC2-FF9900?style=flat&logo=amazonec2&logoColor=white"/>
-  <img src="https://img.shields.io/badge/Amazon_S3-569A31?style=flat&logo=amazons3&logoColor=white"/>
+CI/CD: <img src="https://img.shields.io/badge/GitHub Actions-2088FF?style=flat&logo=githubactions&logoColor=white"/> <img src="https://img.shields.io/badge/Amazon_EC2-FF9900?style=flat&logo=amazonec2&logoColor=white"/> <img src="https://img.shields.io/badge/Amazon_S3-569A31?style=flat&logo=amazons3&logoColor=white"/>
+</div>
 
-## +@
+### Others
+<div>
 <img src="https://img.shields.io/badge/Spring_Security-6DB33F?style=flat&logo=springsecurity&logoColor=white"/>
 <img src="https://img.shields.io/badge/Spring_Data_JPA-6DB33F?style=flat">
 <img src="https://img.shields.io/badge/WebSocket-CD9834?style=flat"/>
@@ -108,32 +109,32 @@
 <img src="https://img.shields.io/badge/Gradle-02303A?style=flat&logo=gradle&logoColor=white"/>
 <img src="https://img.shields.io/badge/Hibernate-59666C?style=flat&logo=Hibernate&logoColor=white"/>
 <img src="https://img.shields.io/badge/Postman-FF6C37?style=flat&logo=Postman&logoColor=white"/>
-
+</div>
 
 ---
 
-# 5. 시연영상, 발표자료
+## 5. 시연영상, 발표자료
 ### 📽️[발표영상](https://www.youtube.com/watch?v=csJrEozcYqE)
 ### 📜[발표자료](https://www.notion.so/bodybuddy3/881c232533fb431a839652a9fae5670a?pvs=4)
 
 ---
 
-# 6. 서비스 아키텍쳐
+## 6. 서비스 아키텍쳐
 
 ---
-# 7. 기술적 의사결정
+## 7. 기술적 의사결정
 
 <details>
 <summary>Spring Data JPA</summary>
 
 ### 💡 데이터 액세스 레이어 구축을 위한 주요 고려 사항은 **코드의 간결성**과 **유지보수성** 이었습니다.
-- #### 👍 **코드의 간결성**
+- 👍 **코드의 간결성**
   - `Repository interface`를 통해 복잡한 `query`도 직관적으로 표현할 수 있습니다.
-- #### 👍 **`Query` 최적화**
+- 👍 **`Query` 최적화**
   - `JPA`가 쿼리의 성능을 내부적으로 **최적화** 합니다.
-- #### 👍 **코드 `중복` 최소화**
+- 👍 **코드 `중복` 최소화**
   - `기본 CRUD 메소드를 제공`하여 반복되는 코드의 작성을 줄입니다.
-- #### 👍 **데이터베이스 `중립성`**
+- 👍 **데이터베이스 `중립성`**
   - 다양한 데이터베이스 전환 시 구현 로직 변경 없이 호환성을 유지합니다.
 </details>
 
@@ -211,7 +212,7 @@
 
 ---
 
-# 8. 트러블 슈팅
+## 8. 트러블 슈팅
 <details>
 <summary>채팅 기능(STOMP 적용 전 websocketHandler로 구현하던 시점)</summary>
 
@@ -291,11 +292,11 @@ List<Post> findByTitle(String postTitle);
 </details>
 
 ---
-# 9. ERD 설계도
+## 9. ERD 설계도
 <img src='https://ifh.cc/g/0X6pfX.jpg' border='0'>
 
 ---
 
-# 10. API 설계도
+## 10. API 설계도
 
 [API 설계도](https://www.notion.so/bodybuddy3/API-baf2b76c1f6e48d5aeda0ee39957bc32?pvs=4)
