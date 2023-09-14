@@ -293,7 +293,7 @@ List<Post> findByTitle(String postTitle);
 
 ---
 ## 9. ERD 설계도
-<img src='https://ifh.cc/g/0X6pfX.jpg' border='0'>
+<img src="https://i.postimg.cc/GhdJnN5D/Untitled.png">
 
 ---
 
