@@ -2,6 +2,7 @@ package com.bb3.bodybuddybe.post.dto;
 
 import com.bb3.bodybuddybe.post.enums.CategoryEnum;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -15,6 +16,6 @@ public class PostUpdateRequestDto {
     @NotBlank(message = "내용을 입력해주세요.")
     private String content;
 
-    @NotBlank(message = "카테고리를 입력해주세요.")
+    @NotNull(message = "카테고리를 입력해주세요.")
     private CategoryEnum category;
 }
