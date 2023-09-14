@@ -113,7 +113,7 @@
 ---
 
 # 5. 시연영상, 발표자료
-### 📽️[시연영상](https://www.youtube.com/watch?v=4pf3NvqKD1w)
+### 📽️[발표영상](https://www.youtube.com/watch?v=csJrEozcYqE)
 ### 📜[발표자료](https://www.notion.so/bodybuddy3/881c232533fb431a839652a9fae5670a?pvs=4)
 
 ---
