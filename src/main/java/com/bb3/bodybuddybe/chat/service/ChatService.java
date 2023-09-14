@@ -190,49 +190,48 @@ public class ChatService {
      * 채팅 메세지관련
      * Used in WebSocketHandler
      */
+//
+//    public void sendMessage(WebSocketSession session, MessageRequestDto message) {
+//        MessageResponseDto messageResponseDto = changeToResponseDto(message);
+//        try {
+//            session.sendMessage(
+//                new TextMessage(convertMessageToJson(messageResponseDto)));
+//        } catch (IOException e) {
+//            log.error("Error sending message to session: " + session.getId(), e);
+//            throw new CustomException(ErrorCode.WEBSOCKET_SEND_ERROR);
+//        }
+//    }
 
-    public void sendMessage(WebSocketSession session, MessageRequestDto message) {
-        MessageResponseDto messageResponseDto = changeToResponseDto(message);
-        try {
-            session.sendMessage(
-                new TextMessage(convertMessageToJson(messageResponseDto)));
-        } catch (IOException e) {
-            log.error("Error sending message to session: " + session.getId(), e);
-            throw new CustomException(ErrorCode.WEBSOCKET_SEND_ERROR);
-        }
-    }
+//    @Transactional
+//    public void saveMessage(MessageRequestDto message, User user, Chat chat) {
+//
+//        Message chatMessage = Message.builder()
+//            .content(message.getContent())
+//            .chat(chat)
+//            .user(user)
+//            .build();
+//
+//        messageRepository.save(chatMessage);
+//
+//    }
 
-    @Transactional
-    public void saveMessage(MessageRequestDto message, User user, Chat chat) {
-
-        Message chatMessage = Message.builder()
-            .type(message.getType())
-            .content(message.getContent())
-            .chat(chat)
-            .user(user)
-            .build();
-
-        messageRepository.save(chatMessage);
-
-    }
-
-    public void getMessages(WebSocketSession session, Long chatId) {
-        List<MessageResponseDto> messageResponseDtos = messageRepository.findAllByChatId(chatId)
-            .stream()
-            .map(MessageResponseDto::new)
-            .collect(Collectors.toList());
-
-        messageResponseDtos.forEach(messageResponseDto -> {
-            try {
-                session.sendMessage(new TextMessage(convertMessageToJson(messageResponseDto)));
-            } catch (IOException e) {
-                log.error("Error sending message to session: " + session.getId(), e);
-                throw new CustomException(ErrorCode.WEBSOCKET_SEND_ERROR);
-            }
-        });
-
-
-    }
+//    public void getMessages(WebSocketSession session, Long chatId) {
+//        List<MessageResponseDto> messageResponseDtos = messageRepository.findAllByChatId(chatId)
+//            .stream()
+//            .map(MessageResponseDto::new)
+//            .collect(Collectors.toList());
+//
+//        messageResponseDtos.forEach(messageResponseDto -> {
+//            try {
+//                session.sendMessage(new TextMessage(convertMessageToJson(messageResponseDto)));
+//            } catch (IOException e) {
+//                log.error("Error sending message to session: " + session.getId(), e);
+//                throw new CustomException(ErrorCode.WEBSOCKET_SEND_ERROR);
+//            }
+//        });
+//
+//
+//    }
 
 //--------------------------------------------------------------------------------------------------------------------------------------------//
 
@@ -292,27 +291,26 @@ public class ChatService {
             .orElseThrow(() -> new CustomException(ErrorCode.USERCHAT_NOT_FOUND));
     }
 
-    private String convertMessageToJson(MessageResponseDto message) {
-        try {
-            return objectMapper.writeValueAsString(message);
-        } catch (JsonProcessingException e) {
-            log.error("Error converting message to JSON", e);
-            throw new CustomException(ErrorCode.JSON_PROCESSING_ERROR);
-        }
-    }
+//    private String convertMessageToJson(MessageResponseDto message) {
+//        try {
+//            return objectMapper.writeValueAsString(message);
+//        } catch (JsonProcessingException e) {
+//            log.error("Error converting message to JSON", e);
+//            throw new CustomException(ErrorCode.JSON_PROCESSING_ERROR);
+//        }
+//    }
 
-    private MessageResponseDto changeToResponseDto(MessageRequestDto message) {
-        String senderNickname = findUser(message.getSenderUserId()).getNickname();
-
-        MessageResponseDto messageResponseDto = MessageResponseDto.builder()
-            .type(message.getType())
-            .chatId(message.getChatId())
-            .senderNickname(senderNickname)
-            .content(message.getContent())
-            .messageDate(LocalDateTime.now())
-            .build();
-
-        return messageResponseDto;
-    }
+//    private MessageResponseDto changeToResponseDto(MessageRequestDto message) {
+//        String senderNickname = findUser(message.getSenderId()).getNickname();
+//
+//        MessageResponseDto messageResponseDto = MessageResponseDto.builder()
+//            .chatId(message.getChatId())
+//            .senderNickname(senderNickname)
+//            .content(message.getContent())
+//            .messageDate(LocalDateTime.now())
+//            .build();
+//
+//        return messageResponseDto;
+//    }
 
 }

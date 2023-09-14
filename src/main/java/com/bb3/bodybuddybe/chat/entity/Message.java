@@ -4,8 +4,6 @@ import com.bb3.bodybuddybe.common.timestamped.TimeStamped;
 import com.bb3.bodybuddybe.user.entity.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -29,9 +27,6 @@ public class Message extends TimeStamped {
     @Column
     private String content;
 
-    @Enumerated(EnumType.STRING)
-    private MessageType type;
-
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
@@ -41,9 +36,8 @@ public class Message extends TimeStamped {
     private Chat chat;
 
     @Builder
-    public Message(String content, MessageType type, User user ,Chat chat) {
+    public Message(String content, User user ,Chat chat) {
         this.content = content;
-        this.type = type;
         this.user = user;
         this.chat = chat;
     }
