@@ -30,7 +30,7 @@ public class MessageController {
     @MessageMapping("/messages/participation/{chatId}") // -> /pub/messages/participation/{chatId}
     @SendTo("/sub/messages/{chatId}")
     public MessageResponseDto participation(@DestinationVariable Long chatId, MessageRequestDto messageRequestDto,
-                                    @AuthenticationPrincipal UserDetailsImpl userDetails) {
+                                            @AuthenticationPrincipal UserDetailsImpl userDetails) {
         return messageService.participation(chatId, messageRequestDto, userDetails.getUser());
     }
 
@@ -52,7 +52,7 @@ public class MessageController {
     @MessageMapping("/messages/exit/{chatId}") // -> /pub/messages/exit/{chatId}
     @SendTo("/sub/messages/{chatId}")
     public MessageResponseDto exit(@DestinationVariable Long chatId, MessageRequestDto messageRequestDto,
-        @AuthenticationPrincipal UserDetailsImpl userDetails) {
+                                   @AuthenticationPrincipal UserDetailsImpl userDetails) {
         return messageService.exit(chatId, messageRequestDto, userDetails.getUser());
     }
 
