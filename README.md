@@ -9,7 +9,7 @@
 |                      👑리더                      |                     🧚‍♀️부리더                      |                          👨‍💻팀원                          |                         👨‍💻팀원                          |                        👨‍💻팀원                        |
 |:----------------------------------------------:|:-----------------------------------------------------:|:----------------------------------------------------:|:---------------------------------------------------:|:------------------------------------------------:|
 |                      김은비                       |                          심지연                          |                         정민재                          |                         박경환                         |                        이성수                       |
-| [Github](https://github.com/eunb1)<br>[Blog]() | [Github](https://github.com/SIMJIYEON93)<br>[Blog]( ) | [Github](https://github.com/hohominjae)<br>[Blog]( ) | [Github](https://github.com/endrmseha)<br>[Blog]( ) | [Github](https://github.com/lss6181)<br>[Blog](https://velog.io/@lss6181) |
+| [Github](https://github.com/eunb1)<br>[Blog](https://velog.io/@eunb1) | [Github](https://github.com/SIMJIYEON93)<br>[Blog](https://simjji-cool-developer.tistory.com/) | [Github](https://github.com/hohominjae)<br>[Blog](https://velog.io/@hohominjae) | [Github](https://github.com/endrmseha)<br>[Blog](https://endrmseha.tistory.com/) | [Github](https://github.com/lss6181)<br>[Blog](https://velog.io/@lss6181) |
 <br>
 <details>
 <summary>🤙 git 컨벤션</summary>
