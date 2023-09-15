@@ -104,33 +104,34 @@ public class ChatService {
         User toChatUser = findUser(toChatUserId);
         Gym gym = findGym(gymId);
 
-        validateUserMembership(user,gym);
+        validateUserMembership(user, gym);
 
-        List<Chat> userDirectChats = chatRepository.findAllByGym_IdAndOwnerUserAndChatTypeContains(gymId, user, ChatType.DIRECT);
+        List<Chat> userDirectChats = chatRepository.findAllByGym_IdAndChatType(gymId, ChatType.DIRECT);
 
         Chat directChatRoom = null;
 
         for (Chat userDirectChat : userDirectChats) {
-            for (UserChat userChat : userDirectChat.getUserChatList()) {
-                if (userChat.getUser().getId()==toChatUserId) {
-                    directChatRoom = userDirectChat;
-                    break;
+            if (userChatRepository.existsByChatAndUser(userDirectChat, user)) {
+                for (UserChat userChat : userDirectChat.getUserChatList()) {
+                    if (userChatRepository.existsByChatAndUser(userDirectChat, toChatUser)) {
+                        directChatRoom = userDirectChat;
+                        break;
+                    }
                 }
             }
         }
 
         // 위 for문을 타도 null값인 경우 (1대1방이 존재하지 않는경우)
-        if (directChatRoom.equals(null)) {
+        if (directChatRoom == null) {
             Chat chat = Chat.builder()
                 .chatType(ChatType.DIRECT)
                 .roomName("님 과 1대1 채팅방")
                 .gym(gym)
-                .ownerUser(user)
                 .build();
 
             chatRepository.save(chat);
 
-            UserChat userChat1 = new UserChat(chat.getOwnerUser(), chat);
+            UserChat userChat1 = new UserChat(user, chat);
             UserChat userChat2 = new UserChat(toChatUser, chat);
 
             userChatRepository.save(userChat1);

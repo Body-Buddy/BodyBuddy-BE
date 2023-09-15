@@ -13,6 +13,7 @@ import com.bb3.bodybuddybe.matching.enums.*;
 import com.bb3.bodybuddybe.matching.repository.MatchingCriteriaRepository;
 import com.bb3.bodybuddybe.user.dto.ProfileResponseDto;
 import com.bb3.bodybuddybe.user.entity.User;
+import com.bb3.bodybuddybe.user.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -31,6 +32,9 @@ import static org.mockito.Mockito.*;
 class MatchingServiceImplTest {
     @InjectMocks
     MatchingServiceImpl matchingService;
+
+    @Mock
+    UserRepository userRepository;
 
     @Mock
     UserGymRepository userGymRepository;
