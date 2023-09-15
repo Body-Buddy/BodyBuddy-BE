@@ -11,8 +11,8 @@ on:
 env:
   AWS_REGION: ap-northeast-2
   S3_BUCKET_NAME: bodybuddy-s3
-  CODE_DEPLOY_APPLICATION_NAME: pet-codedeploy-app
-  CODE_DEPLOY_DEPLOYMENT_GROUP_NAME: pet-codedeploy-deployment-group
+  CODE_DEPLOY_APPLICATION_NAME: bodybuddy
+  CODE_DEPLOY_DEPLOYMENT_GROUP_NAME: bodybuddybe
 
 permissions:
   contents: read
