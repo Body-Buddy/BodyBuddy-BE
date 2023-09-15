@@ -4,7 +4,7 @@ name: BodyBuddy CD
 on:
   push:
     branches:
-      - dev
+      - develop
 
 # 본인이 설정한 값을 여기서 채워넣습니다.
 # 리전, 버킷 이름, CodeDeploy 앱 이름, CodeDeploy 배포 그룹 이름
@@ -43,7 +43,6 @@ jobs:
     # 환경 변수 세팅
     - name: properties 파일 생성
       run: |
-        mkdir ./src/main/resources
         cd ./src/main/resources
         touch ./application.yml
         echo "${{secrets.CD_APPLICATION_YML}}" > ./application.yml
