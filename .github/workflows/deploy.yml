@@ -43,6 +43,7 @@ jobs:
     # 환경 변수 세팅
     - name: properties 파일 생성
       run: |
+        mkdir ./src/main/resources
         cd ./src/main/resources
         touch ./application.yml
         echo "${{secrets.CD_APPLICATION_YML}}" > ./application.yml
