@@ -9,22 +9,25 @@ import com.bb3.bodybuddybe.common.exception.CustomException;
 import com.bb3.bodybuddybe.common.exception.ErrorCode;
 import com.bb3.bodybuddybe.user.entity.User;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
+
+import com.bb3.bodybuddybe.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
 public class MessageService {
 
+    private final UserRepository userRepository;
     private final MessageRepository messageRepository;
     private final ChatService chatService;
 
     public MessageResponseDto participation(Long chatId, MessageRequestDto messageRequestDto, User user) {
         Chat chat = chatService.findChat(chatId);
-        if (user.getId()!= messageRequestDto.getSenderId()) {
+        if (!Objects.equals(user.getId(), messageRequestDto.getSenderId())) {
             throw new CustomException(ErrorCode.NOT_SAME_LOGIN_USER);
         }
         chatService.validateChatIsMyGym(user, chat.getGym());
@@ -41,8 +44,10 @@ public class MessageService {
         return responseDto;
     }
 
-    public MessageResponseDto sendMessage(Long chatId, MessageRequestDto messageRequestDto,
-        User user) {
+    @Transactional
+    public MessageResponseDto sendMessage(Long chatId, MessageRequestDto messageRequestDto) {
+        User user = findUser(messageRequestDto.getSenderId());
+
         MessageRequestDto requestDto = MessageRequestDto.builder()
             .chatId(chatId)
             .senderId(messageRequestDto.getSenderId())
@@ -51,13 +56,18 @@ public class MessageService {
 
         Message message = Message.builder()
             .content(requestDto.getContent())
-            .user(user)
+            .sender(user)
             .chat(chatService.findChat(chatId))
             .build();
 
         messageRepository.save(message);
 
         return new MessageResponseDto(message);
+    }
+
+    private User findUser(Long senderId) {
+        return userRepository.findById(senderId)
+            .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
     }
 
     public MessageResponseDto exit(Long chatId, MessageRequestDto messageRequestDto, User user) {

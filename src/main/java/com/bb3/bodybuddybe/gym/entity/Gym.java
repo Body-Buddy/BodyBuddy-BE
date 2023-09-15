@@ -1,14 +1,12 @@
 package com.bb3.bodybuddybe.gym.entity;
 
+import com.bb3.bodybuddybe.common.timestamped.TimeStamped;
 import com.bb3.bodybuddybe.gym.dto.GymRequestDto;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,7 +14,7 @@ import java.util.List;
 @Getter
 @Table(name = "gym")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Gym {
+public class Gym extends TimeStamped {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,10 +29,6 @@ public class Gym {
 
     @Column(nullable = false)
     private String roadAddress;
-
-    @CreationTimestamp
-    @Column(nullable = false, updatable = false)
-    private LocalDateTime createdAt;
 
     @OneToMany(mappedBy = "gym", cascade = CascadeType.ALL)
     private List<UserGym> members = new ArrayList<>();

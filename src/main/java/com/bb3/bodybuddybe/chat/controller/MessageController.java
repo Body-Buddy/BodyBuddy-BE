@@ -40,10 +40,8 @@ public class MessageController {
      */
     @MessageMapping("/messages/{chatId}")
     @SendTo("/sub/messages/{chatId}")
-    public MessageResponseDto sendMessage(@DestinationVariable Long chatId, MessageRequestDto messageRequestDto,
-                                          @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        return messageService.sendMessage(chatId, messageRequestDto, userDetails.getUser());
-
+    public MessageResponseDto sendMessage(@DestinationVariable Long chatId, MessageRequestDto messageRequestDto) {
+        return messageService.sendMessage(chatId, messageRequestDto);
     }
 
     /*

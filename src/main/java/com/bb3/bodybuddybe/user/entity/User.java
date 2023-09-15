@@ -1,7 +1,7 @@
 package com.bb3.bodybuddybe.user.entity;
 
 import com.bb3.bodybuddybe.chat.entity.Message;
-import com.bb3.bodybuddybe.chat.entity.UserChat;
+import com.bb3.bodybuddybe.chat.entity.ChatParticipant;
 import com.bb3.bodybuddybe.common.exception.CustomException;
 import com.bb3.bodybuddybe.common.exception.ErrorCode;
 import com.bb3.bodybuddybe.common.oauth2.dto.OAuthAttributes;
@@ -78,7 +78,7 @@ public class User {
     private MatchingCriteria matchingCriteria;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
-    private List<UserChat> groupChatMemberList = new ArrayList<>();
+    private List<ChatParticipant> groupChatMemberList = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<UserGym> userGymList = new ArrayList<>();
