@@ -18,6 +18,7 @@ import com.bb3.bodybuddybe.user.enums.UserRoleEnum;
 import com.bb3.bodybuddybe.user.enums.UserStatusEnum;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -80,23 +81,24 @@ public class User {
     @Column
     private Boolean hasSetMatchingCriteria = false;
 
-    public User(SignupRequestDto requestDto) {
-        this.email = requestDto.getEmail();
-        this.password = requestDto.getPassword();
-        this.gender = requestDto.getGender();
-        this.birthDate = requestDto.getBirthDate();
+    @Builder
+    public User(String email, String password, GenderEnum gender, LocalDate birthDate, UserRoleEnum role) {
+        this.email = email;
+        this.password = password;
+        this.gender = gender;
+        this.birthDate = birthDate;
+        this.role = role;
         this.needSocialSignup = false;
-        this.role = UserRoleEnum.USER;
         this.status = UserStatusEnum.ACTIVE;
     }
 
-    public User(OAuthAttributes attributes) {
+    public User(OAuthAttributes attributes, UserRoleEnum role) {
         this.email = attributes.getEmail();
         this.password = UUID.randomUUID().toString();
         this.nickname = attributes.getName();
         this.imageUrl = attributes.getPicture();
+        this.role = role;
         this.needSocialSignup = true;
-        this.role = UserRoleEnum.USER;
         this.status = UserStatusEnum.ACTIVE;
     }
 
