@@ -67,6 +67,8 @@ public enum ErrorCode {
     INVALID_S3_URL(HttpStatus.INTERNAL_SERVER_ERROR, "M002", "유효하지 않은 S3 URL 입니다."),
     FAILED_TO_UPLOAD_FILE(HttpStatus.INTERNAL_SERVER_ERROR, "M003", "S3 파일 업로드에 실패했습니다."),
     FAILED_TO_DELETE_FILE(HttpStatus.INTERNAL_SERVER_ERROR, "M004", "S3 파일 삭제에 실패했습니다."),
+    FILE_SIZE_EXCEEDS_LIMIT(HttpStatus.BAD_REQUEST, "M005", "파일 크기가 제한을 초과했습니다."),
+    INVALID_FILE_TYPE(HttpStatus.BAD_REQUEST, "M006", "지원하지 않는 파일 형식입니다."),
     ;
 
     private final HttpStatus httpStatus;

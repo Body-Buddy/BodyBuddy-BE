@@ -3,7 +3,7 @@ package com.bb3.bodybuddybe.user.service;
 
 import com.bb3.bodybuddybe.common.exception.CustomException;
 import com.bb3.bodybuddybe.common.exception.ErrorCode;
-import com.bb3.bodybuddybe.media.service.ImageUploader;
+import com.bb3.bodybuddybe.media.service.AwsS3Service;
 import com.bb3.bodybuddybe.matching.enums.GenderEnum;
 import com.bb3.bodybuddybe.user.dto.SignupRequestDto;
 import com.bb3.bodybuddybe.user.entity.User;
@@ -37,7 +37,7 @@ class UserServiceImplTest {
     private PasswordEncoder passwordEncoder;
 
     @Mock
-    private ImageUploader imageUploader;
+    private AwsS3Service awsS3Service;
 
     @BeforeEach
     void setUp() {
@@ -127,7 +127,7 @@ class UserServiceImplTest {
         userService.uploadProfileImage(mock(MultipartFile.class), user);
 
         // then
-        String imageUrl = verify(imageUploader).upload(any(MultipartFile.class));
+        String imageUrl = verify(awsS3Service).uploadFile(any(MultipartFile.class));
         verify(user).updateImageUrl(imageUrl);
     }
 }
