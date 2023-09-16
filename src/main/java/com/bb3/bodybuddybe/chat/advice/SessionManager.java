@@ -13,7 +13,9 @@ import org.springframework.web.socket.WebSocketSession;
 @Getter
 public class SessionManager {
     private Map<Long, Set<WebSocketSession>> sessions = new HashMap<>();
+
 //test
+
     public void addSession(Long chatId, WebSocketSession session) {
         this.sessions
             .computeIfAbsent(chatId,k -> new HashSet<>())
