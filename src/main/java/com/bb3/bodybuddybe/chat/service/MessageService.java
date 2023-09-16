@@ -9,7 +9,6 @@ import com.bb3.bodybuddybe.common.exception.CustomException;
 import com.bb3.bodybuddybe.common.exception.ErrorCode;
 import com.bb3.bodybuddybe.user.entity.User;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 import com.bb3.bodybuddybe.user.repository.UserRepository;
@@ -21,44 +20,59 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class MessageService {
 
+    private final ChatService chatService;
     private final UserRepository userRepository;
     private final MessageRepository messageRepository;
-    private final ChatService chatService;
 
-    public MessageResponseDto participation(Long chatId, MessageRequestDto messageRequestDto, User user) {
+    public List<MessageResponseDto> getPastMessages(Long chatId, User user) {
         Chat chat = chatService.findChat(chatId);
-        if (!Objects.equals(user.getId(), messageRequestDto.getSenderId())) {
-            throw new CustomException(ErrorCode.NOT_SAME_LOGIN_USER);
-        }
-        chatService.validateChatIsMyGym(user, chat.getGym());
         chatService.validateJoinedChat(user, chat);
 
-        MessageRequestDto requestDto = MessageRequestDto.builder()
-            .chatId(chatId)
-            .senderId(messageRequestDto.getSenderId())
-            .content(messageRequestDto.changeEnterMessage(user.getNickname()))
-            .build();
-
-        MessageResponseDto responseDto = requestDto.changeToResponseDto(user);
-
-        return responseDto;
+        return messageRepository.findAllByChatId(chatId)
+                .stream()
+                .map(MessageResponseDto::new)
+                .collect(Collectors.toList());
     }
 
     @Transactional
-    public MessageResponseDto sendMessage(Long chatId, MessageRequestDto messageRequestDto) {
-        User user = findUser(messageRequestDto.getSenderId());
+    public MessageResponseDto sendMessage(Long chatId, MessageRequestDto requestDto) {
+        Message message = Message.builder()
+                .content(requestDto.getContent())
+                .sender(findUser(requestDto.getSenderId()))
+                .chat(chatService.findChat(chatId))
+                .build();
 
-        MessageRequestDto requestDto = MessageRequestDto.builder()
-            .chatId(chatId)
-            .senderId(messageRequestDto.getSenderId())
-            .content(messageRequestDto.getContent())
-            .build();
+        messageRepository.save(message);
+
+        return new MessageResponseDto(message);
+    }
+
+    public MessageResponseDto sendEnterMessage(Long chatId, MessageRequestDto requestDto) {
+        Chat chat = chatService.findChat(chatId);
+        User user = findUser(requestDto.getSenderId());
+        chatService.validateDuplicatedChat(user, chat);
 
         Message message = Message.builder()
-            .content(requestDto.getContent())
-            .sender(user)
-            .chat(chatService.findChat(chatId))
-            .build();
+                .content(user.getNickname() + "님이 입장하셨습니다.")
+                .sender(user)
+                .chat(chatService.findChat(chatId))
+                .build();
+
+        messageRepository.save(message);
+
+        return new MessageResponseDto(message);
+    }
+
+    public MessageResponseDto sendLeaveMessage(Long chatId, MessageRequestDto requestDto) {
+        Chat chat = chatService.findChat(chatId);
+        User user = findUser(requestDto.getSenderId());
+        chatService.validateJoinedChat(user, chat);
+
+        Message message = Message.builder()
+                .content(user.getNickname() + "님이 퇴장하셨습니다.")
+                .sender(user)
+                .chat(chatService.findChat(chatId))
+                .build();
 
         messageRepository.save(message);
 
@@ -67,27 +81,6 @@ public class MessageService {
 
     private User findUser(Long senderId) {
         return userRepository.findById(senderId)
-            .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
-    }
-
-    public MessageResponseDto exit(Long chatId, MessageRequestDto messageRequestDto, User user) {
-
-        MessageRequestDto requestDto = MessageRequestDto.builder()
-            .chatId(chatId)
-            .senderId(messageRequestDto.getSenderId())
-            .content(messageRequestDto.changeExitMessage(user.getNickname()))
-            .build();
-
-        MessageResponseDto messageResponseDto = requestDto.changeToResponseDto(user);
-
-        return messageResponseDto;
-    }
-
-    public List<MessageResponseDto> getPastMessages(Long chatId) {
-        List<MessageResponseDto> messageResponseDtos = messageRepository.findAllByChatId(chatId)
-            .stream()
-            .map(MessageResponseDto::new)
-            .collect(Collectors.toList());
-        return messageResponseDtos;
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
     }
 }

@@ -68,24 +68,6 @@ public class User {
     @Enumerated(value = EnumType.STRING)
     private UserStatusEnum status;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<PostLike> postLikes = new ArrayList<>();
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<CommentLike> commentLikes = new ArrayList<>();
-
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
-    private MatchingCriteria matchingCriteria;
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
-    private List<ChatParticipant> groupChatMemberList = new ArrayList<>();
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
-    private List<UserGym> userGymList = new ArrayList<>();
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
-    private List<Message> messageList = new ArrayList<>();
-
     @Column
     private Boolean needSocialSignup = true;
 

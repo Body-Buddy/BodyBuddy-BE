@@ -29,7 +29,6 @@ public class ChatController {
 
     private final ChatService chatService;
 
-    // 채팅방 생성 (그룹방)
     @PostMapping("/gyms/{gymId}/chats")
     public ResponseEntity<ApiResponseDto> createChatRoom(@PathVariable Long gymId,
                                                          @Valid @RequestBody ChatRequestDto requestDto,
@@ -38,14 +37,12 @@ public class ChatController {
         return ResponseEntity.ok(new ApiResponseDto("채팅방 생성 완료", HttpStatus.OK.value()));
     }
 
-    // GYM 내 채팅방 전체목록 조회
     @GetMapping("/gyms/{gymId}/chats")
     public ResponseEntity<List<ChatResponseDto>> getAllChatsInGym(@PathVariable Long gymId) {
         List<ChatResponseDto> response = chatService.getAllChatsInGym(gymId);
         return ResponseEntity.ok(response);
     }
 
-    // Gym 내에 내가 참여한 채팅방 목록 조회
     @GetMapping("/gym/{gymId}/users/{userId}/chats")
     public ResponseEntity<List<ChatResponseDto>> getMyChatsInGym(@PathVariable Long gymId,
                                                                  @AuthenticationPrincipal UserDetailsImpl userDetails) {
@@ -53,16 +50,21 @@ public class ChatController {
         return ResponseEntity.ok(response);
     }
 
-    // 1대1 채팅방 생성 또는 가져오기
     @PostMapping("/gyms/{gymId}/direct-chats/users/{toChatUserId}")
-    public ResponseEntity<ChatResponseDto> getOrCreateDirectChat(@PathVariable Long gymId,
+    public ResponseEntity<Long> getOrCreateDirectChat(@PathVariable Long gymId,
                                                                  @PathVariable Long toChatUserId,
                                                                  @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        ChatResponseDto response = chatService.getOrCreateDirectChat(gymId, userDetails.getUser(), toChatUserId);
+        Long chatId = chatService.getOrCreateDirectChat(gymId, userDetails.getUser(), toChatUserId);
+        return ResponseEntity.ok(chatId);
+    }
+
+    @GetMapping("/chats/{chatId}")
+    public ResponseEntity<ChatResponseDto> getChat(@PathVariable Long chatId,
+                                                   @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        ChatResponseDto response = chatService.getChat(chatId, userDetails.getUser());
         return ResponseEntity.ok(response);
     }
 
-    // 채팅방 수정(방이름 or ChatType)
     @PutMapping("/chats/{chatId}")
     public ResponseEntity<ApiResponseDto> updateChat(@PathVariable Long chatId,
                                                      @RequestBody ChatRequestDto chatRequestDto,
@@ -71,7 +73,6 @@ public class ChatController {
         return ResponseEntity.ok(new ApiResponseDto("채팅방 수정 완료", HttpStatus.OK.value()));
     }
 
-    // 채팅방 삭제
     @DeleteMapping("/chats/{chatId}")
     public ResponseEntity<ApiResponseDto> deleteChat(@PathVariable Long chatId,
                                                      @AuthenticationPrincipal UserDetailsImpl userDetails) {
@@ -79,7 +80,6 @@ public class ChatController {
         return ResponseEntity.ok(new ApiResponseDto("채팅방 삭제 완료", HttpStatus.OK.value()));
     }
 
-    // 채팅방 참여
     @PostMapping("/chats/{chatId}/participants")
     public ResponseEntity<ApiResponseDto> joinChat(@PathVariable Long chatId,
                                                    @AuthenticationPrincipal UserDetailsImpl userDetails) {
@@ -87,7 +87,6 @@ public class ChatController {
         return ResponseEntity.ok(new ApiResponseDto("채팅방 참여 완료", HttpStatus.OK.value()));
     }
 
-    // 채팅방 나가기
     @DeleteMapping("/chats/{chatId}/participants")
     public ResponseEntity<ApiResponseDto> leaveChat(@PathVariable Long chatId,
                                                     @AuthenticationPrincipal UserDetailsImpl userDetails) {

@@ -8,12 +8,12 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 
 @Configuration
 @EnableWebSocketMessageBroker
-public class StompWebSocketConfig implements WebSocketMessageBrokerConfigurer {
+public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/ws/chat")
-            .setAllowedOriginPatterns("http://localhost:5173", "https://bodybuddy.vercel.app")
-            .withSockJS();
+                .setAllowedOriginPatterns("http://localhost:5173", "https://bodybuddy.vercel.app")
+                .withSockJS();
     }
 
     @Override

@@ -5,8 +5,8 @@ import com.bb3.bodybuddybe.chat.dto.ChatResponseDto;
 import com.bb3.bodybuddybe.chat.entity.Chat;
 import com.bb3.bodybuddybe.chat.entity.ChatParticipant;
 import com.bb3.bodybuddybe.chat.entity.ChatType;
-import com.bb3.bodybuddybe.chat.repository.ChatRepository;
 import com.bb3.bodybuddybe.chat.repository.ChatParticipantRepository;
+import com.bb3.bodybuddybe.chat.repository.ChatRepository;
 import com.bb3.bodybuddybe.common.exception.CustomException;
 import com.bb3.bodybuddybe.common.exception.ErrorCode;
 import com.bb3.bodybuddybe.gym.entity.Gym;
@@ -20,7 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -32,10 +31,6 @@ public class ChatService {
     private final UserGymRepository userGymRepository;
     private final ChatParticipantRepository chatParticipantRepository;
 
-    /*
-     * 채팅방 CRUD
-     * Used in ChatController
-     */
     @Transactional
     public void createGroupChat(Long gymId, ChatRequestDto requestDto, User user) {
         Gym gym = findGym(gymId);
@@ -59,7 +54,7 @@ public class ChatService {
         return chatRepository.findAllByGym_Id(gymId)
                 .stream()
                 .map(ChatResponseDto::new)
-                .collect(Collectors.toList());
+                .toList();
     }
 
 
@@ -70,6 +65,13 @@ public class ChatService {
                 .map(ChatParticipant::getChat)
                 .map(ChatResponseDto::new)
                 .toList();
+    }
+
+    public ChatResponseDto getChat(Long chatId, User user) {
+        Chat chat = findChat(chatId);
+        validateJoinedChat(user, chat);
+
+        return new ChatResponseDto(chat);
     }
 
     @Transactional
@@ -89,7 +91,7 @@ public class ChatService {
     }
 
     @Transactional
-    public ChatResponseDto getOrCreateDirectChat(Long gymId, User user, Long toChatUserId) {
+    public Long getOrCreateDirectChat(Long gymId, User user, Long toChatUserId) {
         User toChatUser = findUser(toChatUserId);
         Gym gym = findGym(gymId);
 
@@ -97,7 +99,7 @@ public class ChatService {
 
         Chat directChat = chatRepository.findDirectChatBetweenUsers(gymId, user.getId(), toChatUserId);
 
-        if(directChat == null) {
+        if (directChat == null) {
             Chat chat = Chat.builder()
                     .chatType(ChatType.DIRECT)
                     .name(toChatUser.getNickname() + "님과의 채팅")
@@ -115,20 +117,13 @@ public class ChatService {
             directChat = chat;
         }
 
-        return new ChatResponseDto(directChat);
+        return directChat.getId();
     }
-
-//--------------------------------------------------------------------------------------------------------------------------------------------
-
-    /*
-     * 채팅방 참여 / 나가기
-     * Used in ChatController
-     */
 
     @Transactional
     public void joinChat(User user, Long chatId) {
         Chat chat = findChat(chatId);
-        validateDuplicatedUserChat(user, chat);
+        validateDuplicatedChat(user, chat);
         ChatParticipant chatParticipant = new ChatParticipant(user, chat);
 
         chatParticipantRepository.save(chatParticipant);
@@ -138,64 +133,13 @@ public class ChatService {
     public void leaveChat(User user, Long chatId) {
         Chat chat = findChat(chatId);
 
-        if(chat.getChatType() == ChatType.GROUP) {
+        if (chat.getChatType() == ChatType.GROUP) {
             ownerCantLeave(user, chat);
         }
 
         ChatParticipant chatParticipant = findChatParticipant(user, chatId);
         chatParticipantRepository.delete(chatParticipant);
     }
-
-//--------------------------------------------------------------------------------------------------------------------------------------------
-
-    /*
-     * 채팅 메세지관련
-     * Used in WebSocketHandler
-     */
-//
-//    public void sendMessage(WebSocketSession session, MessageRequestDto message) {
-//        MessageResponseDto messageResponseDto = changeToResponseDto(message);
-//        try {
-//            session.sendMessage(
-//                new TextMessage(convertMessageToJson(messageResponseDto)));
-//        } catch (IOException e) {
-//            log.error("Error sending message to session: " + session.getId(), e);
-//            throw new CustomException(ErrorCode.WEBSOCKET_SEND_ERROR);
-//        }
-//    }
-
-//    @Transactional
-//    public void saveMessage(MessageRequestDto message, User user, Chat chat) {
-//
-//        Message chatMessage = Message.builder()
-//            .content(message.getContent())
-//            .chat(chat)
-//            .user(user)
-//            .build();
-//
-//        messageRepository.save(chatMessage);
-//
-//    }
-
-//    public void getMessages(WebSocketSession session, Long chatId) {
-//        List<MessageResponseDto> messageResponseDtos = messageRepository.findAllByChatId(chatId)
-//            .stream()
-//            .map(MessageResponseDto::new)
-//            .collect(Collectors.toList());
-//
-//        messageResponseDtos.forEach(messageResponseDto -> {
-//            try {
-//                session.sendMessage(new TextMessage(convertMessageToJson(messageResponseDto)));
-//            } catch (IOException e) {
-//                log.error("Error sending message to session: " + session.getId(), e);
-//                throw new CustomException(ErrorCode.WEBSOCKET_SEND_ERROR);
-//            }
-//        });
-//
-//
-//    }
-
-//--------------------------------------------------------------------------------------------------------------------------------------------//
 
     private Gym findGym(Long gymId) {
         return gymRepository.findById(gymId)
@@ -212,19 +156,18 @@ public class ChatService {
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
     }
 
+    private ChatParticipant findChatParticipant(User user, Long chatId) {
+        return chatParticipantRepository.findByUserAndChatId(user, chatId)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_CHAT_NOT_FOUND));
+    }
+
     private void validateUserMembership(User user, Gym gym) {
         if (!userGymRepository.existsByUserAndGym(user, gym)) {
             throw new CustomException(ErrorCode.NOT_MY_GYM);
         }
     }
 
-    public void validateChatIsMyGym(User user, Gym gym) {
-        if (!userGymRepository.existsByUserAndGym(user, gym)) {
-            throw new CustomException(ErrorCode.CHAT_NOT_MY_GYM);
-        }
-    }
-
-    private void validateDuplicatedUserChat(User user, Chat chat) {
+    public void validateDuplicatedChat(User user, Chat chat) {
         if (chatParticipantRepository.existsByChatAndUser(chat, user)) {
             throw new CustomException(ErrorCode.DUPLICATED_USER_CHAT);
         }
@@ -247,32 +190,4 @@ public class ChatService {
             throw new CustomException(ErrorCode.OWNER_CAN_NOT_LEAVE);
         }
     }
-
-    private ChatParticipant findChatParticipant(User user, Long chatId) {
-        return chatParticipantRepository.findByUserAndChatId(user, chatId)
-                .orElseThrow(() -> new CustomException(ErrorCode.USER_CHAT_NOT_FOUND));
-    }
-
-//    private String convertMessageToJson(MessageResponseDto message) {
-//        try {
-//            return objectMapper.writeValueAsString(message);
-//        } catch (JsonProcessingException e) {
-//            log.error("Error converting message to JSON", e);
-//            throw new CustomException(ErrorCode.JSON_PROCESSING_ERROR);
-//        }
-//    }
-
-//    private MessageResponseDto changeToResponseDto(MessageRequestDto message) {
-//        String senderNickname = findUser(message.getSenderId()).getNickname();
-//
-//        MessageResponseDto messageResponseDto = MessageResponseDto.builder()
-//            .chatId(message.getChatId())
-//            .senderNickname(senderNickname)
-//            .content(message.getContent())
-//            .messageDate(LocalDateTime.now())
-//            .build();
-//
-//        return messageResponseDto;
-//    }
-
 }
