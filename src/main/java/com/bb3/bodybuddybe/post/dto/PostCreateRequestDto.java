@@ -24,8 +24,4 @@ public class PostCreateRequestDto {
 
     @NotNull(message = "헬스장 id를 입력해주세요.")
     private Long gymId;
-
-    private List<MultipartFile> images;
-
-    private List<MultipartFile> videos;
 }

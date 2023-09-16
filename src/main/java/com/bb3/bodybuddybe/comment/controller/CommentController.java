@@ -22,7 +22,7 @@ public class CommentController {
     @PostMapping("/comments")
     public ResponseEntity<ApiResponseDto> createComment(@Valid @RequestBody CommentCreateRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         commentService.createComment(requestDto, userDetails.getUser());
-        return ResponseEntity.ok(new ApiResponseDto("댓글 생성 성공", HttpStatus.CREATED.value()));
+        return ResponseEntity.status(HttpStatus.CREATED).body(new ApiResponseDto("댓글 생성 성공", HttpStatus.CREATED.value()));
     }
 
     @PutMapping("/comments/{commentId}")

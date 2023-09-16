@@ -1,5 +1,5 @@
 package com.bb3.bodybuddybe.media.enums;
 
-public enum MediaType {
+public enum MediaTypeEnum {
     IMAGE, VIDEO
 }

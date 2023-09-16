@@ -16,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 
 import java.util.List;
@@ -29,9 +30,10 @@ public class PostController {
     private final PostServiceImpl postService;
 
     @PostMapping("/posts")
-    public ResponseEntity<ApiResponseDto> createPost(@Valid @RequestBody PostCreateRequestDto requestDto,
+    public ResponseEntity<ApiResponseDto> createPost(@Valid @ModelAttribute PostCreateRequestDto requestDto,
+                                                     @RequestParam(required = false) List<MultipartFile> files,
                                                      @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        postService.createPost(requestDto, userDetails.getUser());
+        postService.createPost(requestDto, files, userDetails.getUser());
         return ResponseEntity.status(HttpStatus.CREATED).body(new ApiResponseDto("게시글이 작성되었습니다.", HttpStatus.CREATED.value()));
     }
 

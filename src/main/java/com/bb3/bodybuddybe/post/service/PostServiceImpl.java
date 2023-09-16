@@ -2,6 +2,8 @@ package com.bb3.bodybuddybe.post.service;
 
 import com.bb3.bodybuddybe.common.exception.CustomException;
 import com.bb3.bodybuddybe.common.exception.ErrorCode;
+import com.bb3.bodybuddybe.media.entity.Media;
+import com.bb3.bodybuddybe.media.enums.MediaTypeEnum;
 import com.bb3.bodybuddybe.media.service.AwsS3Service;
 import com.bb3.bodybuddybe.gym.entity.Gym;
 import com.bb3.bodybuddybe.gym.repository.GymRepository;
@@ -16,7 +18,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -25,12 +29,12 @@ import java.util.List;
 public class PostServiceImpl implements PostService {
     private final PostRepository postRepository;
     private final GymRepository gymRepository;
-    private final AwsS3Service awsS3Service;
     private final MediaRepository mediaRepository;
+    private final AwsS3Service awsS3Service;
 
     @Override
     @Transactional
-    public void createPost(PostCreateRequestDto requestDto, User user) {
+    public void createPost(PostCreateRequestDto requestDto, List<MultipartFile> files, User user) {
         Gym gym = findGym(requestDto.getGymId());
 
         Post post = Post.builder()
@@ -43,16 +47,29 @@ public class PostServiceImpl implements PostService {
 
         postRepository.save(post);
 
-//        List<MultipartFile> files = new ArrayList<>();
-//        files.addAll(requestDto.getImages());
-//        files.addAll(requestDto.getVideos());
-//
-//        if (!files.isEmpty()) {
-//            for (MultipartFile file : files) {
-//                String s3Url = imageUploader.upload(file);
-//                imageRepository.save(new Image(s3Url, post));
-//            }
-//        }
+        if (files != null) {
+            List<Media> medias = new ArrayList<>();
+
+            for (MultipartFile file : files) {
+                String url = awsS3Service.uploadFile(file);
+                MediaTypeEnum mediaType;
+
+                if (file.getContentType().startsWith("image/")) {
+                    mediaType = MediaTypeEnum.IMAGE;
+                } else {
+                    mediaType = MediaTypeEnum.VIDEO;
+                }
+
+                Media media = Media.builder()
+                        .s3Url(url)
+                        .post(post)
+                        .mediaType(mediaType)
+                        .build();
+
+                medias.add(media);
+            }
+            mediaRepository.saveAll(medias);
+        }
     }
 
     @Override

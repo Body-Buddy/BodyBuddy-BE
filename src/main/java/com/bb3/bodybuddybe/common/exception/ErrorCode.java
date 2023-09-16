@@ -63,12 +63,11 @@ public enum ErrorCode {
     REFRESH_TOKEN_NOT_FOUND(HttpStatus.BAD_REQUEST, "AU004", "존재하지 않는 리프레시 토큰입니다."),
 
     // media
-    FILE_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "M001", "한 게시글에는 동일한 이미지를 여러 개 올릴 수 없습니다."),
-    INVALID_S3_URL(HttpStatus.INTERNAL_SERVER_ERROR, "M002", "유효하지 않은 S3 URL 입니다."),
-    FAILED_TO_UPLOAD_FILE(HttpStatus.INTERNAL_SERVER_ERROR, "M003", "S3 파일 업로드에 실패했습니다."),
-    FAILED_TO_DELETE_FILE(HttpStatus.INTERNAL_SERVER_ERROR, "M004", "S3 파일 삭제에 실패했습니다."),
-    FILE_SIZE_EXCEEDS_LIMIT(HttpStatus.BAD_REQUEST, "M005", "파일 크기가 제한을 초과했습니다."),
-    INVALID_FILE_TYPE(HttpStatus.BAD_REQUEST, "M006", "지원하지 않는 파일 형식입니다."),
+    INVALID_S3_URL(HttpStatus.INTERNAL_SERVER_ERROR, "M001", "유효하지 않은 S3 URL 입니다."),
+    FAILED_TO_UPLOAD_FILE(HttpStatus.INTERNAL_SERVER_ERROR, "M002", "S3 파일 업로드에 실패했습니다."),
+    FAILED_TO_DELETE_FILE(HttpStatus.INTERNAL_SERVER_ERROR, "M003", "S3 파일 삭제에 실패했습니다."),
+    FILE_SIZE_EXCEEDS_LIMIT(HttpStatus.BAD_REQUEST, "M004", "파일 크기가 제한을 초과했습니다."),
+    INVALID_FILE_TYPE(HttpStatus.BAD_REQUEST, "M005", "지원하지 않는 파일 형식입니다."),
     ;
 
     private final HttpStatus httpStatus;

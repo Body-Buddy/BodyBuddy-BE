@@ -1,6 +1,6 @@
 package com.bb3.bodybuddybe.media.entity;
 
-import com.bb3.bodybuddybe.media.enums.MediaType;
+import com.bb3.bodybuddybe.media.enums.MediaTypeEnum;
 import com.bb3.bodybuddybe.post.entity.Post;
 import jakarta.persistence.*;
 import lombok.*;
@@ -17,7 +17,7 @@ public class Media {
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    MediaType mediaType;
+    MediaTypeEnum mediaType;
 
     @Column(nullable = false, unique = true)
     private String s3Url;
@@ -27,7 +27,7 @@ public class Media {
     private Post post;
 
     @Builder
-    public Media(MediaType mediaType, String s3Url, Post post) {
+    public Media(MediaTypeEnum mediaType, String s3Url, Post post) {
         this.mediaType = mediaType;
         this.s3Url = s3Url;
         this.post = post;
