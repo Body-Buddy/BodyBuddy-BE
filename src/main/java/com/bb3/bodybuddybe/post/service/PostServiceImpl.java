@@ -2,10 +2,10 @@ package com.bb3.bodybuddybe.post.service;
 
 import com.bb3.bodybuddybe.common.exception.CustomException;
 import com.bb3.bodybuddybe.common.exception.ErrorCode;
-import com.bb3.bodybuddybe.common.image.ImageUploader;
+import com.bb3.bodybuddybe.media.service.ImageUploader;
 import com.bb3.bodybuddybe.gym.entity.Gym;
 import com.bb3.bodybuddybe.gym.repository.GymRepository;
-import com.bb3.bodybuddybe.image.repository.ImageRepository;
+import com.bb3.bodybuddybe.media.repository.ImageRepository;
 import com.bb3.bodybuddybe.post.dto.*;
 import com.bb3.bodybuddybe.post.entity.Post;
 import com.bb3.bodybuddybe.post.enums.CategoryEnum;

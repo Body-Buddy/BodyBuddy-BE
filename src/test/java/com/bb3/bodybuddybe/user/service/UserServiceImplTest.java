@@ -3,7 +3,7 @@ package com.bb3.bodybuddybe.user.service;
 
 import com.bb3.bodybuddybe.common.exception.CustomException;
 import com.bb3.bodybuddybe.common.exception.ErrorCode;
-import com.bb3.bodybuddybe.common.image.ImageUploader;
+import com.bb3.bodybuddybe.media.service.ImageUploader;
 import com.bb3.bodybuddybe.matching.enums.GenderEnum;
 import com.bb3.bodybuddybe.user.dto.SignupRequestDto;
 import com.bb3.bodybuddybe.user.entity.User;

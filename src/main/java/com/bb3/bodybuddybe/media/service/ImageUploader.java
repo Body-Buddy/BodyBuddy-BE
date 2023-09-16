@@ -1,4 +1,4 @@
-package com.bb3.bodybuddybe.common.image;
+package com.bb3.bodybuddybe.media.service;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;

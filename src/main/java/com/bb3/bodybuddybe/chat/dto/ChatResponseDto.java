@@ -1,7 +1,7 @@
 package com.bb3.bodybuddybe.chat.dto;
 
 import com.bb3.bodybuddybe.chat.entity.Chat;
-import com.bb3.bodybuddybe.chat.entity.ChatType;
+import com.bb3.bodybuddybe.chat.enums.ChatType;
 import lombok.Getter;
 
 import java.time.LocalDateTime;

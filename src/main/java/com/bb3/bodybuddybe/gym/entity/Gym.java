@@ -1,6 +1,6 @@
 package com.bb3.bodybuddybe.gym.entity;
 
-import com.bb3.bodybuddybe.common.timestamped.TimeStamped;
+import com.bb3.bodybuddybe.common.listener.TimeStamped;
 import com.bb3.bodybuddybe.gym.dto.GymRequestDto;
 import jakarta.persistence.*;
 import lombok.AccessLevel;

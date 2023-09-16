@@ -1,4 +1,4 @@
-package com.bb3.bodybuddybe.image.entity;
+package com.bb3.bodybuddybe.media.entity;
 
 import com.bb3.bodybuddybe.post.entity.Post;
 import jakarta.persistence.*;
@@ -8,7 +8,7 @@ import lombok.*;
 @Getter
 @Table(name = "image")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Image {
+public class Media {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,7 +21,7 @@ public class Image {
     @JoinColumn(name = "post_id", nullable = false)
     private Post post;
 
-    public Image(String s3Url, Post post) {
+    public Media(String s3Url, Post post) {
         this.s3Url = s3Url;
         this.post = post;
     }

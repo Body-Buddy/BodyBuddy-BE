@@ -4,7 +4,7 @@ import com.bb3.bodybuddybe.chat.dto.ChatRequestDto;
 import com.bb3.bodybuddybe.chat.dto.ChatResponseDto;
 import com.bb3.bodybuddybe.chat.entity.Chat;
 import com.bb3.bodybuddybe.chat.entity.ChatParticipant;
-import com.bb3.bodybuddybe.chat.entity.ChatType;
+import com.bb3.bodybuddybe.chat.enums.ChatType;
 import com.bb3.bodybuddybe.chat.repository.ChatParticipantRepository;
 import com.bb3.bodybuddybe.chat.repository.ChatRepository;
 import com.bb3.bodybuddybe.common.exception.CustomException;

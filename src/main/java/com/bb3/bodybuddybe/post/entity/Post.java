@@ -1,8 +1,9 @@
 package com.bb3.bodybuddybe.post.entity;
 
 import com.bb3.bodybuddybe.comment.entity.Comment;
-import com.bb3.bodybuddybe.common.timestamped.TimeStamped;
+import com.bb3.bodybuddybe.common.listener.TimeStamped;
 import com.bb3.bodybuddybe.gym.entity.Gym;
+import com.bb3.bodybuddybe.media.entity.Media;
 import com.bb3.bodybuddybe.like.entity.PostLike;
 import com.bb3.bodybuddybe.post.dto.PostUpdateRequestDto;
 import com.bb3.bodybuddybe.post.enums.CategoryEnum;
@@ -43,6 +44,9 @@ public class Post extends TimeStamped {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "gym_id")
     private Gym gym;
+
+    @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<Media> media = new ArrayList<>();
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Comment> comments = new ArrayList<>();

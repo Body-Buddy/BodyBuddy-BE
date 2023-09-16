@@ -1,4 +1,4 @@
-package com.bb3.bodybuddybe.chat.config;
+package com.bb3.bodybuddybe.common.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;

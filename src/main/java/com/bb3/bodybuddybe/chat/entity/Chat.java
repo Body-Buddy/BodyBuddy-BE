@@ -1,6 +1,7 @@
 package com.bb3.bodybuddybe.chat.entity;
 
-import com.bb3.bodybuddybe.common.timestamped.TimeStamped;
+import com.bb3.bodybuddybe.chat.enums.ChatType;
+import com.bb3.bodybuddybe.common.listener.TimeStamped;
 import com.bb3.bodybuddybe.gym.entity.Gym;
 import com.bb3.bodybuddybe.user.entity.User;
 import jakarta.persistence.CascadeType;
