@@ -4,12 +4,12 @@ import com.bb3.bodybuddybe.user.entity.User;
 import lombok.Getter;
 
 @Getter
-public class AuthorResponseDto {
+public class AuthorDto {
     private Long id;
     private String nickname;
     private String profileImage;
 
-    public AuthorResponseDto(User user) {
+    public AuthorDto(User user) {
         this.id = user.getId();
         this.nickname = user.getNickname();
         this.profileImage = user.getImageUrl();

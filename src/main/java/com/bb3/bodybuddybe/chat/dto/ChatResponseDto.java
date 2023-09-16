@@ -4,7 +4,6 @@ import com.bb3.bodybuddybe.chat.entity.Chat;
 import com.bb3.bodybuddybe.chat.entity.ChatType;
 import lombok.Getter;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -13,7 +12,7 @@ public class ChatResponseDto {
     private Long id;
     private String name;
     private ChatType chatType;
-    private List<ChatParticipantResponseDto> participants;
+    private List<ChatParticipantDto> participants;
     private LocalDateTime createdAt;
     private MessageResponseDto lastMessage;
 
@@ -23,7 +22,7 @@ public class ChatResponseDto {
         this.chatType = chat.getChatType();
         this.participants = chat.getParticipants()
                 .stream()
-                .map(participant -> new ChatParticipantResponseDto(participant.getUser()))
+                .map(participant -> new ChatParticipantDto(participant.getUser()))
                 .toList();
         this.createdAt = chat.getCreatedAt();
         this.lastMessage = chat.getMessages().isEmpty() ? null : new MessageResponseDto(chat.getMessages().get(chat.getMessages().size() - 1));

@@ -19,6 +19,7 @@ public enum ErrorCode {
     COMMENT_NOT_FOUND(HttpStatus.BAD_REQUEST, "C001", "댓글이 존재하지 않습니다."),
     WRONG_PARENT_COMMENT(HttpStatus.BAD_REQUEST, "C002", "부모 댓글이 같은 게시글에 속하지 않습니다."),
     NOT_COMMENT_AUTHOR(HttpStatus.BAD_REQUEST, "C003", "댓글 작성자만 수정 또는 삭제할 수 있습니다."),
+    NOT_SUPPORTED_COMMENT_DEPTH(HttpStatus.BAD_REQUEST, "C004", "대댓글은 1 depth 까지만 가능합니다."),
 
     // like
     ALREADY_LIKED_POST(HttpStatus.BAD_REQUEST, "L001", "사용자가 이미 좋아요를 누른 게시물입니다."),
