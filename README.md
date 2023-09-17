@@ -114,7 +114,9 @@ CI/CD: <img src="https://img.shields.io/badge/GitHub Actions-2088FF?style=flat&l
 ---
 
 ## 5. 시연영상, 발표자료
-### 📽️[발표영상](https://www.youtube.com/watch?v=csJrEozcYqE)
+### 📽️[전체 시연 영상](https://www.youtube.com/watch?v=csJrEozcYqE)
+### 📽️[채팅 시연 영상](https://nbcamp.slack.com/files/U0538D61SLR/F05SK3N2EA1/___________________.mkv)
+### 📽️[알림 시연 영상](https://www.youtube.com/watch?v=csJrEozcYqE)
 ### 📜[발표자료](https://www.notion.so/bodybuddy3/881c232533fb431a839652a9fae5670a?pvs=4)
 
 ---
