@@ -66,6 +66,11 @@ public class CommentServiceImpl implements CommentService {
     public void deleteComment(Long commentId, User user) {
         Comment comment = findComment(commentId);
         validateUserOwnership(comment, user);
+
+        if(comment.getChildren().size() > 0) {
+            throw new CustomException(ErrorCode.NOT_EMPTY_COMMENT);
+        }
+
         commentRepository.delete(comment);
     }
 

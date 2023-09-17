@@ -32,7 +32,7 @@ public class Comment extends TimeStamped {
     @ManyToOne(fetch = FetchType.LAZY)
     private Comment parent;
 
-    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "parent")
     private List<Comment> children = new ArrayList<>();
 
     @OneToMany(mappedBy = "comment", cascade = CascadeType.ALL)
@@ -55,5 +55,9 @@ public class Comment extends TimeStamped {
 
     public void update(CommentUpdateRequestDto requestDto) {
         this.content = requestDto.getContent();
+    }
+
+    public void changeContent(String content) {
+        this.content = content;
     }
 }

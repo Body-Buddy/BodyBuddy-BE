@@ -15,10 +15,6 @@ public class Media {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
-    MediaTypeEnum mediaType;
-
     @Column(nullable = false, unique = true)
     private String s3Url;
 
@@ -26,10 +22,14 @@ public class Media {
     @JoinColumn(name = "post_id", nullable = false)
     private Post post;
 
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    MediaTypeEnum mediaType;
+
     @Builder
-    public Media(MediaTypeEnum mediaType, String s3Url, Post post) {
-        this.mediaType = mediaType;
+    public Media(String s3Url, Post post, MediaTypeEnum mediaType) {
         this.s3Url = s3Url;
         this.post = post;
+        this.mediaType = mediaType;
     }
 }

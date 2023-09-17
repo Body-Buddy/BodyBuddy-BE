@@ -46,7 +46,7 @@ public class Post extends TimeStamped {
     private Gym gym;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE, orphanRemoval = true)
-    private List<Media> media = new ArrayList<>();
+    private List<Media> medias = new ArrayList<>();
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Comment> comments = new ArrayList<>();
