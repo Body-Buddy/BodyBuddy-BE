@@ -55,6 +55,7 @@ class UserServiceImplTest {
         requestDto.setBirthDate(LocalDate.of(2000, 01, 01));
 
         when(userRepository.findByEmail(requestDto.getEmail())).thenReturn(Optional.empty());
+        when(passwordEncoder.encode(requestDto.getPassword())).thenReturn("encodedPassword");
 
         // when
         userService.signup(requestDto);
@@ -66,7 +67,7 @@ class UserServiceImplTest {
 
         User user = userCaptor.getValue();
         assertEquals(requestDto.getEmail(), user.getEmail());
-        assertEquals("testPassword", user.getPassword());
+        assertEquals("encodedPassword", user.getPassword());
         assertEquals(requestDto.getGender(), user.getGender());
         assertEquals(LocalDate.of(2000, 1, 1), user.getBirthDate());
     }
