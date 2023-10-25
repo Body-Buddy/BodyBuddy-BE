@@ -2,6 +2,7 @@ package com.bb3.bodybuddybe.common.oauth2;
 
 import com.bb3.bodybuddybe.common.oauth2.dto.OAuthAttributes;
 import com.bb3.bodybuddybe.user.entity.User;
+import com.bb3.bodybuddybe.user.enums.UserRoleEnum;
 import com.bb3.bodybuddybe.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -45,7 +46,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
     private User saveOrUpdate(OAuthAttributes attributes) {
         User user = userRepository.findByEmail(attributes.getEmail())
                 .map(entity -> entity.update(attributes.getName(), attributes.getPicture()))
-                .orElse(new User(attributes));
+                .orElse(new User(attributes, UserRoleEnum.USER));
 
         return userRepository.save(user);
     }

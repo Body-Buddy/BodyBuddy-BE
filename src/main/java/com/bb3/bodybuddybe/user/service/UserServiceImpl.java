@@ -2,7 +2,7 @@ package com.bb3.bodybuddybe.user.service;
 
 import com.bb3.bodybuddybe.common.exception.CustomException;
 import com.bb3.bodybuddybe.common.exception.ErrorCode;
-import com.bb3.bodybuddybe.common.image.ImageUploader;
+import com.bb3.bodybuddybe.media.service.AwsS3Service;
 import com.bb3.bodybuddybe.common.jwt.JwtUtil;
 import com.bb3.bodybuddybe.common.jwt.TokenResponseHandler;
 import com.bb3.bodybuddybe.common.oauth2.entity.BlacklistedToken;
@@ -29,14 +29,22 @@ public class UserServiceImpl implements UserService {
     private final RefreshTokenRepository refreshTokenRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
-    private final ImageUploader imageUploader;
+    private final AwsS3Service awsS3Service;
     private final TokenResponseHandler tokenResponseHandler;
 
     @Override
     @Transactional
     public void signup(SignupRequestDto requestDto) {
         verifyEmailIsUnique(requestDto.getEmail());
-        User user = new User(requestDto);
+
+        User user = User.builder()
+                .email(requestDto.getEmail())
+                .password(passwordEncoder.encode(requestDto.getPassword()))
+                .gender(requestDto.getGender())
+                .birthDate(requestDto.getBirthDate())
+                .role(UserRoleEnum.USER)
+                .build();
+
         verifyAge(user.getAge());
         userRepository.save(user);
     }
@@ -126,7 +134,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void uploadProfileImage(MultipartFile file, User user) {
-        String imageUrl = imageUploader.upload(file);
+        String imageUrl = awsS3Service.uploadFile(file);
         user.updateImageUrl(imageUrl);
         userRepository.save(user);
     }
@@ -140,7 +148,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void deleteProfileImage(User user) {
-        imageUploader.deleteFromUrl(user.getImageUrl());
+        awsS3Service.deleteFileFromS3Url(user.getImageUrl());
         user.updateImageUrl(null);
         userRepository.save(user);
     }

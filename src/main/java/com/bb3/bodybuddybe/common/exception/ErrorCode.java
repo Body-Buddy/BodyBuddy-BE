@@ -19,6 +19,8 @@ public enum ErrorCode {
     COMMENT_NOT_FOUND(HttpStatus.BAD_REQUEST, "C001", "댓글이 존재하지 않습니다."),
     WRONG_PARENT_COMMENT(HttpStatus.BAD_REQUEST, "C002", "부모 댓글이 같은 게시글에 속하지 않습니다."),
     NOT_COMMENT_AUTHOR(HttpStatus.BAD_REQUEST, "C003", "댓글 작성자만 수정 또는 삭제할 수 있습니다."),
+    NOT_SUPPORTED_COMMENT_DEPTH(HttpStatus.BAD_REQUEST, "C004", "대댓글은 1 depth 까지만 가능합니다."),
+    NOT_EMPTY_COMMENT(HttpStatus.BAD_REQUEST, "C005", "대댓글이 존재하는 댓글은 삭제할 수 없습니다."),
 
     // like
     ALREADY_LIKED_POST(HttpStatus.BAD_REQUEST, "L001", "사용자가 이미 좋아요를 누른 게시물입니다."),
@@ -62,10 +64,11 @@ public enum ErrorCode {
     REFRESH_TOKEN_NOT_FOUND(HttpStatus.BAD_REQUEST, "AU004", "존재하지 않는 리프레시 토큰입니다."),
 
     // media
-    FILE_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "M001", "한 게시글에는 동일한 이미지를 여러 개 올릴 수 없습니다."),
-    INVALID_S3_URL(HttpStatus.INTERNAL_SERVER_ERROR, "M002", "유효하지 않은 S3 URL 입니다."),
-    FAILED_TO_UPLOAD_FILE(HttpStatus.INTERNAL_SERVER_ERROR, "M003", "S3 파일 업로드에 실패했습니다."),
-    FAILED_TO_DELETE_FILE(HttpStatus.INTERNAL_SERVER_ERROR, "M004", "S3 파일 삭제에 실패했습니다."),
+    INVALID_S3_URL(HttpStatus.INTERNAL_SERVER_ERROR, "M001", "유효하지 않은 S3 URL 입니다."),
+    FAILED_TO_UPLOAD_FILE(HttpStatus.INTERNAL_SERVER_ERROR, "M002", "S3 파일 업로드에 실패했습니다."),
+    FAILED_TO_DELETE_FILE(HttpStatus.INTERNAL_SERVER_ERROR, "M003", "S3 파일 삭제에 실패했습니다."),
+    FILE_SIZE_EXCEEDS_LIMIT(HttpStatus.BAD_REQUEST, "M004", "파일 크기가 제한을 초과했습니다."),
+    INVALID_FILE_TYPE(HttpStatus.BAD_REQUEST, "M005", "지원하지 않는 파일 형식입니다."),
     ;
 
     private final HttpStatus httpStatus;

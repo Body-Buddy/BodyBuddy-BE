@@ -20,10 +20,12 @@ public class CommentServiceImpl implements CommentService {
     private final PostRepository postRepository;
     private final CommentRepository commentRepository;
     private final NotificationService notificationService;
+
     @Override
     @Transactional
     public void createComment(CommentCreateRequestDto requestDto, User user) {
         Post post = findPost(requestDto.getPostId());
+
         Comment comment = Comment.builder()
                 .content(requestDto.getContent())
                 .post(post)
@@ -31,8 +33,12 @@ public class CommentServiceImpl implements CommentService {
                 .build();
 
         if (requestDto.getParentId() != 0) {
-            Comment parentComment = validateParentComment(requestDto);
-            comment.addParent(parentComment);
+            Comment parent = validateParentComment(requestDto);
+            if (parent.getParent() == null) {
+                comment.addParent(parent);
+            } else {
+                throw new CustomException(ErrorCode.NOT_SUPPORTED_COMMENT_DEPTH);
+            }
         }
 
         commentRepository.save(comment);
@@ -40,11 +46,11 @@ public class CommentServiceImpl implements CommentService {
     }
 
     private Comment validateParentComment(CommentCreateRequestDto requestDto) {
-        Comment parentComment = findComment(requestDto.getParentId());
-        if (!parentComment.getPost().getId().equals(requestDto.getPostId())) {
+        Comment parent = findComment(requestDto.getParentId());
+        if (!parent.getPost().getId().equals(requestDto.getPostId())) {
             throw new CustomException(ErrorCode.WRONG_PARENT_COMMENT);
         }
-        return parentComment;
+        return parent;
     }
 
     @Override
@@ -60,6 +66,11 @@ public class CommentServiceImpl implements CommentService {
     public void deleteComment(Long commentId, User user) {
         Comment comment = findComment(commentId);
         validateUserOwnership(comment, user);
+
+        if(comment.getChildren().size() > 0) {
+            throw new CustomException(ErrorCode.NOT_EMPTY_COMMENT);
+        }
+
         commentRepository.delete(comment);
     }
 

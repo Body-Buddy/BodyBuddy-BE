@@ -1,7 +1,7 @@
 package com.bb3.bodybuddybe.user.entity;
 
 import com.bb3.bodybuddybe.chat.entity.Message;
-import com.bb3.bodybuddybe.chat.entity.UserChat;
+import com.bb3.bodybuddybe.chat.entity.ChatParticipant;
 import com.bb3.bodybuddybe.common.exception.CustomException;
 import com.bb3.bodybuddybe.common.exception.ErrorCode;
 import com.bb3.bodybuddybe.common.oauth2.dto.OAuthAttributes;
@@ -18,6 +18,7 @@ import com.bb3.bodybuddybe.user.enums.UserRoleEnum;
 import com.bb3.bodybuddybe.user.enums.UserStatusEnum;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -68,24 +69,6 @@ public class User {
     @Enumerated(value = EnumType.STRING)
     private UserStatusEnum status;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<PostLike> postLikes = new ArrayList<>();
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<CommentLike> commentLikes = new ArrayList<>();
-
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
-    private MatchingCriteria matchingCriteria;
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
-    private List<UserChat> groupChatMemberList = new ArrayList<>();
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
-    private List<UserGym> userGymList = new ArrayList<>();
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
-    private List<Message> messageList = new ArrayList<>();
-
     @Column
     private Boolean needSocialSignup = true;
 
@@ -98,23 +81,24 @@ public class User {
     @Column
     private Boolean hasSetMatchingCriteria = false;
 
-    public User(SignupRequestDto requestDto) {
-        this.email = requestDto.getEmail();
-        this.password = requestDto.getPassword();
-        this.gender = requestDto.getGender();
-        this.birthDate = requestDto.getBirthDate();
+    @Builder
+    public User(String email, String password, GenderEnum gender, LocalDate birthDate, UserRoleEnum role) {
+        this.email = email;
+        this.password = password;
+        this.gender = gender;
+        this.birthDate = birthDate;
+        this.role = role;
         this.needSocialSignup = false;
-        this.role = UserRoleEnum.USER;
         this.status = UserStatusEnum.ACTIVE;
     }
 
-    public User(OAuthAttributes attributes) {
+    public User(OAuthAttributes attributes, UserRoleEnum role) {
         this.email = attributes.getEmail();
         this.password = UUID.randomUUID().toString();
         this.nickname = attributes.getName();
         this.imageUrl = attributes.getPicture();
+        this.role = role;
         this.needSocialSignup = true;
-        this.role = UserRoleEnum.USER;
         this.status = UserStatusEnum.ACTIVE;
     }
 

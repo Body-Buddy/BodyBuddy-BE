@@ -1,5 +1,7 @@
 package com.bb3.bodybuddybe.chat.entity;
 
+import com.bb3.bodybuddybe.chat.enums.ChatType;
+import com.bb3.bodybuddybe.common.listener.TimeStamped;
 import com.bb3.bodybuddybe.gym.entity.Gym;
 import com.bb3.bodybuddybe.user.entity.User;
 import jakarta.persistence.CascadeType;
@@ -24,42 +26,42 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Chat {
+public class Chat extends TimeStamped {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Enumerated(EnumType.STRING)
-    private ChatType chatType; // 1대1 or 그룹
+    @Column(nullable = false)
+    private String name;
 
-    @Column
-    private String roomname; // 채팅방 이름
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private ChatType chatType;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "gym_id")
+    @JoinColumn(name = "gym_id", nullable = false)
     private Gym gym;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private User ownerUser;
+    @JoinColumn(name = "owner_id")
+    private User owner;
 
-    @OneToMany(mappedBy = "chat", cascade = CascadeType.ALL, orphanRemoval = true) // 채팅방이 삭제되면 참여인원들 같이 삭제되도록
-    private List<UserChat> userChatList;
+    @OneToMany(mappedBy = "chat", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ChatParticipant> participants;
 
-    @OneToMany(mappedBy = "chat", cascade = CascadeType.ALL, orphanRemoval = true) // 채팅방이 삭제되면 메세지들도 같이 삭제 되도록
+    @OneToMany(mappedBy = "chat", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Message> messages;
 
     @Builder
-    public Chat(ChatType chatType, String roomName, Gym gym, User ownerUser) {
+    public Chat(ChatType chatType, String name, Gym gym, User owner) {
         this.chatType = chatType;
-        this.roomname = roomName;
+        this.name = name;
         this.gym = gym;
-        this.ownerUser = ownerUser;
+        this.owner = owner;
     }
 
-    public void updateChat(String roomname) {
-        this.roomname = roomname;
+    public void updateChat(String name) {
+        this.name = name;
     }
-
 }

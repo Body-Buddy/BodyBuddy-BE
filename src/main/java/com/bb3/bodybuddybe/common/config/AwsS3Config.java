@@ -9,7 +9,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class ImageConfig {
+public class AwsS3Config {
+
     @Value("${cloud.aws.credentials.accessKey}")
     private String accessKey;
 
@@ -18,7 +19,6 @@ public class ImageConfig {
 
     @Value("${cloud.aws.region.static}")
     private String region;
-
 
     @Bean
     public AmazonS3Client amazonS3Client() {

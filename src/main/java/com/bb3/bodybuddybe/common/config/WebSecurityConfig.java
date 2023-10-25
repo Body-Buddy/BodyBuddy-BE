@@ -10,8 +10,11 @@ import com.bb3.bodybuddybe.common.security.UserDetailsServiceImpl;
 import com.bb3.bodybuddybe.common.security.UserVerificationFilter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -88,6 +91,7 @@ public class WebSecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable);
+        http.formLogin(AbstractHttpConfigurer::disable);
         http.cors(cors -> cors.configurationSource(corsConfigurationSource()));
 
         http.oauth2Login(oauth2Login ->
@@ -104,7 +108,9 @@ public class WebSecurityConfig {
 
         http.authorizeHttpRequests(authorizeHttpRequests ->
                 authorizeHttpRequests
-                        .anyRequest().permitAll()
+                        .requestMatchers(HttpMethod.OPTIONS).permitAll()
+                        .requestMatchers("/api/auth/**").permitAll()
+                        .anyRequest().authenticated()
         );
 
         http.addFilterBefore(jwtAuthorizationFilter(), JwtAuthenticationFilter.class);

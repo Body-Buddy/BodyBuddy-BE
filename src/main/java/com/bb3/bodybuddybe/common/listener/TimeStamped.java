@@ -1,4 +1,4 @@
-package com.bb3.bodybuddybe.common.timestamped;
+package com.bb3.bodybuddybe.common.listener;
 
 import jakarta.persistence.*;
 import lombok.Getter;

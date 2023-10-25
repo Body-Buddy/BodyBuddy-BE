@@ -10,7 +10,7 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/api/**")
-                .allowedOrigins("http://localhost:5173", "https://bodybuddy.vercel.app","http://43.200.208.53:8080")
+                .allowedOrigins("http://localhost:5173", "https://bodybuddy.vercel.app")
                 .allowedMethods(
                         HttpMethod.GET.name(),
                         HttpMethod.POST.name(),
